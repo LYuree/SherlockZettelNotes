@@ -1,0 +1,41 @@
+create table users (id serial primary key not null,
+				   	name varchar(70) not null,
+					email varchar(70) not null,
+					password varchar(70) not null
+				   );
+
+create table collections(id serial primary key not null,
+					name varchar(70) not null,
+					creation_date timestamptz not null,
+					owner_id integer not null,
+foreign key(owner_id) references users(id)						 
+					);
+
+create table folders(id serial primary key not null,
+					parent_id integer,
+					name varchar(255) not null,
+					collection_id integer not null,
+					foreign key(collection_id) references collections(id),
+foreign key (parent_id) references folders(id)
+					);
+
+create table notes (id serial primary key,
+				   name varchar(255),
+				   creation_date timestamptz,
+				   note_text varchar(9000),
+					folder_id integer not null,
+					foreign key (folder_id) references folders(id)
+				   );
+
+
+create table keywords (id_note integer,
+					   keyword varchar(255),
+					   primary key(id_note, keyword),
+					  	foreign key(id_note) references notes(id)
+					  );
+create table note_references_note(id_referencing integer,
+								 id_referenced integer,
+								 primary key(id_referencing, id_referenced),
+								 foreign key(id_referencing) references notes(id),
+								 foreign key(id_referenced) references notes(id)
+								 );
