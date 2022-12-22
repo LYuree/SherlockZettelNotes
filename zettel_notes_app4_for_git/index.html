@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Project ZettelNotes</title>
+</head>
+<body>
+
+
+    <div class="modal__sign-in__background">
+        <div id="modal__sign-in">
+            <div class="modal__sign-in__caption">Мы рады приветствовать Вас!<br>Пожалуйста, войдите в аккаунт</div>
+            <div class="modal__sign-in__row">
+                <label for="modal__sign-in__login-input">Логин/e-mail:&nbsp</label>
+                <input type="text" name="modal__sign-in__login-input" class="modal__sign-in__login-input">
+            </div>
+            <div class="modal__sign-in__row">
+                <label for="modal__sign-in__password-input">Пароль:&nbsp</label>
+                <input type="password" name="modal__sign-in__password-input" class="modal__sign-in__login-input">
+            </div>
+            <button type="submit" class="modal__sign-in__button">Войти</button>
+            <div class="modal__sign-in__register-link__wrapper">
+                <span>Нет аккаунта?</span>
+                <br>
+                <a href="#" class="modal__sign-in__register-link">Регистрация</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="notes" id="app">
+
+        <!-- THE SIDEBAR SECTION -->
+
+
+        <aside class="notes__sidebar">
+            
+            <!-- search field and note-create button  -->
+            
+
+            <div class="notes__sidebar__management__panel">
+                <img src="images/vintage_ornament_maroon.png" id="vintage__ornament" alt="">
+                <input type="text" name="search__note" id="search__note" class="search__note" placeholder="Search notes...">
+                <button class="notes__add"> New </button>
+            </div>
+
+
+            <!-- the notes previews -->
+            <div class="notes__list-items__container">
+                <div class="note__list-item">
+                    <div class="notes__small-title">Sample Title</div>
+                    <button class="notes__delete"> X </button>
+                    <div class="notes__small-body">preview super-text</div>
+                    <div class="notes__small-updated">Thursday, 4 December 2022 12:00</div>
+                </div>
+
+                <div class="note__list-item">
+                    <div class="notes__small-title">Sample Title</div>
+                    <button class="notes__delete"> X </button>
+                    <div class="notes__small-body">Sample preview text</div>
+                    <div class="notes__small-updated">Thursday, 4 December 2022 12:00</div>
+                </div>
+                
+                <div class="note__list-item">
+                    <div class="notes__small-title">Sample Title</div>
+                    <button class="notes__delete"> X </button>
+                    <div class="notes__small-body">Sample preview text</div>
+                    <div class="notes__small-updated">Thursday, 4 December 2022 12:00</div>
+                </div>
+
+                
+                <div class="note__list-item">
+                    <div class="notes__small-title">Sample Title</div>
+                    <button class="notes__delete"> X </button>
+                    <div class="notes__small-body">Sample preview text</div>
+                    <div class="notes__small-updated">Thursday, 4 December 2022 12:00</div>
+                </div>
+                
+                <div class="note__list-item">
+                    <div class="notes__small-title">Sample Title</div>
+                    <button class="notes__delete"> X </button>
+                    <div class="notes__small-body">Sample preview text</div>
+                    <div class="notes__small-updated">Thursday, 4 December 2022 12:00</div>
+                </div>
+                
+                <div class="note__list-item">
+                    <div class="notes__small-title">Sample Title</div>
+                    <button class="notes__delete"> X </button>
+                    <div class="notes__small-body">Sample preview text</div>
+                    <div class="notes__small-updated">Thursday, 4 December 2022 12:00</div>
+                </div>
+                
+                <div class="note__list-item">
+                    <div class="notes__small-title">Sample Title</div>
+                    <button class="notes__delete"> X </button>
+                    <div class="notes__small-body">Sample preview text</div>
+                    <div class="notes__small-updated">Thursday, 4 December 2022 12:00</div>
+                </div>
+                
+                <div class="note__list-item">
+                    <div class="notes__small-title">Sample Title</div>
+                    <button class="notes__delete"> X </button>
+                    <div class="notes__small-body">Sample preview text</div>
+                    <div class="notes__small-updated">Thursday, 4 December 2022 12:00</div>
+                </div>
+            </div>
+
+
+        </aside>
+
+        <!-- THE MAIN SECTION -->
+
+
+        <main class="notes__preview">
+            <input type="text" name="" id="" class="notes__title" placeholder="Enter a title...">
+            <textarea class="notes__body" placeholder="Type in your text here..."></textarea>
+
+        </main>
+
+
+
+    </div>
+    
+    <script src="js/main.js"></script>
+</body>
+</html>
