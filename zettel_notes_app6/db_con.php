@@ -7,8 +7,9 @@ $options = [
 ];
 
 try{
-    //INSERT YOUR OWN PASSWORD INSTEAD OF ASTERISKS
-    $pdo = new PDO($dsn, 'postgres', '*******', $options);
+     // З'єднання з базою даних
+    $pdo = new PDO($dsn, 'postgres', 'Mister#wizard*', $options);
+    // print_r('<span style="color:white">Підключення вдалося! </span>'); 
 }catch (PDOException $e) {
     $pdo = null;
     print_r('<span style="color:white">Підключення не вдалося: ' . $e->getMessage() . '</span>'); 
