@@ -51,8 +51,6 @@ if(!empty($_POST)){
         }
     }
 }
-// else print_r("<span style='position: absolute; color:white; z-index: 1000'>FUCK YOU POST IS EMPTYYY</span>");
-
 
 ?>
 
