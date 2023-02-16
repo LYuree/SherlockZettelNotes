@@ -1,5 +1,6 @@
 export default class NotesView{
-    constructor(root, {onNoteSearch, onNoteSelect,  onNoteAdd,  onNoteEdit, onNoteDelete} = {}){
+    constructor(appObj, root, {onNoteSearch, onNoteSelect,  onNoteAdd,  onNoteEdit, onNoteDelete} = {}){
+        this.App = appObj;
         this.root = root;
         this.onNoteSearch = onNoteSearch;
         this.onNoteSelect = onNoteSelect;
@@ -13,6 +14,7 @@ export default class NotesView{
         this.inputTitle = this.root.querySelector('.notes__title');
         this.inputBody = this.root.querySelector('.notes__body');
         this.notePreview = this.root.querySelector('.notes__preview');
+        this.notesSidebar = this.root.querySelector('.notes__sidebar');
         this.notesContainer = this.root.querySelector('.notes__list-items__container');
         this.noteAddBtn = this.root.querySelector('.notes__add');
         this.searchField = this.root.querySelector('.search__note');
@@ -20,17 +22,17 @@ export default class NotesView{
             const eventTarget = clickEvent.target,
                 targetClassList = clickEvent.target.classList;
             let eventTargetParent = null,
-                activeNoteId = null,
-                smallTitle = null,
-                smallBody = null;
+                activeNoteId = null;
     
             if(targetClassList.contains("notes__delete")){
                 console.log("Note deletion event...");
                 const confirmDeletion = confirm('Вы действительно хотите удалить эту заметку?');
                 const idToRemove = eventTarget.parentNode.id;                    
                 if(confirmDeletion){
-                    this.onNoteDelete(idToRemove);
+                    console.log(this.App.username);
+                    this.onNoteDelete(idToRemove, this.App.username);
                     eventTarget.parentNode.remove();
+                    this.updatePreviewVisibility(false);
                 }        
             }
             else{
@@ -38,18 +40,20 @@ export default class NotesView{
                     {
                         eventTargetParent = eventTarget.parentNode;
                         activeNoteId = eventTargetParent.id;        
-                        this.smallTitle = eventTargetParent.querySelector('.notes__small-title');
-                        this.smallBody = eventTargetParent.querySelector('.notes__small-body');          
+                        this.activeSmallTitle = eventTargetParent.querySelector('.notes__small-title');
+                        this.activeSmallBody = eventTargetParent.querySelector('.notes__small-body');
+                        this.activeSmallUpdated = eventTargetParent.querySelector('.notes__small-updated');
                     }
                     else if(targetClassList.contains("note__list-item"))
                     {
                         activeNoteId = eventTarget.id;
-                        this.smallTitle = eventTarget.querySelector('.notes__small-title');
-                        this.smallBody = eventTarget.querySelector('.notes__small-body');       
+                        this.activeSmallTitle = eventTarget.querySelector('.notes__small-title');
+                        this.activeSmallBody = eventTarget.querySelector('.notes__small-body');       
+                        this.activeSmallUpdated = eventTarget.querySelector('.notes__small-updated');
                     }
                     
-                    const smallTitleText = this.smallTitle.innerHTML,
-                        smallBodyText = this.smallBody.innerHTML;
+                    const smallTitleText = this.activeSmallTitle.innerHTML,
+                        smallBodyText = this.activeSmallBody.innerHTML;
                     // console.log(this);
                     this.onNoteSelect(activeNoteId);
                     this.updateActiveNote(smallTitleText, smallBodyText);
@@ -58,7 +62,6 @@ export default class NotesView{
 
             this.noteAddBtn.addEventListener('click', () => {
                 this.onNoteAdd();
-                // this.activeNoteId = 999;
             });
 
             this.inputTitle.addEventListener('blur', () => {
@@ -79,11 +82,22 @@ export default class NotesView{
             this.notesContainer.addEventListener('click', _sidebarClickHandler);
     }
 
-    createListItemHTML(id, title, body){
+
+    static getCurrentDateString(){
         const today = new Date();
-        const date = today.getFullYear()+ '-' +(today.getMonth() + 1) + '-' +today.getDate();
-        const time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+        const month = `${(today.getMonth()+1) < 10 ? '0' + (today.getMonth()+1) : (today.getMonth()+1)}`;
+        const day = `${today.getDate() < 10 ? '0' + today.getDate() : today.getDate()}`;
+        const date = today.getFullYear() + '-' + month + '-' + day;
+        const time = today.getHours()+ ':' + today.getMinutes() + ':' + today.getSeconds();
         const dateTime = date + ' ' + time;
+        return dateTime;
+    }
+
+    createListItemHTML(id, title, body, lastUpdatedString){
+        console.log(id);
+        console.log(title);
+        console.log(body);
+        console.log(lastUpdatedString);
 
         const newNote = document.createElement("div"),
         newNoteSmallTitle = document.createElement("div"),
@@ -101,7 +115,7 @@ export default class NotesView{
         newNoteSmallTitle.innerHTML = title;
         newNoteDeleteBtn.innerHTML = " X ";
         newNoteSmallBody.innerHTML = body;
-        newNoteSmallUpdated.innerHTML = `${dateTime}`;
+        newNoteSmallUpdated.innerHTML = lastUpdatedString;
         newNote.appendChild(newNoteSmallTitle);
         newNote.appendChild(newNoteDeleteBtn);
         newNote.appendChild(newNoteSmallBody);
@@ -110,24 +124,34 @@ export default class NotesView{
     }
 
     updateActiveNote(smallTitleText, smallBodyText){
-        // const today = new Date();
-        // const date = today.getFullYear() + '-' + today.getMonth() + '-' + today.getDate();
-        // const time = today.getHours()+ ':' + today.getMinutes() + today.getSeconds();
-        // const dateTime = date + time;
         this.inputTitle.value = smallTitleText;
         this.inputBody.value = smallBodyText;
-        // this.activeSmallTitle.value = smallTitleText;
-        // this.activeSmallBody.value = smallBodyText;
-        // this.activeSmallUpdated.value = dateTime;
         this.updatePreviewVisibility(true);
+    }
+
+    updateSmallActiveNote(smallTitleText, smallBodyText){
+        this.activeSmallTitle.innerHTML = smallTitleText;
+        this.activeSmallBody.innerHTML= smallBodyText;
+        this.activeSmallUpdated.innerHTML = NotesView.getCurrentDateString();
     }
 
     updatePreviewVisibility(visible){
         visible ? this.notePreview.style.display = 'flex' : this.notePreview.style.display = 'none';
     }
 
-    updateNotesList(notesArray){
-        
+    initiateNotesList(notesMatrix){
+        //this method is only used for the initial client-side note items list load,
+        //when the user gets authorized and the browser sends a query to get all the notes from the user's collection;
+        //further updates to the client-side display of the notes list are acomplished without using this method;
+        //again: this is only for the INITIAL list upload.
+        const m = notesMatrix.length;
+        console.log(notesMatrix.length);
+        if(m > 0){
+            for(let note of notesMatrix){
+                console.log(note);
+                this.createListItemHTML(note['id'], note['name'], note['note_text'], note['creation_date']);
+            }
+        }
     }
 
 }

@@ -16,13 +16,13 @@
                 <div class="modal__sign-in__caption">Мы рады приветствовать Вас!<br>Пожалуйста, войдите в аккаунт</div>
                 <div class="modal__sign-in__row">
                     <label for="modal__sign-in__login-input">Логин/e-mail:&nbsp</label>
-                    <div class="modal__sign-in__input-wrapper">
+                    <div class="modal__sign-in__intput-wrapper">
                         <input type="text" name="modal__sign-in__login-input" class="modal__sign-in__login-input">
                     </div>
                 </div>
                 <div class="modal__sign-in__row">
                     <label for="modal__sign-in__password-input">Пароль:&nbsp</label>
-                    <div class="modal__sign-in__input-wrapper">
+                    <div class="modal__sign-in__intput-wrapper">
                         <input type="password" name="modal__sign-in__password-input" class="modal__sign-in__password-input">
                     </div>
                 </div>
@@ -53,66 +53,50 @@
 
         <div class="modal__sign-up__background">
             <div id="modal__sign-up">
-                <div class="modal__sign-up__caption">Создание учётной записи</div>
+                <div class="modal__sign-up__caption">Мы рады приветствовать Вас!<br>Пожалуйста, войдите в аккаунт</div>
                 
-                <div class="modal__sign-up__form-control">
-                    <div class="modal__sign-up__row">
-                        <label for="modal__sign-up__login-input">Имя пользователя:&nbsp</label>
-                        <div class="modal__sign-up__input-wrapper">
-                            <input type="text" name="modal__sign-up__login-input" class="modal__sign-up__login-input">
-                        </div>
+                <div class="modal__sign-up__row">
+                    <label for="modal__sign-up__login-input">Имя пользователя:&nbsp</label>
+                    <div class="modal__sign-up__intput-wrapper">
+                        <input type="text" name="modal__sign-up__login-input" class="modal__sign-up__login-input">
                     </div>
-                    <div class="modal__sign-up__small-wrapper">
-                        <small class="modal__sign-in__login-input-error">error message</small>
-                    </div>
+                    <small class="modal__sign-in__username-error"></small>
                 </div>
                 
-                <div class="modal__sign-up__form-control">
-                    <div class="modal__sign-up__row">
-                        <label for="modal__sign-up__email-input">e-mail:&nbsp</label>
-                        <div class="modal__sign-up__input-wrapper">
-                            <input type="text" name="modal__sign-up__email-input" class="modal__sign-up__email-input">
-                        </div>
+                <div class="modal__sign-up__row">
+                    <label for="modal__sign-up__password-input">e-mail:&nbsp</label>
+                    <div class="modal__sign-up__intput-wrapper">
+                        <input type="password" name="modal__sign-up__password-input" class="modal__sign-up__password-input">
                     </div>
-                    <div class="modal__sign-up__small-wrapper">
-                        <small class="modal__sign-in__email-input-error">error message</small>
-                    </div>
+                    <small class="modal__sign-in__email-error"></small>
                 </div>
 
-                <div class="modal__sign-up__form-control">
-                    <div class="modal__sign-up__row">
-                        <label for="modal__sign-up__password-input">Пароль:&nbsp</label>
-                        <div class="modal__sign-up__input-wrapper">
-                            <input type="password" name="modal__sign-up__password-input" class="modal__sign-up__password-input">
-                        </div>
+                <div class="modal__sign-up__row">
+                    <label for="modal__sign-up__login-input">Пароль:&nbsp</label>
+                    <div class="modal__sign-up__intput-wrapper">
+                        <input type="text" name="modal__sign-up__login-input" class="modal__sign-up__login-input">
                     </div>
-                    <div class="modal__sign-up__small-wrapper">
-                        <small class="modal__sign-in__password-error">error message</small>
-                    </div>
+                    <small class="modal__sign-in__password-error"></small>
                 </div>
 
-                <div class="modal__sign-up__form-control">
-                    <div class="modal__sign-up__row">
-                        <label for="modal__sign-up__repeat-password-input">Подтвердите пароль:&nbsp</label>
-                        <div class="modal__sign-up__input-wrapper">
-                            <input type="password" name="modal__sign-up__repeat-password-input" class="modal__sign-up__repeat-password-input">
-                        </div>
+                <div class="modal__sign-up__row">
+                    <label for="modal__sign-up__login-input">Подтвердите пароль:&nbsp</label>
+                    <div class="modal__sign-up__intput-wrapper">
+                        <input type="text" name="modal__sign-up__login-input" class="modal__sign-up__login-input">
                     </div>
-                    <div class="modal__sign-up__small-wrapper">
-                        <small class="modal__sign-in__repeat-password-error">error message</small>
-                    </div>
+                    <small class="modal__sign-in__password-repeat-error"></small>
                 </div>
 
                 <div class="modal__sign-up__button-wrapper__flex-container">
                     <div class="modal__sign-up__button-wrapper">
-                        <button type="submit" class="modal__sign-up__button">Регистрация</button>
+                        <button type="submit" class="modal__sign-up__button">Зарегистрироваться</button>
                     </div>
                 </div>
                 
-                <div class="modal__sign-up__authorize-link__wrapper">
+                <div class="modal__sign-up__register-link__wrapper">
                     <span>Уже есть аккаунт?</span>
                     <br>
-                    <a href="#" class="modal__sign-up__authorize-link">Вход</a>
+                    <a href="#" class="modal__sign-up__register-link">Вход</a>
                 </div>
             </div>
         </div>
@@ -138,7 +122,8 @@
         <!-- THE MAIN SECTION -->
         <main class="notes__preview">
             <input type="text" name="" id="" class="notes__title" placeholder="Enter a title...">
-            <textarea class="notes__body" placeholder="Type in your text here..."></textarea>
+            <textarea class="notes__body" placeholder="Type in your text here..."><?php //echo $output?></textarea>
+
         </main>
     </div>
 </body>
