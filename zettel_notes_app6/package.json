@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "franc-cli": "^8.0.0",
+    "rake-js": "^0.1.1"
+  }
+}

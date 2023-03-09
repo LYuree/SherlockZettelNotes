@@ -58,6 +58,8 @@ export default class NotesAPI{
     }
 
     static noteSave(activeNoteId, inputTitle, inputBody, username){
+        inputTitle = this._shieldApostrophes(inputTitle);
+        inputBody = this._shieldApostrophes(inputBody);
         const xhr = new XMLHttpRequest(),
             noteId = activeNoteId,
             noteTitle = inputTitle,
@@ -107,5 +109,14 @@ export default class NotesAPI{
         }
         xhr.send(params);
         // eventTarget.parentNode.remove();
+    }
+
+    // prevents sql-insert mistakes with
+    //different kinds of apostrophes from happening
+    static _shieldApostrophes(text){
+        text = text.replace(/'/g, "''");
+        text = text.replace(/`/g, "\`");
+        text = text.replace(/"/g, "\"");
+        return text;
     }
 }

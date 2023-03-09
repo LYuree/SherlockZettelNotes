@@ -15,8 +15,8 @@ export default class App{
         
         // Cookies.set('username', login, 1);
         // Cookies.set('password', password, 1);
-        Cookies.set('authenticated', false, 1);
-        console.log(typeof Cookies.get('authenticated'));
+        // Cookies.set('authenticated', false, 1);
+        console.log(Cookies.get('authenticated'));
 
         // CODE MOVED FROM CALLSIGNINWINDOW
         // =================================
@@ -34,8 +34,12 @@ export default class App{
         this.modalSignUpPassword = document.querySelector('.modal__sign-up__password-input');
         this.modalSignUpPasswordRepeat = document.querySelector('.modal__sign-up__repeat-password-input');
         this.modalSignInError = document.querySelector('.modal__sign-in__error-wrapper__flex-container');
+        this.modalVerificationBackground = document.querySelector('.modal__verification_message__background');
+        this.modalVerification = document.querySelector('.modal__verification_message');
+        this.modalVerificationLink = document.querySelector('.modal__verification_message__authorize-link');
         this.modalSignInLink = document.querySelector('.modal__sign-in__register-link');
         this.modalSignUpLink = document.querySelector('.modal__sign-up__authorize-link');
+
         // this.modalLogInError = document.querySelector('.modal__sign-in__username-error');
         // this.modalPasswordError = document.querySelector('.modal__sign-in__password-error');
         this.modalSignInLink.addEventListener('click', () => {
@@ -83,10 +87,10 @@ export default class App{
                     }
                 }          
                 else{
-                    console.log(!(login.length < 8));
-                    console.log(!(login.length > 14));
-                    console.log(_isAlpha(login));
-                    console.log(!(password.length < 8));
+                    // console.log(!(login.length < 8));
+                    // console.log(!(login.length > 14));
+                    // console.log(_isAlpha(login));
+                    // console.log(!(password.length < 8));
                     this.modalSignInError.classList.add('active');
                     // this.modalLogInInput.classList.add('error', 'invalid-username');
                     // this.modalLogInError.classList.add('active');
@@ -179,6 +183,17 @@ export default class App{
                 else if(response.emailExists === true){
                     this._setErrorFor(this.modalSignUpEmail, "На этот адрес уже зарегистрирован другой аккаунт");
                 }
+                else {
+                    //verification message window: active
+                    this.modalVerificationLink.addEventListener('click', () => {
+                        this.modalVerificationBackground.classList.remove('active');
+                        this.modalVerification.classList.remove('active');
+                        this.modalSignInBackground.classList.add('active');
+                        this.modalSignIn.classList.add('active');
+                    });
+                    this.modalVerificationBackground.classList.add('active');
+                    this.modalVerification.classList.add('active');
+                }
             }
             
 
@@ -192,6 +207,30 @@ export default class App{
         //unless we create our own custom constructor
         if(Cookies.get('authenticated') === null || Cookies.get('authenticated') === undefined || Cookies.get('authenticated') == 'false'){
             this._callSignInWindow();
+        }
+        else{
+            const notesArray = NotesAPI.getNotes(Cookies.get('username'), Cookies.get('password'));
+            console.log(notesArray);
+            // if (notesArray.notes === null) {
+            if (notesArray.verified === false) { 
+                console.log(notesArray.password);
+                console.log(notesArray.hash);
+                console.log(notesArray.verified);
+                this.modalSignInLogIn.classList.add('error', 'wrong-username-or-pw');
+                this.modalSignInPassword.classList.add('error', 'invalid-password');
+            }
+            else{
+                this.view = new NotesView(this, this.root, this._handlers());
+                this._setNotes(notesArray);
+                // Cookies.set('username', login, 1);
+                this.username = Cookies.get('username');
+                // Cookies.set('password', password, 1);
+                // Cookies.set('authenticated', true, 1);
+                //loading...
+                this.modalSignInBackground.classList.remove('active');
+                this.modalSignIn.classList.remove('active');
+                this.view.notesSidebar.classList.add('active');
+            }
         }
     }
 
@@ -364,4 +403,6 @@ export default class App{
             onNoteDelete: NotesAPI.noteDelete
         }
     }
+    //this is meant to prevent the errors 
+    //with the SQL-insert query
 }
