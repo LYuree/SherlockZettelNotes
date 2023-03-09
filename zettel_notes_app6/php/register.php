@@ -3,6 +3,11 @@
 require "./db_con.php";
 require "./functions.php";
 
+function generate_activation_code(){
+    return bin2hex(random_bytes(16));
+}
+
+
 if(!empty($_POST) && isset($_POST['username']) && isset($_POST['password']) && isset($_POST['email'])){    try{
         $response = array();
         $response['usernameExists'] = false;
@@ -25,6 +30,10 @@ if(!empty($_POST) && isset($_POST['username']) && isset($_POST['password']) && i
             $newCollectionId = $resultsArray[0];
             $newFolderName = $username ."''s Initial Folder";
             $pdo->query("INSERT into folders values (default, null, '$newFolderName', $newCollectionId)");
+            $activationCode = generate_activation_code();
+            $pdo->query("INSERT into user_tokens values (default, $newUserId,
+                                                        '$activationCode',
+                                                        'email-verification'");
             // header("Location: index.php");
         }
         else{
