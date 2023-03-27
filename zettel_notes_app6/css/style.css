@@ -260,6 +260,17 @@ body {
 } */
 
 
+.notes__navbar {
+    height: 100%;
+    width: 60px;
+}
+
+.notes__navbar__fas__fa-icons {
+    display: flex;
+    flex-direction: column;
+}
+
+
 .notes__sidebar{
     /* padding: 0 2rem; */
     /* display: none; */

@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="./css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300&display=swap" rel="stylesheet">
     <link rel="shortcut icon" href="./images/holmes_icon.png">
+    <!-- FA-ICONS -->
+    <script src="https://kit.fontawesome.com/e202a65f05.js" crossorigin="anonymous"></script>
     <title>Project ZettelNotes</title>
 </head>
 <body>
@@ -133,9 +135,27 @@
 
         <script type="module" src="./js/main.js"></script>
 
+        <!-- navigation icons panel -->
+        <aside class="notes__navbar">
+            <div class="notes__navbar__fas__fa-icons">
+                <button>
+                    <!-- <i class="fa-sharp fa-solid fa-sidebar"></i> -->
+                    <!-- <i class="fa-solid fa-circle-arrow-left"></i>
+                     -->
+                     
+                </button>
+                <button>
+
+                </button>
+                <button>
+                    
+                </button>
+            </div>
+        </aside>
+
 
         <!-- THE SIDEBAR SECTION -->
-        <aside class="notes__sidebar">            
+        <div class="notes__sidebar">            
             <!-- search field and note-create button  -->
             <div class="notes__sidebar__management__panel">
                 <img src="./images/vintage_ornament_maroon.png" id="vintage__ornament" alt="">
@@ -145,7 +165,7 @@
             <!-- the notes previews -->
             <div class="notes__list-items__container">
             </div>
-        </aside>
+        </div>
         <!-- THE MAIN SECTION -->
         <main class="notes__preview">
             <input type="text" name="" id="" class="notes__title" placeholder="Enter a title...">
