@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300&display=swap" rel="stylesheet">
     <link rel="shortcut icon" href="./images/holmes_icon.png">
     <!-- FA-ICONS -->
+    <!-- <script src="https://kit.fontawesome.com/e202a65f05.js" crossorigin="anonymous"></script> -->
     <script src="https://kit.fontawesome.com/e202a65f05.js" crossorigin="anonymous"></script>
     <title>Project ZettelNotes</title>
 </head>
@@ -130,26 +131,159 @@
             </div>
         </div>
 
+
+
+
+        <!-- RAKE WINDOW -->
+        <div class="modal__rake_window__background">
+            <div id="modal__rake_window">
+                <div class="modal__rake_window__header">
+                    <div class="modal__rake_window__caption">
+                        Анализ
+                    </div>
+                    <button class="modal__rake_window__background__close_button">
+                         X
+                    </button>
+                </div>
+                <div class="modal__rake_window__info">
+                    Информация о колонках.
+                    <br>
+                    Информация о колонках. Lorem ipsum.
+                    <br>
+                    Информация о колонках. Dolor sit amet.
+                    <br>
+                    Информация о колонках. Lorem ipsum. Dolor sit amet.
+                    <br>
+                </div>
+                
+                <div class="modal__rake_window__section_flex_container">
+                    <section class="modal__rake_window__user_info">
+                        <img src="./images/holmes_icon.png" alt="avatar">
+                        <span class="modal__rake_window__username">Mr. Holmes</span>
+                        <span class="modal__rake_window__registration_date">2022/22/10</span>
+                    </section>
+
+                    <section class="modal__rake_window__users_keywords">
+                        <div class="modal__rake_window__users_keywords__loader_mask">
+                            <div class="modal__rake_window__users_keywords__loader"></div>
+                        </div>
+
+                        <div class="modal__rake_window__users_keywords__caption">
+                            Ваши ключевые слова
+                        </div>
+                        <table class="modal__rake_window__users_keywords__table">
+                            <tr class="modal__rake_window__users_keywords__table_row">
+                                <th>Слово</th>
+                                <!-- <th>Встречаемость</th> -->
+                            </tr>
+                            <tr class="modal__rake_window__users_keywords_table_row">
+                                <td class="modal__rake_window__users_keywords__table_row__username_col">
+                                    circulatory system
+                                </td>
+                            </tr>
+                            <tr class="modal__rake_window__users_keywords__table_row">
+                                <td class="modal__rake_window__users_keywords__table_row__username_col">
+                                    blood
+                                </td>
+                            </tr>
+                            <!-- <tr>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                            </tr> -->
+                        </table>
+                        <div class="modal__rake_window__button_wrapper">
+                            <button class="modal__rake_window__users_keywords__refresh_keywords_button">
+                                Обновить список
+                            </button>
+                        </div>
+                    </section>
+                    <section class="modal__rake_window__cowork_candidates">
+                        <div class="modal__rake_window__cowork_candidates__loader_mask">
+                            <div class="modal__rake_window__cowork_candidates__loader"></div>
+                        </div>
+                        <div class="modal__rake_window__users_keywords__caption">
+                            Заинтересованы в сотрудничестве?
+                        </div>
+                        <table class="modal__rake_window__cowork_candidates__table">
+                            <tr class="modal__rake_window__cowork_candidates__table_row">
+                                <th>Никнейм</th>
+                                <th>Сходство</th>
+                            </tr>
+                            <tr class="modal__rake_window__cowork_candidates__table_row">
+                                <td class="modal__rake_window__cowork_candidates__table_row__username_col">
+                                    Wolf_Kitsessss
+                                </td>
+                                <td class="modal__rake_window__cowork_candidates__table_row__correlation_col">
+                                    0.87
+                                </td>
+                            </tr>
+                            <tr class="modal__rake_window__cowork_candidates__table_row">
+                                <td class="modal__rake_window__cowork_candidates__table_row__username_col">
+                                    alex
+                                </td>
+                                <td class="modal__rake_window__cowork_candidates__table_row__correlation_col">
+                                    0.79
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </table>
+                        <div class="modal__rake_window__button_wrapper">
+                            <button class="modal__rake_window__cowork_candidates__refresh_candidates_button">
+                                Обновить список
+                            </button>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+
     <div class="notes" id="app">
 
-
+        <!-- <script type="module" src="./js/rake_js_test.js"></script> -->
+        <!-- <script> var exports = {}; </script> -->
+        <!-- <script type="module" src="./js/node_modules/rake-js/dist/lib/index.js"></script> -->
+        <!-- <script src="https://requirejs.org/docs/release/2.3.5/minified/require.js"></script> -->
+        <!-- <script type="module" src="./js/node_modules/rake-js/dist/lib/index.js"></script> -->
         <script type="module" src="./js/main.js"></script>
+        <!-- <script type="module" data-main="./js/main.js" src="./js/requireJS.js"></script> -->
+        
 
         <!-- navigation icons panel -->
         <aside class="notes__navbar">
             <div class="notes__navbar__fas__fa-icons">
-                <button>
-                    <!-- <i class="fa-sharp fa-solid fa-sidebar"></i> -->
-                    <!-- <i class="fa-solid fa-circle-arrow-left"></i>
-                     -->
-                     
+                <button class="fas fa-arrow-left" title="Свернуть панель">                     
                 </button>
-                <button>
-
-                </button>
-                <button>
+                <button class="fas fa-flask notes__navbar__analysis_button" title="Анализ ключевых слов">
                     
                 </button>
+                <button class="fas fa-power-off" title="Выйти из аккаунта">
+                    <!-- <i class="fas fa-analytics"></i> -->
+                </button>
+                <!-- <i class="fa-solid fa-magnifying-glass-chart"></i>
+                <i class="fa-solid fa-chart-simple"></i> -->
             </div>
         </aside>
 

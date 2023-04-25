@@ -94,10 +94,10 @@ export default class NotesView{
     }
 
     createListItemHTML(id, title, body, lastUpdatedString){
-        console.log(id);
-        console.log(title);
-        console.log(body);
-        console.log(lastUpdatedString);
+        // console.log(id);
+        // console.log(title);
+        // console.log(body);
+        // console.log(lastUpdatedString);
 
         const newNote = document.createElement("div"),
         newNoteSmallTitle = document.createElement("div"),
@@ -145,10 +145,10 @@ export default class NotesView{
         //further updates to the client-side display of the notes list are acomplished without using this method;
         //again: this is only for the INITIAL list upload.
         const m = notesMatrix.length;
-        console.log(notesMatrix.length);
+        // console.log(notesMatrix.length);
         if(m > 0){
             for(let note of notesMatrix){
-                console.log(note);
+                // console.log(note);
                 this.createListItemHTML(note['id'], note['name'], note['note_text'], note['creation_date']);
             }
         }
