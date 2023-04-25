@@ -8,5 +8,44 @@
 </head>
 <body>
     <i class="fa-solid fa-circle-arrow-left"></i>
+    <table class="test_table"></table>
+
+    <style>
+        .test_table {
+            /* display: block; */
+            /* height: 10rem; */
+            table-layout: fixed;
+            overflow: hidden;
+            overflow-y:scroll;
+            border: 2px solid black;
+            border-collapse: separate;
+        }
+        .test_table tr, td{
+            border: 2px solid black;
+        }
+    </style>
+
+
+    <script>
+    const table = document.querySelector('.test_table');
+
+    function _createTableRowHTML(numberOfCells, rowClass, cellValues){
+        const newRow = document.createElement("tr");
+        // const cells = new Array();
+        // cellValues is an array
+        for(let i = 0; i < numberOfCells; i++){
+            const dataCell = document.createElement("td");
+            dataCell.classList += rowClass;
+            dataCell.innerHTML = cellValues[i];
+            newRow.appendChild(dataCell);
+            // cells.push(dataCell);
+        }
+        table.appendChild(newRow);
+    }
+
+    _createTableRowHTML(2, "keywords", ["cat", "meow"]);
+    _createTableRowHTML(2, "keywords", ["dog", "woof"]);
+
+    </script>
 </body>
 </html>

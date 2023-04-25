@@ -1,6 +1,9 @@
 import NotesView from "./NotesView.js";
 import NotesAPI from "./NotesAPI.js";
 import Cookies from './js_cookies/js.cookie.mjs'
+// import rake from '../node_modules/rake-js/src/lib/rake.ts'
+// import rake from '../node_modules/rake-js/dist/lib/index.js'
+
 
 export default class App{
     constructor(root){
@@ -16,6 +19,7 @@ export default class App{
         // Cookies.set('username', login, 1);
         // Cookies.set('password', password, 1);
         // Cookies.set('authenticated', false, 1);
+        Cookies.set('authenticated', true, 1);
         console.log(Cookies.get('authenticated'));
 
         // CODE MOVED FROM CALLSIGNINWINDOW
@@ -25,6 +29,16 @@ export default class App{
         this.modalSignIn = document.getElementById('modal__sign-in');
         this.modalSignUpBackground = document.querySelector('.modal__sign-up__background');
         this.modalSignUp = document.getElementById('modal__sign-up');
+        this.modalRakeWindowBackground = document.querySelector('.modal__rake_window__background');
+        this.modalRakeWindow = document.getElementById('modal__rake_window');
+        this.modalRakeWindowRefreshKeywordsBtn = document.querySelector('.modal__rake_window__users_keywords__refresh_keywords_button');
+        this.modalRakeWindowRefreshCandidatesBtn = document.querySelector('.modal__rake_window__cowork_candidates__refresh_candidates_button');
+        this.modalRakeWindowRefreshKeywordsLoaderBackgr = document.querySelector('.modal__rake_window__users_keywords__loader_mask');
+        this.modalRakeWindowRefreshKeywordsLoader = document.querySelector('.modal__rake_window__users_keywords__loader');
+        this.modalRakeWindowRefreshCoworkCandidatesLoaderBackgr = document.querySelector('.modal__rake_window__cowork_candidates__loader_mask');
+        this.modalRakeWindowRefreshCoworkCandidatesLoader = document.querySelector('.modal__rake_window__cowork_candidates__loader');
+        this.modalRakeWindowKeywordsTable = document.querySelector('.modal__rake_window__users_keywords__table');
+        this.modalRakeWindowCoworkCandidatesTable = document.querySelector('.modal__rake_window__cowork_candidates__table');
         this.modalSignInBtn = document.querySelector('.modal__sign-in__button');
         this.modalSignUpBtn = document.querySelector('.modal__sign-up__button');
         this.modalSignInLogIn = document.querySelector('.modal__sign-in__login-input');
@@ -39,6 +53,35 @@ export default class App{
         this.modalVerificationLink = document.querySelector('.modal__verification_message__authorize-link');
         this.modalSignInLink = document.querySelector('.modal__sign-in__register-link');
         this.modalSignUpLink = document.querySelector('.modal__sign-up__authorize-link');
+        this.flaskButton = document.querySelector('.notes__navbar__analysis_button');
+        this.modalRakeWindowCloseBtn = document.querySelector('.modal__rake_window__background__close_button');
+
+
+        window.onbeforeunload = () => {
+
+        };
+
+        
+        
+        this.flaskButton.addEventListener('click', ()=>{
+            this.modalRakeWindowBackground.classList.add('active');
+            this.modalRakeWindow.classList.add('active');
+        });
+
+        this.modalRakeWindowCloseBtn.addEventListener('click', () => {
+            this.modalRakeWindowBackground.classList.remove('active');
+            this.modalRakeWindow.classList.remove('active');
+        });
+
+        this.modalRakeWindowRefreshKeywordsBtn.addEventListener('click', ()=>{
+            this._refreshUsersKeywords();
+        });
+
+
+
+        // this.modalRakeWindowRefreshCandidatesBtn.addEventListener('click', ()=>{
+        // });
+
 
         // this.modalLogInError = document.querySelector('.modal__sign-in__username-error');
         // this.modalPasswordError = document.querySelector('.modal__sign-in__password-error');
@@ -129,6 +172,8 @@ export default class App{
                 this._removeErrorFor(this.modalSignUpLogin);
             }
 
+            
+
 
 
             if(email === '') {
@@ -210,7 +255,7 @@ export default class App{
         }
         else{
             const notesArray = NotesAPI.getNotes(Cookies.get('username'), Cookies.get('password'));
-            console.log(notesArray);
+            // console.log(notesArray);
             // if (notesArray.notes === null) {
             if (notesArray.verified === false) { 
                 console.log(notesArray.password);
@@ -234,6 +279,25 @@ export default class App{
         }
     }
 
+
+    // haven't managed to get done with proper file imports
+
+    // _extractKeywordsFromNote_obsolete(){
+    //     if(this.notesMatrix.length > 0)
+    //         for(note of notesMatrix){
+    //             const keywordsFromNoteTitle = rake(note['name']).join(",");
+    //             const keywordsFromNoteBody = rake(note['note_text']).join(",");
+    //             const keywordsString = keywordsFromNoteTitle + ','
+    //             + keywordsFromNoteBody;
+    //             return keywordsString;
+    //         }
+    // }
+
+
+    // now add an eventlistener with a callback of a method that'll call this._extractKeywords
+    // + NotesAPI.pushKeywods
+
+    
     _setErrorFor(inputElement, message){
         const formControl = ((inputElement.parentElement).parentElement).parentElement;
         const small = formControl.querySelector("small");
@@ -269,74 +333,6 @@ export default class App{
     }
 
     _callSignInWindow(){
-        // console.log(this); //outputs App
-        // this.modalSignInBackground = document.querySelector('.modal__sign-in__background');
-        // this.modalSignIn = document.getElementById('modal__sign-in');
-        // this.modalSignUpBackground = document.querySelector('.modal__sign-up__background');
-        // this.modalSignUp = document.getElementById('modal__sign-up');
-        // this.modalSignInBtn = document.querySelector('.modal__sign-in__button');
-        // this.modalLogInInput = document.querySelector('.modal__sign-in__login-input');
-        // this.modalPasswordInput = document.querySelector('.modal__sign-in__password-input');
-        // this.modalSignInError = document.querySelector('.modal__sign-in__error-wrapper__flex-container');
-        // this.modalSignInLink = document.querySelector('.modal__sign-in__register-link');
-        // this.modalSignUpLink = document.querySelector('.modal__sign-up__authorize-link');
-        // // this.modalLogInError = document.querySelector('.modal__sign-in__username-error');
-        // // this.modalPasswordError = document.querySelector('.modal__sign-in__password-error');
-        // this.modalSignInLink.addEventListener('click', () => {
-        //     this.modalSignInBackground.classList.remove('active');
-        //     this.modalSignIn.classList.remove('active');
-        //     this.modalSignUpBackground.classList.add('active');
-        //     this.modalSignUp.classList.add('active');
-        // });
-
-        // this.modalSignUpLink.addEventListener('click', () => {
-        //     this.modalSignUpBackground.classList.remove('active');
-        //     this.modalSignUp.classList.remove('active');
-        //     this.modalSignInBackground.classList.add('active');
-        //     this.modalSignIn.classList.add('active');
-        // });
-        
-        // this.modalSignInBtn.addEventListener('click', () =>{
-        //     const login = this.modalLogInInput.value.trim(),
-        //         password = this.modalPasswordInput.value.trim();
-
-        //         const _isAlpha = str => /^[a-zA-Z]*$/.test(str);
-
-        //         if(!(login.length < 8) && !(login.length > 14) && _isAlpha(login) && !(password.length < 6)){
-        //             const notesArray = NotesAPI.getNotes(login, password);
-        //             console.log(notesArray);
-        //             if (notesArray === null) {
-        //                 this.modalLogInInput.classList.add('error', 'wrong-username-or-pw');
-        //                 this.modalPasswordInput.classList.add('error', 'invalid-password');
-        //             }
-        //             else{
-        //                 this.view = new NotesView(this, this.root, this._handlers());
-        //                 this._setNotes(notesArray);
-        //                 Cookies.set('username', login, 1);
-        //                 this.username = login;
-        //                 Cookies.set('password', password, 1);
-        //                 Cookies.set('authenticated', true, 1);
-        //                 //loading...
-        //                 this.modalSignInBackground.classList.remove('active');
-        //                 this.modalSignIn.classList.remove('active');
-        //                 this.view.notesSidebar.classList.add('active');
-        //             }
-        //         }          
-        //         else{
-        //             console.log(!(login.length < 8));
-        //             console.log(!(login.length > 14));
-        //             console.log(_isAlpha(login));
-        //             console.log(!(password.length < 8));
-        //             this.modalSignInError.classList.add('active');
-        //             // this.modalLogInInput.classList.add('error', 'invalid-username');
-        //             // this.modalLogInError.classList.add('active');
-        //             // this.modalPasswordInput.classList.add('error', 'invalid-password');
-        //             // this.modalPasswordError.classList.add('active');
-        //             // this.modalLogInError.innerHTML += 'Логин не может быть короче 8 символов.';
-        //             // this.modalPasswordError.innerHTML += 'Логин не может быть короче 8 символов.';
-        //         }
-        // });
-
         this.modalSignUpBackground.classList.remove('active');
         this.modalSignUp.classList.remove('active');
         this.modalSignInBackground.classList.add('active');
@@ -350,11 +346,6 @@ export default class App{
         this.modalSignUp.classList.add('active');
     }
 
-    // _refreshNotes(username, password) {
-    //     const notesMatrix = NotesAPI.getAllNotes(username, password);
-    //     // this._setNotes(notesMatrix);
-    // }
-
     _setNotes(notesMatrix){
         this.notesMatrix = notesMatrix;
         this.view.initiateNotesList(notesMatrix);
@@ -364,6 +355,105 @@ export default class App{
     _setActiveNote(noteId){
         this.activeNoteId = noteId;
         this.view.updateActiveNote(noteId);
+    }
+
+    _refreshUsersKeywords(){
+        for (let note of this.notesMatrix){
+            this.modalRakeWindowRefreshKeywordsLoaderBackgr.classList += 'active';
+            this.modalRakeWindowRefreshKeywordsLoader.classList += 'active';
+            let noteKeywords = NotesAPI.extractKeywords(note['note_text']);
+            noteKeywords.push(note['name']);
+            // for (let word of noteKeywords){
+            //     console.log("Word before mutation: ", word);
+            //     word = NotesAPI.shieldApostrophes(word);
+            //     console.log("Word after mutation: ", word);
+            // }
+            // noteKeywords.forEach(NotesAPI.shieldApostrophes);
+            noteKeywords = noteKeywords.map(str => NotesAPI.shieldApostrophes(str));
+            const keywordTable = this.modalRakeWindowKeywordsTable;
+            this._clearChildNodes(keywordTable);
+            const rowClass = "modal__rake_window__users_keywords__table_row";
+            for (let word of noteKeywords){
+                this._createTableRowHTML(keywordTable, 1, rowClass, [word]);
+            }
+            this.modalRakeWindowRefreshKeywordsLoaderBackgr.classList.remove('active');
+            this.modalRakeWindowRefreshKeywordsLoader.classList.remove('active');
+            const keywordsString = noteKeywords.join(",");
+            // console.log("KEYWORDS STRING, APP: ", keywordsString);
+            NotesAPI.pushKeywords(this.username, note['id'], keywordsString);
+        }
+    }
+
+
+    // based on the general computer-science considerations,
+    // it's generally quicker to remove the last element
+    // of a collection then the first one
+    _clearChildNodes(parent){
+        while (parent.lastElementChild) {
+            parent.removeChild(parent.lastElementChild);
+          }
+    }
+
+    // _refreshUsersKeywords(){
+    //     console.log(this.notesMatrix); //correct output
+    //     const usersKeywordsArray = this._getUsersKeywords();
+    //     console.log(usersKeywordsArray);
+    //     // a string to be exploded into an array
+    //     // in the .php-script
+    //     const keywordString = usersKeywordsArray.join(",");
+    //     console.log("APP, KEYWORDSTRING: ", keywordString);
+
+    //     // YOU'RE NOT PASSING ANY SPECIFIC NOTE ID
+
+    //     NotesAPI.pushKeywords(this.username, keywordString);        
+    // }
+
+    // _getUsersKeywords(){
+    //     // console.log(this.notesMatrix);
+    //     let usersKeywords = new Array();
+    //     for (let note of this.notesMatrix){
+    //         console.log("Note text: ", note['note_text']);
+    //         // raw array of note body keywords with note id not specified
+    //         const noteBodyKeywords = NotesAPI.extractKeywords(note['note_text']);
+    //         const noteId = note['id'];
+    //         const noteBodyKeyValuePairs = new Array();
+    //         // attaching the note's id to each of its keywords
+    //         for (word of noteBodyKeywords){
+    //             noteBodyKeyValuePairs.push([noteId, word]);
+    //         }
+    //         console.log(noteBodyKeyValuePairs);
+    //         // console.log("App, get user's keywords: ", noteBodyKeywords);
+    //         usersKeywords.push([noteId, note['name']]);
+    //         // usersKeywords = usersKeywords.concat(noteBodyKeywords); //concat works fine,
+    //                                                     // but noteBodyKeywords is empty
+    //         usersKeywords = usersKeywords.concat(noteBodyKeyValuePairs);
+    //         // console.log(usersKeywords);
+    //     }
+    //     return usersKeywords;
+    // }
+
+    // _trimWhitespace(strings){
+    //     for (let str in strings){
+    //         str.trim();
+    //         str = str.replace(/\s+/g, " ");
+    //     }
+    // }
+    
+
+
+    //  declare constant strings for cell classes
+    _createTableRowHTML(parentalTable, numberOfCells, rowClass, cellValues){
+        const newRow = document.createElement("tr");
+        // const cells = new Array();
+        // cellValues is an array
+        for(let i = 0; i < numberOfCells; i++){
+            const dataCell = document.createElement("td");
+            dataCell.classList += rowClass;
+            dataCell.innerHTML = cellValues[i];
+            newRow.appendChild(dataCell);
+            // cells.push(dataCell);
+        }
+        parentalTable.appendChild(newRow);
     }
 
     _handlers(){
