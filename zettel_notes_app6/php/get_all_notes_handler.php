@@ -6,12 +6,15 @@ if(!empty($_POST) && isset($_POST['username'])){
         //NOTE INSERTION/UPDATE
         try{
             $username = $_POST['username'];
+            // echo "\nusername: "."$username";
             $collection_id_row = ($pdo->query("SELECT collections.id FROM collections join users on
             users.id = owner_id WHERE users.name = '$username' OR users.email = '$username'"))->fetch(PDO::FETCH_NUM);
             $collection_id = $collection_id_row[0];
+            // echo "\ncollection_id: "."$collection_id";
             $folder_row = $pdo->query(("SELECT folders.id FROM collections join folders
             on collection_id = collections.id WHERE collections.id = $collection_id"))->fetch(PDO::FETCH_NUM);
             $folder_id = $folder_row[0];
+            // echo "\nfolder_id: "."$folder_id\n";
         }
         catch(PDOException $e){
             $pdo = null;
@@ -20,15 +23,26 @@ if(!empty($_POST) && isset($_POST['username'])){
         }
 
         try{
+            // echo "\nfolder_id, one block down"."$folder_id\n";
             // echo "mkaaaay, trying to insert your little pile of gibberish...";
-            $idToSave = $_POST['idToSave'];
+            // $idToSave = $_POST['idToSave'];
+            if($_POST['idToSave'] == -1)
+                $idToSave = 'default';
+            else
+                $idToSave = $_POST['idToSave'];
             $noteTitle = $_POST['noteTitle'];
             $noteText = $_POST['noteText'];
-            $pdo->query("INSERT into notes VALUES ($idToSave, '$noteTitle', CURRENT_TIMESTAMP(0), '$noteText', $folder_id)
+            $query_string = "INSERT into notes VALUES ($idToSave, '$noteTitle', CURRENT_TIMESTAMP(0), '$noteText', $folder_id)
                 ON CONFLICT (id) DO UPDATE
                 SET name = '$noteTitle',
                 creation_date = CURRENT_TIMESTAMP(0),
-                note_text = '$noteText' RETURNING *");
+                note_text = '$noteText' RETURNING id";
+            // echo $query_string;
+            $insertionStatement = $pdo->query($query_string);
+            $insertionResult = $insertionStatement->fetch(PDO::FETCH_ASSOC);
+            $lastNoteId = $insertionResult['id'];
+            // echo "$lastNoteId";
+            echo json_encode($lastNoteId);
         }
         catch(PDOException $e) {
             $pdo = null;

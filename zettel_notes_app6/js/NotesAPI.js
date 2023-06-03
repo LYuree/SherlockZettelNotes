@@ -3,6 +3,8 @@ export default class NotesAPI{
     static registerUrl = './php/register.php';
     static rakeUrl = './php/RAKE.php';
     static pushKeywordsUrl = './php/push_keywords.php';
+    static getKeywordsUrl = './php/get_keywords.php';
+    static getUserEntryUrl = './php/get_user.php';
 
     static createUser(username, email, password){
         const xhr = new XMLHttpRequest(),
@@ -24,6 +26,23 @@ export default class NotesAPI{
         console.log("Response OUTSIDE of the onreadystatechange callback: ", response);
         return response;
     }
+
+    static getUserEntry(username, password){
+        const xhr = new XMLHttpRequest();
+        const params = "username=" + username + "&password=" + password;
+        xhr.open('POST', this.getUserEntryUrl, false);
+        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');   
+        let userEntry = new Object(); 
+        xhr.onreadystatechange = () => {
+            if(xhr.readyState == 4 && xhr.status == 200) {
+                // console.log(xhr.response);
+                userEntry = JSON.parse(xhr.response);
+            }
+        }        
+        xhr.send(params);
+        // console.log(xhr.response);
+        return userEntry;
+    }
     
     static getNotes(username, password){
         const xhr = new XMLHttpRequest();
@@ -43,6 +62,23 @@ export default class NotesAPI{
     }
 
 
+    static getKeywords(username){
+        const xhr = new XMLHttpRequest();
+        const params = "username=" + username;
+        xhr.open('POST', this.getKeywordsUrl, false);
+        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');   
+        let keywords = [];
+        xhr.onreadystatechange = () => {
+            if(xhr.readyState == 4 && xhr.status == 200) {
+                console.log(xhr.response);
+                keywords = JSON.parse(xhr.response);
+            }
+        }        
+        xhr.send(params);
+        // console.log(xhr.response);
+        return keywords;
+    }
+
 
     // static getAllNotes(username, password){
     //     const xhr = new XMLHttpRequest();
@@ -60,24 +96,31 @@ export default class NotesAPI{
     //     return notesMatrix;
     // }
 
-    static noteSave(activeNoteId, inputTitle, inputBody, username){
+    static noteSave(idToSave = -1, inputTitle, inputBody, username){
+        console.log("NotesAPI, notesave, username: ", username);
         inputTitle = this.shieldApostrophes(inputTitle);
         inputBody = this.shieldApostrophes(inputBody);
         const xhr = new XMLHttpRequest(),
-            noteId = activeNoteId,
+            noteId = idToSave,
             noteTitle = inputTitle,
             noteText = inputBody,
             params = "idToSave="+ noteId + "&noteTitle=" + noteTitle + "&noteText=" + noteText + "&username=" + username;
-        xhr.open('POST', this.url, true);
+        xhr.open('POST', this.url, false);
         xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');    
+        let lastNoteId = null;
         xhr.onreadystatechange = function() {//Call a function when the state changes.
             if(xhr.readyState == 4 && xhr.status == 200) {
                 console.log("Updating the note...");
                 console.log(xhr.response);
+                lastNoteId = JSON.parse(xhr.response);
+                console.log(lastNoteId);
             }
         }        
         xhr.send(params);
+        return lastNoteId;
     }
+
+
     
     static noteSaveMalfunctioned(activeNoteId, inputTitle, inputBody, username){
         const xhr = new XMLHttpRequest(),
@@ -95,6 +138,7 @@ export default class NotesAPI{
         xhr.send(params);
     }
     static noteDelete(idToRemove, username){
+        // console.log("NotesAPI.noteDelete, idToRemove: ", idToRemove);
         const xhr = new XMLHttpRequest(),
             noteId = idToRemove,
             params = "idToDelete=" + noteId + "&username=" + username;
@@ -126,7 +170,7 @@ export default class NotesAPI{
     //     return usersKeywordsArray;
     // }
 
-
+    
     static extractKeywords(noteBody){ //this is sync
         const xhr = new XMLHttpRequest();
         const params = "noteText=" + noteBody;
