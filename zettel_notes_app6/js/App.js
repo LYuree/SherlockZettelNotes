@@ -20,7 +20,7 @@ export default class App{
         // Cookies.set('password', password, 1);
         // Cookies.set('authenticated', false, 1);
         Cookies.set('authenticated', true, 1);
-        console.log(Cookies.get('authenticated'));
+        // console.log(Cookies.get('authenticated'));
 
         // CODE MOVED FROM CALLSIGNINWINDOW
         // =================================
@@ -106,42 +106,47 @@ export default class App{
                 const _isAlpha = str => /^[a-zA-Z]*$/.test(str);
 
                 if(!(login.length < 8) && !(login.length > 15) && (_isAlpha(login) || this._isValidEmail(login)) && !(password.length < 5)){
-                    const notesArray = NotesAPI.getNotes(login, password);
-                    console.log(notesArray);
-                    // if (notesArray.notes === null) {
-                    if (notesArray.verified === false) { 
-                        console.log(notesArray.password);
-                        console.log(notesArray.hash);
-                        console.log(notesArray.verified);
-                        this.modalSignInLogIn.classList.add('error', 'wrong-username-or-pw');
-                        this.modalSignInPassword.classList.add('error', 'invalid-password');
-                    }
-                    else{
+                    // get user!
+                    const userEntry = NotesAPI.getUserEntry(login, password);
+                    let notesArray = new Array();
+                    if(userEntry['active'] == 'true') {
+                        notesArray = NotesAPI.getNotes(login, password);
+                        console.log(notesArray);
+
                         this.view = new NotesView(this, this.root, this._handlers());
                         this._setNotes(notesArray);
+                        
                         Cookies.set('username', login, 1);
                         this.username = login;
                         Cookies.set('password', password, 1);
                         Cookies.set('authenticated', true, 1);
+                        // new
+                        this._initiateKeywords();
+                        //
                         //loading...
                         this.modalSignInBackground.classList.remove('active');
                         this.modalSignIn.classList.remove('active');
                         this.view.notesSidebar.classList.add('active');
                     }
-                }          
-                else{
-                    // console.log(!(login.length < 8));
-                    // console.log(!(login.length > 14));
-                    // console.log(_isAlpha(login));
-                    // console.log(!(password.length < 8));
-                    this.modalSignInError.classList.add('active');
-                    // this.modalLogInInput.classList.add('error', 'invalid-username');
-                    // this.modalLogInError.classList.add('active');
-                    // this.modalPasswordInput.classList.add('error', 'invalid-password');
-                    // this.modalPasswordError.classList.add('active');
-                    // this.modalLogInError.innerHTML += 'Логин не может быть короче 8 символов.';
-                    // this.modalPasswordError.innerHTML += 'Логин не может быть короче 8 символов.';
-                }
+                    else{
+                        // console.log(!(login.length < 8));
+                        // console.log(!(login.length > 14));
+                        // console.log(_isAlpha(login));
+                        // console.log(!(password.length < 8));
+                        // console.log(notesArray.password);
+                        // console.log(notesArray.hash);
+                        // console.log(notesArray.verified);
+                        this.modalSignInLogIn.classList.add('error', 'wrong-username-or-pw');
+                        this.modalSignInPassword.classList.add('error', 'invalid-password');
+                        this.modalSignInError.classList.add('active');
+                        // this.modalLogInInput.classList.add('error', 'invalid-username');
+                        // this.modalLogInError.classList.add('active');
+                        // this.modalPasswordInput.classList.add('error', 'invalid-password');
+                        // this.modalPasswordError.classList.add('active');
+                        // this.modalLogInError.innerHTML += 'Логин не может быть короче 8 символов.';
+                        // this.modalPasswordError.innerHTML += 'Логин не может быть короче 8 символов.';
+                    }
+                }         
         });
 
         this.modalSignUpBtn.addEventListener('click', () => {
@@ -270,7 +275,10 @@ export default class App{
                 // Cookies.set('username', login, 1);
                 this.username = Cookies.get('username');
                 // Cookies.set('password', password, 1);
-                // Cookies.set('authenticated', true, 1);
+                Cookies.set('authenticated', true, 1);
+                // new
+                this._initiateKeywords();
+                //
                 //loading...
                 this.modalSignInBackground.classList.remove('active');
                 this.modalSignIn.classList.remove('active');
@@ -347,6 +355,7 @@ export default class App{
     }
 
     _setNotes(notesMatrix){
+        console.log("SETTING YOUR NOTES");
         this.notesMatrix = notesMatrix;
         this.view.initiateNotesList(notesMatrix);
         // this.view.updatePreviewVisibility(true);
@@ -355,6 +364,29 @@ export default class App{
     _setActiveNote(noteId){
         this.activeNoteId = noteId;
         this.view.updateActiveNote(noteId);
+    }
+
+    _initiateKeywords(){
+        // console.log(this);
+        console.log(Cookies.get('authenticated'));
+        console.log(Cookies.get('authenticated') === "true" && this.username !== null);
+        if(Cookies.get('authenticated') === "true" && this.username !== null){
+            console.log("FUCKING SLAVE!");
+            const keywords = NotesAPI.getKeywords(this.username);
+            // copied from _refreshUsersKeywords
+            const keywordTable = this.modalRakeWindowKeywordsTable;
+            this._clearChildNodes(keywordTable);
+            const rowClass = "modal__rake_window__users_keywords__table_row";
+            for (let word of keywords){
+                console.log(word);
+                this._createTableRowHTML(keywordTable, 1, rowClass, [word['keyword']]);
+            }
+            this.modalRakeWindowRefreshKeywordsLoaderBackgr.classList.remove('active');
+            this.modalRakeWindowRefreshKeywordsLoader.classList.remove('active');
+            // const keywordsString = noteKeywords.join(",");
+            // // console.log("KEYWORDS STRING, APP: ", keywordsString);
+            // NotesAPI.pushKeywords(this.username, note['id'], keywordsString);
+        }
     }
 
     _refreshUsersKeywords(){
@@ -474,18 +506,20 @@ export default class App{
             },
 
             onNoteAdd: () => {     
-                const lastNote = this.view.notesContainer.lastElementChild;
-                console.log(lastNote);
-                console.log(this.view.notesContainer);
-                this.activeNoteId = (lastNote === null? 0 : +lastNote.id) + 1;
-                this.view.createListItemHTML(this.activeNoteId, "Новая заметка", "Введите текст...",
+                // const lastNote = this.view.notesContainer.lastElementChild;
+                // console.log(lastNote);
+                // console.log(this.view.notesContainer);
+                // this.activeNoteId = (lastNote === null? 0 : +lastNote.id) + 1;
+                const lastId = NotesAPI.noteSave(-1, "Новая заметка", "Введите текст...", this.username);
+                console.log("onNoteAdd, id to add: ", lastId);
+                this.view.createListItemHTML(lastId, "Новая заметка", "Введите текст...",
                     NotesView.getCurrentDateString());
-                NotesAPI.noteSave(this.activeNoteId, "Новая заметка", "Введите текст...", this.username);
             },
 
             onNoteEdit: () => {
                 const newTitleText = this.view.inputTitle.value.trim(),
                     newBodyText = this.view.inputBody.value.trim();
+                    console.log("onNoteEdit, activeNoteId: ", this.activeNoteId);
                 NotesAPI.noteSave(this.activeNoteId, newTitleText, newBodyText, this.username);
                 this.view.updateSmallActiveNote(newTitleText, newBodyText);
             },
