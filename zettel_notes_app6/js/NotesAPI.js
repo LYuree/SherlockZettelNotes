@@ -5,6 +5,28 @@ export default class NotesAPI{
     static pushKeywordsUrl = './php/push_keywords.php';
     static getKeywordsUrl = './php/get_keywords.php';
     static getUserEntryUrl = './php/get_user.php';
+    static sendEmailUrl = './php/email_send.php'
+
+
+    static sendEmail(email, activationCode){
+        const xhr = new XMLHttpRequest(),
+            params = "email=" + email + "&activationCode=" + activationCode;
+        console.log(params);
+        xhr.open('POST', this.sendEmailUrl, false);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.onreadystatechange = () => {
+            if(xhr.readyState == 4 && xhr.status == 200){
+                //?
+                console.log('query for VERIFICATION EMAIL processed');
+                // console.log(xhr.response);
+                console.log(xhr.response);
+                // response = JSON.parse(xhr.response);
+                // console.log("Response inside of the onreadystatechange callback: ", response);
+            }
+        }
+        xhr.send(params);
+    }
+
 
     static createUser(username, email, password){
         const xhr = new XMLHttpRequest(),
@@ -35,7 +57,7 @@ export default class NotesAPI{
         let userEntry = new Object(); 
         xhr.onreadystatechange = () => {
             if(xhr.readyState == 4 && xhr.status == 200) {
-                // console.log(xhr.response);
+                console.log(xhr.response);
                 userEntry = JSON.parse(xhr.response);
             }
         }        
@@ -271,8 +293,8 @@ export default class NotesAPI{
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         xhr.onreadystatechange = function(){
             if(xhr.readyState === 4 && xhr.status === 200){
-                console.log("Keywords insertion query successfully processed!");
-                console.log(xhr.responseText);
+                // console.log("Keywords insertion query successfully processed!");
+                // console.log(xhr.responseText);
                 // const response = JSON.parse(xhr.response);
                 // console.log(response);
             }
@@ -283,11 +305,11 @@ export default class NotesAPI{
     // prevents sql-insert mistakes with
     //different kinds of apostrophes from happening
     static shieldApostrophes(text){
-        console.log("Text BEFORE mutation: ", text);
+        // console.log("Text BEFORE mutation: ", text);
         text = text.replace(/'/g, "''");
         text = text.replace(/`/g, "\`");
         text = text.replace(/"/g, "\"");
-        console.log("Text AFTER mutation: ", text);
+        // console.log("Text AFTER mutation: ", text);
         return text;
     }
 }

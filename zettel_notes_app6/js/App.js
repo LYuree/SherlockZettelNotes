@@ -18,8 +18,8 @@ export default class App{
         
         // Cookies.set('username', login, 1);
         // Cookies.set('password', password, 1);
-        // Cookies.set('authenticated', false, 1);
-        Cookies.set('authenticated', true, 1);
+        Cookies.set('authenticated', false, 1);
+        // Cookies.set('authenticated', true, 1);
         // console.log(Cookies.get('authenticated'));
 
         // CODE MOVED FROM CALLSIGNINWINDOW
@@ -104,14 +104,16 @@ export default class App{
                 password = this.modalSignInPassword.value.trim();
 
                 const _isAlpha = str => /^[a-zA-Z]*$/.test(str);
-
-                if(!(login.length < 8) && !(login.length > 15) && (_isAlpha(login) || this._isValidEmail(login)) && !(password.length < 5)){
+                // !(login.length < 8) && !(login.length > 15) && 
+                if((_isAlpha(login) || this._isValidEmail(login)) && !(password.length < 5)){
                     // get user!
                     const userEntry = NotesAPI.getUserEntry(login, password);
                     let notesArray = new Array();
+                    console.log(userEntry);
+                    console.log(`user entry: ${userEntry['active']}`);
                     if(userEntry['active'] == 'true') {
                         notesArray = NotesAPI.getNotes(login, password);
-                        console.log(notesArray);
+                        // console.log(notesArray);
 
                         this.view = new NotesView(this, this.root, this._handlers());
                         this._setNotes(notesArray);
@@ -150,8 +152,8 @@ export default class App{
         });
 
         this.modalSignUpBtn.addEventListener('click', () => {
-            console.log(this.modalSignUpLogin);
-            console.log(this.modalSignUpEmail);
+            // console.log(this.modalSignUpLogin);
+            // console.log(this.modalSignUpEmail);
 
             const username = this.modalSignUpLogin.value.trim(),
                 email = this.modalSignUpEmail.value.trim(),
@@ -226,15 +228,16 @@ export default class App{
             //SENDING A QUERY
             if(inputError != true){
                 const response = NotesAPI.createUser(username, email, password);
-                console.log(response);
+                // console.log(response);
                 if(response.usernameExists === true){
                     this._setErrorFor(this.modalSignUpLogin, "Пользователь с таким именем уже существует");
                 }
                 else if(response.emailExists === true){
                     this._setErrorFor(this.modalSignUpEmail, "На этот адрес уже зарегистрирован другой аккаунт");
                 }
-                else {
+                else if(response.activationCode != undefined) {
                     //verification message window: active
+                    NotesAPI.sendEmail(email, response.activationCode);
                     this.modalVerificationLink.addEventListener('click', () => {
                         this.modalVerificationBackground.classList.remove('active');
                         this.modalVerification.classList.remove('active');
@@ -244,6 +247,7 @@ export default class App{
                     this.modalVerificationBackground.classList.add('active');
                     this.modalVerification.classList.add('active');
                 }
+                else console.log("ERROR: email verification code might be undefined...");
             }
             
 
@@ -358,6 +362,7 @@ export default class App{
         console.log("SETTING YOUR NOTES");
         this.notesMatrix = notesMatrix;
         this.view.initiateNotesList(notesMatrix);
+        console.log(this.notesMatrix);
         // this.view.updatePreviewVisibility(true);
     }
 
@@ -390,28 +395,23 @@ export default class App{
     }
 
     _refreshUsersKeywords(){
+        console.log("App, refreshing user's keywords, showing notesMatrix: ", this.notesMatrix);
+        const keywordTable = this.modalRakeWindowKeywordsTable;
+        const rowClass = "modal__rake_window__users_keywords__table_row";
+        this._clearChildNodes(keywordTable);
         for (let note of this.notesMatrix){
             this.modalRakeWindowRefreshKeywordsLoaderBackgr.classList += 'active';
             this.modalRakeWindowRefreshKeywordsLoader.classList += 'active';
             let noteKeywords = NotesAPI.extractKeywords(note['note_text']);
             noteKeywords.push(note['name']);
-            // for (let word of noteKeywords){
-            //     console.log("Word before mutation: ", word);
-            //     word = NotesAPI.shieldApostrophes(word);
-            //     console.log("Word after mutation: ", word);
-            // }
-            // noteKeywords.forEach(NotesAPI.shieldApostrophes);
             noteKeywords = noteKeywords.map(str => NotesAPI.shieldApostrophes(str));
-            const keywordTable = this.modalRakeWindowKeywordsTable;
-            this._clearChildNodes(keywordTable);
-            const rowClass = "modal__rake_window__users_keywords__table_row";
+            console.log("_refreshUsersKeywords proc, noteKeywords: ", noteKeywords);
             for (let word of noteKeywords){
                 this._createTableRowHTML(keywordTable, 1, rowClass, [word]);
             }
             this.modalRakeWindowRefreshKeywordsLoaderBackgr.classList.remove('active');
             this.modalRakeWindowRefreshKeywordsLoader.classList.remove('active');
             const keywordsString = noteKeywords.join(",");
-            // console.log("KEYWORDS STRING, APP: ", keywordsString);
             NotesAPI.pushKeywords(this.username, note['id'], keywordsString);
         }
     }
@@ -475,6 +475,7 @@ export default class App{
 
     //  declare constant strings for cell classes
     _createTableRowHTML(parentalTable, numberOfCells, rowClass, cellValues){
+        console.log("Creaing a table row, cellValues: ", cellValues);
         const newRow = document.createElement("tr");
         // const cells = new Array();
         // cellValues is an array
@@ -483,7 +484,6 @@ export default class App{
             dataCell.classList += rowClass;
             dataCell.innerHTML = cellValues[i];
             newRow.appendChild(dataCell);
-            // cells.push(dataCell);
         }
         parentalTable.appendChild(newRow);
     }
@@ -506,14 +506,14 @@ export default class App{
             },
 
             onNoteAdd: () => {     
-                // const lastNote = this.view.notesContainer.lastElementChild;
-                // console.log(lastNote);
-                // console.log(this.view.notesContainer);
-                // this.activeNoteId = (lastNote === null? 0 : +lastNote.id) + 1;
                 const lastId = NotesAPI.noteSave(-1, "Новая заметка", "Введите текст...", this.username);
-                console.log("onNoteAdd, id to add: ", lastId);
+                // console.log("onNoteAdd, id to add: ", lastId);
+                const currDate = NotesView.getCurrentDateString();
                 this.view.createListItemHTML(lastId, "Новая заметка", "Введите текст...",
-                    NotesView.getCurrentDateString());
+                    currDate);
+                this.notesMatrix.push({id: lastId, name: "Новая заметка", note_text: "Введите текст...",
+                    creation_date: currDate});
+                // console.log(this.notesMatrix);
             },
 
             onNoteEdit: () => {
@@ -521,6 +521,9 @@ export default class App{
                     newBodyText = this.view.inputBody.value.trim();
                     console.log("onNoteEdit, activeNoteId: ", this.activeNoteId);
                 NotesAPI.noteSave(this.activeNoteId, newTitleText, newBodyText, this.username);
+                const notesMatrixItem = this.notesMatrix.find(note => note['id'] == this.activeNoteId)
+                notesMatrixItem['note_text'] = newBodyText;
+                notesMatrixItem['name'] = newTitleText;
                 this.view.updateSmallActiveNote(newTitleText, newBodyText);
             },
             

@@ -33,7 +33,8 @@ if(!empty($_POST) && isset($_POST['username']) && isset($_POST['password']) && i
             $activationCode = generate_activation_code();
             $pdo->query("INSERT into user_tokens values (default, $newUserId,
                                                         '$activationCode',
-                                                        'email-verification'");
+                                                        'email-verification',
+                                                        (CURRENT_TIMESTAMP(0)+INTERVAL'1 day'))");
             // header("Location: index.php");
         }
         else{
@@ -42,6 +43,7 @@ if(!empty($_POST) && isset($_POST['username']) && isset($_POST['password']) && i
         }
         $response['usernameResults'] = $usernameResults;
         $response['emailResults'] = $emailResults;
+        $response['activationCode'] = $activationCode;
         echo json_encode($response);
     }
     catch(PDOEexception $e){
