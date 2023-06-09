@@ -1,7 +1,7 @@
 <?php
     require "./db_con.php";
     require "./functions.php";
-    print("meow");
+    // print("meow");
     if(!empty($_POST) && isset($_POST['username']) && isset($_POST['noteId']) && isset($_POST['keywordsStr'])){
                 try{
                     print_r($_POST);

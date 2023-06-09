@@ -1,8 +1,10 @@
 <?php
 require "./db_con.php";
 require "./functions.php";
+
 if(!empty($_POST) && isset($_POST['username'])){
     try{
+        // echo "entering the main branch";
         $username = $_POST['username'];
         //AUTHORIZATION
         try{
@@ -10,7 +12,8 @@ if(!empty($_POST) && isset($_POST['username'])){
             $results = $pdo->query("SELECT name, password, email FROM users
             WHERE name = '$username'
             OR
-            email = '$username'"); 
+            email = '$username'");
+            // print_r($results);
         }catch (PDOException $e) {
             $results = null;
             $pdo = null;
@@ -19,6 +22,7 @@ if(!empty($_POST) && isset($_POST['username'])){
 
         try{
             $row = $results -> fetch(PDO::FETCH_NUM);
+            // print_r($row);
             if(count($row) == 0 || !is_countable($row)){
                 $results = null;
                 echo json_encode($results);
