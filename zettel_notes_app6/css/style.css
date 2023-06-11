@@ -101,12 +101,14 @@ body {
 }
 
 .modal__rake_window__caption {
-    display: inline;
+    /* display: inline; */
     margin: .5rem;
     font-size: 1.5em;
-    border-bottom: 2px solid black;
     position: relative;
-    left: 50%;
+    width: 100%;
+    text-align: center;
+    /* left: 50%; */
+
     /* transform: translateX(-50%); */
 }
 
@@ -464,9 +466,13 @@ body {
     /* bottom: 0; */
 }
 
-/* .modal__rake_window__header {
-    position: relative;
-} */
+.modal__rake_window__header {
+    /* position: relative; */
+    border-bottom: 2px solid black;
+    margin-left: 4rem;
+    margin-right: 4rem;
+    text-align: center;
+}
 
 .notes__sidebar__management__panel *,
 .notes__delete,
@@ -637,7 +643,7 @@ small {
 }
 
 .modal__rake_window__background__close_button {
-    position: relative;
+    position: absolute;
     font-size: 1.2em;
     float: right;
 }

@@ -18,9 +18,9 @@ export default class App{
         
         // Cookies.set('username', login, 1);
         // Cookies.set('password', password, 1);
-        Cookies.set('authenticated', false, 1);
+        // Cookies.set('authenticated', false, 1);
         // Cookies.set('authenticated', true, 1);
-        // console.log(Cookies.get('authenticated'));
+        console.log(Cookies.get('username'));
 
         // CODE MOVED FROM CALLSIGNINWINDOW
         // =================================
@@ -49,12 +49,13 @@ export default class App{
         this.modalSignUpPasswordRepeat = document.querySelector('.modal__sign-up__repeat-password-input');
         this.modalSignInError = document.querySelector('.modal__sign-in__error-wrapper__flex-container');
         this.modalVerificationBackground = document.querySelector('.modal__verification_message__background');
-        this.modalVerification = document.querySelector('.modal__verification_message');
+        this.modalVerification = document.getElementById('modal__verification_message');
         this.modalVerificationLink = document.querySelector('.modal__verification_message__authorize-link');
         this.modalSignInLink = document.querySelector('.modal__sign-in__register-link');
         this.modalSignUpLink = document.querySelector('.modal__sign-up__authorize-link');
         this.flaskButton = document.querySelector('.notes__navbar__analysis_button');
         this.modalRakeWindowCloseBtn = document.querySelector('.modal__rake_window__background__close_button');
+        this.signOutBtn = document.querySelector('.notes__navbar__fas__fa-icons__sign-out');
 
 
         window.onbeforeunload = () => {
@@ -77,6 +78,10 @@ export default class App{
             this._refreshUsersKeywords();
         });
 
+        this.signOutBtn.addEventListener('click', () => {
+            Cookies.set('authenticated', false, 1);
+            location.reload();
+        });
 
 
         // this.modalRakeWindowRefreshCandidatesBtn.addEventListener('click', ()=>{
@@ -108,28 +113,32 @@ export default class App{
                 if((_isAlpha(login) || this._isValidEmail(login)) && !(password.length < 5)){
                     // get user!
                     const userEntry = NotesAPI.getUserEntry(login, password);
-                    let notesArray = new Array();
                     console.log(userEntry);
-                    console.log(`user entry: ${userEntry['active']}`);
-                    if(userEntry['active'] == true) {
-                        console.log("user entry active!");
-                        notesArray = NotesAPI.getNotes(login, password);
-                        // console.log(notesArray);
-                        
-                        this.view = new NotesView(this, this.root, this._handlers());
-                        this._setNotes(notesArray);
-                        
-                        Cookies.set('username', login, 1);
-                        this.username = login;
-                        Cookies.set('password', password, 1);
-                        Cookies.set('authenticated', true, 1);
-                        // new
-                        this._initiateKeywords();
-                        //
-                        //loading...
-                        this.modalSignInBackground.classList.remove('active');
-                        this.modalSignIn.classList.remove('active');
-                        this.view.notesSidebar.classList.add('active');
+                    // console.log(`user entry: ${userEntry['active']}`);
+                    if(userEntry != null && userEntry['active'] == true) {
+                        // console.log("user entry active!");
+                        // notesArray = NotesAPI.getNotes(login, password);
+                        let response = NotesAPI.getNotes(login, password);
+                        if(response['verified'] == true){                          
+                            this.view = new NotesView(this, this.root, this._handlers());
+                            this._setNotes(response['notes']);                            
+                            Cookies.set('username', login, 1);
+                            this.username = login;
+                            Cookies.set('password', password, 1);
+                            Cookies.set('authenticated', true, 1);
+                            // new
+                            this._initiateKeywords();
+                            //
+                            //loading...
+                            this.modalSignInBackground.classList.remove('active');
+                            this.modalSignIn.classList.remove('active');
+                            this.view.notesSidebar.classList.add('active');
+                        }
+                        else {
+                            this.modalSignInLogIn.classList.add('error', 'wrong-username-or-pw');
+                            this.modalSignInPassword.classList.add('error', 'invalid-password');
+                            this.modalSignInError.classList.add('active');
+                        }
                     }
                     else{
                         console.log("something went wrong");
@@ -251,6 +260,8 @@ export default class App{
                     this.modalVerificationLink.addEventListener('click', () => {
                         this.modalVerificationBackground.classList.remove('active');
                         this.modalVerification.classList.remove('active');
+                        this.modalSignUp.classList.remove('active');
+                        this.modalSignUpBackground.classList.remove('active');
                         this.modalSignInBackground.classList.add('active');
                         this.modalSignIn.classList.add('active');
                     });
@@ -273,10 +284,10 @@ export default class App{
             this._callSignInWindow();
         }
         else{
-            const notesArray = NotesAPI.getNotes(Cookies.get('username'), Cookies.get('password'));
+            const response = NotesAPI.getNotes(Cookies.get('username'), Cookies.get('password'));
             // console.log(notesArray);
             // if (notesArray.notes === null) {
-            if (notesArray.verified === false) { 
+            if (response['verified'] === false) { 
                 console.log(notesArray.password);
                 console.log(notesArray.hash);
                 console.log(notesArray.verified);
@@ -285,7 +296,7 @@ export default class App{
             }
             else{
                 this.view = new NotesView(this, this.root, this._handlers());
-                this._setNotes(notesArray);
+                this._setNotes(response['notes']);
                 // Cookies.set('username', login, 1);
                 this.username = Cookies.get('username');
                 // Cookies.set('password', password, 1);

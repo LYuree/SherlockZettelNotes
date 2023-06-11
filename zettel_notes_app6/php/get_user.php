@@ -22,7 +22,7 @@ if(!empty($_POST) && isset($_POST['username'])){
         try{
             $row = $results -> fetch(PDO::FETCH_ASSOC);
             // print_r($row);
-            if(count($row) == 0 || !is_countable($row)){
+            if(!is_countable($row) || count($row) == 0){
                 $results = null;
                 echo json_encode($results);
                 exit;

@@ -85,10 +85,10 @@ if(!empty($_POST) && isset($_POST['username'])){
                 exit;
             }
             else{
+                $response = new stdClass();
                 // $row = $results -> fetch(PDO::FETCH_NUM);
                 $db_password = $row[1];
                 if(password_verify($_POST['password'], $db_password)){
-                    if(!isset($resultArray)) $resultArray = array();
                         // $results = $pdo->query("SELECT * FROM
                         // (SELECT * FROM
                         //     (SELECT collection_id, notes.id as note_id, notes.name, note_text, creation_date FROM notes JOIN folders on folder_id = folders.id) as note_folder
@@ -114,7 +114,11 @@ if(!empty($_POST) && isset($_POST['username'])){
                             $resultArray[] = $item;
                         }
                         // print_r($resultArray);
-                        echo json_encode($resultArray);
+                        $response->notes = $resultArray;
+                        $response->password = $_POST['password'];
+                        $response->hash = $db_password;
+                        $response->verified = password_verify($_POST['password'], $db_password);
+                        echo json_encode($response);
                         // echo "meow";
                         // $reconArray = array();
                         // $reconArray['a'] = 'a';
@@ -122,13 +126,13 @@ if(!empty($_POST) && isset($_POST['username'])){
                         // echo json_encode($reconArray);
                         exit;
                 }else {
-                    $results = array();
-                    $results['notes'] = null;
+                    // $results = array();
+                    $response->notes = null;
                     // $results = null;
-                    $results['password'] = $_POST['password'];
-                    $results['hash'] = $db_password;
-                    $results['verified'] = password_verify($_POST['password'], $db_password);
-                    echo json_encode($results);
+                    $response->password = $_POST['password'];
+                    $response->hash = $db_password;
+                    $response->verified = password_verify($_POST['password'], $db_password);
+                    echo json_encode($response);
                     // $reconArray = array();
                     // $reconArray['a'] = 'a';
                     // $reconArray['b'] = 'b';
