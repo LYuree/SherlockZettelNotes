@@ -41,9 +41,9 @@ if(!empty($_POST) && isset($_POST['username']) && isset($_POST['password']) && i
             if(!empty($usernameResultsRow)) $response['usernameExists'] = true;
             if(!empty($emailResultsRow)) $response['emailExists'] = true;            
         }
-        $response['usernameResults'] = $usernameResults;
-        $response['emailResults'] = $emailResults;
-        $response['activationCode'] = $activationCode;
+        // $response['usernameResults'] = $usernameResults;
+        // $response['emailResults'] = $emailResults;
+        $response['activationCode'] = $activationCode??null;
         echo json_encode($response);
     }
     catch(PDOEexception $e){

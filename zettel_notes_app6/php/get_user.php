@@ -8,8 +8,7 @@ if(!empty($_POST) && isset($_POST['username'])){
         $username = $_POST['username'];
         //AUTHORIZATION
         try{
-            $username = $_POST['username'];
-            $results = $pdo->query("SELECT name, password, email FROM users
+            $results = $pdo->query("SELECT name, password, email, active FROM users
             WHERE name = '$username'
             OR
             email = '$username'");
@@ -21,19 +20,22 @@ if(!empty($_POST) && isset($_POST['username'])){
         }
 
         try{
-            $row = $results -> fetch(PDO::FETCH_NUM);
+            $row = $results -> fetch(PDO::FETCH_ASSOC);
             // print_r($row);
             if(count($row) == 0 || !is_countable($row)){
                 $results = null;
                 echo json_encode($results);
                 exit;
             }
-            else{
-                // $row = $results -> fetch(PDO::FETCH_NUM);
-                $db_password = $row[1];
-                if(password_verify($_POST['password'], $db_password))
+            else if ($row['active'] == false){
                 $userEntry = new stdClass();
-                $userEntry->active = "true";
+                $userEntry->active = false;
+                echo json_encode($userEntry);
+                exit;
+            }
+            else{
+                $userEntry = new stdClass();
+                $userEntry->active = true;
                 echo json_encode($userEntry);
                 exit;
             }

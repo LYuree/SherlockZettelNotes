@@ -111,10 +111,11 @@ export default class App{
                     let notesArray = new Array();
                     console.log(userEntry);
                     console.log(`user entry: ${userEntry['active']}`);
-                    if(userEntry['active'] == 'true') {
+                    if(userEntry['active'] == true) {
+                        console.log("user entry active!");
                         notesArray = NotesAPI.getNotes(login, password);
                         // console.log(notesArray);
-
+                        
                         this.view = new NotesView(this, this.root, this._handlers());
                         this._setNotes(notesArray);
                         
@@ -131,6 +132,7 @@ export default class App{
                         this.view.notesSidebar.classList.add('active');
                     }
                     else{
+                        console.log("something went wrong");
                         // console.log(!(login.length < 8));
                         // console.log(!(login.length > 14));
                         // console.log(_isAlpha(login));
@@ -228,14 +230,22 @@ export default class App{
             //SENDING A QUERY
             if(inputError != true){
                 const response = NotesAPI.createUser(username, email, password);
-                // console.log(response);
-                if(response.usernameExists === true){
+                console.log(response);
+                if(response.usernameExists == true){
+                    console.log("Username already occupied");
                     this._setErrorFor(this.modalSignUpLogin, "Пользователь с таким именем уже существует");
+                    inputError = true;
                 }
-                else if(response.emailExists === true){
+                
+                if(response.emailExists == true){
+                    console.log("Email already occupied");
                     this._setErrorFor(this.modalSignUpEmail, "На этот адрес уже зарегистрирован другой аккаунт");
+                    inputError = true;
                 }
-                else if(response.activationCode != undefined) {
+                
+                console.log(response.activationCode != null);
+
+                if(inputError != true && response.activationCode != null) {
                     //verification message window: active
                     NotesAPI.sendEmail(email, response.activationCode);
                     this.modalVerificationLink.addEventListener('click', () => {
