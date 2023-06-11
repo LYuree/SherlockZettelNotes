@@ -71,16 +71,16 @@ export default class NotesAPI{
         const params = "username=" + username + "&password=" + password;
         xhr.open('POST', this.url, false);
         xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');   
-        let notesMatrix = []; 
+        let response = undefined; 
         xhr.onreadystatechange = () => {
             if(xhr.readyState == 4 && xhr.status == 200) {
-                // console.log(xhr.response);
-                notesMatrix = JSON.parse(xhr.response);
+                console.log(xhr.response);
+                response = JSON.parse(xhr.response);
             }
         }        
         xhr.send(params);
         // console.log(xhr.response);
-        return notesMatrix;
+        return response;
     }
 
 
