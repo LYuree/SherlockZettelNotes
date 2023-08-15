@@ -3,7 +3,8 @@ export default class NotesAPI{
     static registerUrl = './php/register.php';
     static rakeUrl = './php/RAKE.php';
     static pushKeywordsUrl = './php/push_keywords.php';
-    static getKeywordsUrl = './php/get_keywords.php';
+    static getClientsKeywordsUrl = './php/get_clients_keywords.php';
+    static getKeywordsByUsersUrl = './php/get_keywords_by_users.php';
     static getUserEntryUrl = './php/get_user.php';
     static sendEmailUrl = './php/email_send.php'
 
@@ -84,10 +85,10 @@ export default class NotesAPI{
     }
 
 
-    static getKeywords(username){
+    static getClientsKeywords(username){
         const xhr = new XMLHttpRequest();
         const params = "username=" + username;
-        xhr.open('POST', this.getKeywordsUrl, false);
+        xhr.open('POST', this.getClientsKeywordsUrl, false);
         xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');   
         let keywords = [];
         xhr.onreadystatechange = () => {
@@ -101,6 +102,21 @@ export default class NotesAPI{
         return keywords;
     }
 
+    static getKeywordsByUsers(){
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', this.getKeywordsByUsersUrl, false);
+        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');   
+        let usersAndKeywords = [];
+        xhr.onreadystatechange = () => {
+            if(xhr.readyState == 4 && xhr.status == 200){
+                // console.log(xhr.response);
+                usersAndKeywords = JSON.parse(xhr.response);
+            }
+        }
+        xhr.send();
+        console.log(usersAndKeywords);
+        return usersAndKeywords;
+    }
 
     // static getAllNotes(username, password){
     //     const xhr = new XMLHttpRequest();
@@ -294,7 +310,7 @@ export default class NotesAPI{
         xhr.onreadystatechange = function(){
             if(xhr.readyState === 4 && xhr.status === 200){
                 // console.log("Keywords insertion query successfully processed!");
-                // console.log(xhr.responseText);
+                console.log(xhr.responseText);
                 // const response = JSON.parse(xhr.response);
                 // console.log(response);
             }
