@@ -14,13 +14,27 @@ export default class App{
         this.activeSmallBody = null;
         this.activeSmallTitle = null;
         this.username = null;
+
+        // table cell tag constants
+
+        Object.defineProperty(this, "TD", {
+            value: "td",
+            writeable: false
+        });
+        
+        Object.defineProperty(this, "TH", {
+            value: "th",
+            writeable: false
+        });
+        // const TD = "td";
+        // const TH = "th";
         
         
         // Cookies.set('username', login, 1);
         // Cookies.set('password', password, 1);
         // Cookies.set('authenticated', false, 1);
         // Cookies.set('authenticated', true, 1);
-        console.log(Cookies.get('username'));
+        // console.log(Cookies.get('username'));
 
         // CODE MOVED FROM CALLSIGNINWINDOW
         // =================================
@@ -56,17 +70,53 @@ export default class App{
         this.flaskButton = document.querySelector('.notes__navbar__analysis_button');
         this.modalRakeWindowCloseBtn = document.querySelector('.modal__rake_window__background__close_button');
         this.signOutBtn = document.querySelector('.notes__navbar__fas__fa-icons__sign-out');
+        this.toggleVisibilityBtn1 = document.querySelector('.modal__sign-in__input-wrapper__toggle-visibility__img1');
+        this.toggleVisibilityBtn2 = document.querySelector('.modal__sign-in__input-wrapper__toggle-visibility__img2');
+        this.toggleVisibilityBtn3 = document.querySelector('.modal__sign-in__input-wrapper__toggle-visibility__img3');
 
 
         window.onbeforeunload = () => {
-
+            
         };
 
-        
+        this.toggleVisibilityBtn1.addEventListener('click', ()=>{
+            if (this.modalSignInPassword.type === "password") {
+                this.modalSignInPassword.type = "text";
+                this.toggleVisibilityBtn1.src = './images/eye-green.png';
+            } else {  
+                this.modalSignInPassword.type = "password";
+                this.toggleVisibilityBtn1.src = './images/eye-black.png';
+            }
+        });
+
+
+        this.modalSignUpPassword = document.querySelector('.modal__sign-up__password-input');
+
+        this.toggleVisibilityBtn2.addEventListener('click', ()=>{
+            if (this.modalSignUpPassword.type === "password") {
+                this.modalSignUpPassword.type = "text";
+                this.toggleVisibilityBtn2.src = './images/eye-green.png';
+            } else {  
+                this.modalSignUpPassword.type = "password";
+                this.toggleVisibilityBtn2.src = './images/eye-black.png';
+            }
+        });
+
+        this.toggleVisibilityBtn3.addEventListener('click', ()=>{
+            if (this.modalSignUpPasswordRepeat.type === "password") {
+                this.modalSignUpPasswordRepeat.type = "text";
+                this.toggleVisibilityBtn3.src = './images/eye-green.png';
+            } else {  
+                this.modalSignUpPasswordRepeat.type = "password";
+                this.toggleVisibilityBtn3.src = './images/eye-black.png';
+            }
+        });
         
         this.flaskButton.addEventListener('click', ()=>{
-            this.modalRakeWindowBackground.classList.add('active');
-            this.modalRakeWindow.classList.add('active');
+            if(!(Cookies.get('authenticated') === null || Cookies.get('authenticated') === undefined || Cookies.get('authenticated') == 'false')){
+                this.modalRakeWindowBackground.classList.add('active');
+                this.modalRakeWindow.classList.add('active');
+            }
         });
 
         this.modalRakeWindowCloseBtn.addEventListener('click', () => {
@@ -76,6 +126,10 @@ export default class App{
 
         this.modalRakeWindowRefreshKeywordsBtn.addEventListener('click', ()=>{
             this._refreshUsersKeywords();
+        });
+
+        this.modalRakeWindowRefreshCandidatesBtn.addEventListener('click', ()=>{
+            this._refreshUsersCoworkCandidates();
         });
 
         this.signOutBtn.addEventListener('click', () => {
@@ -397,18 +451,21 @@ export default class App{
         console.log(Cookies.get('authenticated'));
         console.log(Cookies.get('authenticated') === "true" && this.username !== null);
         if(Cookies.get('authenticated') === "true" && this.username !== null){
-            console.log("FUCKING SLAVE!");
-            const keywords = NotesAPI.getKeywords(this.username);
+            const keywords = NotesAPI.getClientsKeywords(this.username);
             // copied from _refreshUsersKeywords
+            console.log(keywords);
             const keywordTable = this.modalRakeWindowKeywordsTable;
             this._clearChildNodes(keywordTable);
             const rowClass = "modal__rake_window__users_keywords__table_row";
+            this._createTableRowHTML(this.TH, keywordTable, 3, rowClass, ['Слово', 'Встреча<wbr>емость', 'Ранг']);
             for (let word of keywords){
-                console.log(word);
-                this._createTableRowHTML(keywordTable, 1, rowClass, [word['keyword']]);
+                // console.log(word);
+                // this._createTableRowHTML(keywordTable, 1, rowClass, [word['keyword']]);
+                this._createTableRowHTML(this.TD, keywordTable, 3, rowClass, [word['keyword'], word['occurrences'],
+                    word['rank']]);
             }
-            this.modalRakeWindowRefreshKeywordsLoaderBackgr.classList.remove('active');
-            this.modalRakeWindowRefreshKeywordsLoader.classList.remove('active');
+            // this.modalRakeWindowRefreshKeywordsLoaderBackgr.classList.remove('active');
+            // this.modalRakeWindowRefreshKeywordsLoader.classList.remove('active');
             // const keywordsString = noteKeywords.join(",");
             // // console.log("KEYWORDS STRING, APP: ", keywordsString);
             // NotesAPI.pushKeywords(this.username, note['id'], keywordsString);
@@ -417,23 +474,111 @@ export default class App{
 
     _refreshUsersKeywords(){
         console.log("App, refreshing user's keywords, showing notesMatrix: ", this.notesMatrix);
-        const keywordTable = this.modalRakeWindowKeywordsTable;
-        const rowClass = "modal__rake_window__users_keywords__table_row";
-        this._clearChildNodes(keywordTable);
+        // const keywordTable = this.modalRakeWindowKeywordsTable;
+        // const rowClass = "modal__rake_window__users_keywords__table_row";
+        // this._clearChildNodes(keywordTable);
+        this.modalRakeWindowRefreshKeywordsLoaderBackgr.classList.add('active');
+        this.modalRakeWindowRefreshKeywordsLoader.classList.add('active');
         for (let note of this.notesMatrix){
-            this.modalRakeWindowRefreshKeywordsLoaderBackgr.classList += 'active';
-            this.modalRakeWindowRefreshKeywordsLoader.classList += 'active';
+            // this.modalRakeWindowRefreshKeywordsLoaderBackgr.classList += 'active';
+            // this.modalRakeWindowRefreshKeywordsLoader.classList += 'active';
             let noteKeywords = NotesAPI.extractKeywords(note['note_text']);
-            noteKeywords.push(note['name']);
+            if (note['name'] != '') noteKeywords.push(note['name'].toLowerCase());
             noteKeywords = noteKeywords.map(str => NotesAPI.shieldApostrophes(str));
-            console.log("_refreshUsersKeywords proc, noteKeywords: ", noteKeywords);
-            for (let word of noteKeywords){
-                this._createTableRowHTML(keywordTable, 1, rowClass, [word]);
-            }
-            this.modalRakeWindowRefreshKeywordsLoaderBackgr.classList.remove('active');
-            this.modalRakeWindowRefreshKeywordsLoader.classList.remove('active');
+            // console.log("_refreshUsersKeywords proc, noteKeywords: ", noteKeywords);
+            // for (let word of noteKeywords){
+            //     this._createTableRowHTML(keywordTable, 1, rowClass, [word]);
+            // }
             const keywordsString = noteKeywords.join(",");
             NotesAPI.pushKeywords(this.username, note['id'], keywordsString);
+        }
+        this._initiateKeywords();
+        
+        // debugging
+        setTimeout(() => {
+            this.modalRakeWindowRefreshKeywordsLoaderBackgr.classList.remove('active');
+            this.modalRakeWindowRefreshKeywordsLoader.classList.remove('active');
+        },
+        5000);
+
+        // this.modalRakeWindowRefreshKeywordsLoaderBackgr.classList.remove('active');
+        // this.modalRakeWindowRefreshKeywordsLoader.classList.remove('active');
+    }
+
+
+    _refreshUsersCoworkCandidates(){
+        let usersWithKeywords = NotesAPI.getKeywordsByUsers();
+        const index = usersWithKeywords.findIndex(user => user.username == this.username);
+        const clientWithKeywords = usersWithKeywords[index];
+        usersWithKeywords.splice(index, 1);
+        this._clearChildNodes(this.modalRakeWindowCoworkCandidatesTable);
+        const rowClass = "modal__rake_window__cowork_candidates__table_row";
+        this._createTableRowHTML(this.TH, this.modalRakeWindowCoworkCandidatesTable,
+            3, rowClass, ["Ник", "Общие<wbr>слова", "Сходство<wbr>ранжировки<wbr> (%)"]);
+        for (let user of usersWithKeywords){
+            let clientsKeywords = clientWithKeywords.keywords;
+            let usersKeywords = user.keywords;
+            // getting an array of keywords with occurrences and ranks
+            // const matchingKeywords = usersKeywords.filter(keyword => clientsKeywords.includes(keyword));
+            usersKeywords = usersKeywords.filter(function(usersItem){
+                for (let clientsItem of clientsKeywords)
+                    if(usersItem.keyword === clientsItem.keyword) return true;
+                return false;
+            });
+            clientsKeywords = clientsKeywords.filter(function(clientsItem){
+                for (let usersItem of usersKeywords)
+                    if(usersItem.keyword === clientsItem.keyword) return true;
+                return false;
+            });
+            const matchesCount = clientsKeywords.length;
+            let SpearmanCorrelation = 0;
+            if(matchesCount > 0){
+                if(matchesCount == 1) SpearmanCorrelation = 1;
+                else{
+                    let newRank = matchesCount;
+
+                    for (let word of clientsKeywords){
+                        word.rank = newRank;
+                        newRank--;
+                    }
+
+                    newRank = matchesCount;
+                    for (let word of usersKeywords){
+                        word.rank = newRank;
+                        newRank--;
+                    }
+
+                    // RECALCULATING THE RANKS FOR BOTH ARRAYS
+                    // ======================================================
+                    // since two users may have a big difference in the total
+                    // number of the keywords they possess,
+                    // when we find the intersection of their keyword arrays,
+                    // we'll have to recalculate the ranks of those keywords,
+                    // so that their keyword ranking systems are comparable.
+                    // ======================================================
+
+                    let sumSqrDif = 0;
+
+                    // HOW WE CALCULATE THE SQUARE DIFFERENCES FOR THE SPEARMAN'S RHO
+                    // we have to take THE SAME keyword and look at the difference between
+                    // two ranks
+                    // so we'll have to find corresponding 
+                    // objects by property at each iteration
+                    
+                    for (let clientsWord of clientsKeywords){
+                        // console.log(usersKeywords,clientsKeywords);
+                        const usersWord = usersKeywords.find(item => item.keyword == clientsWord.keyword);
+                        console.log(clientsWord, usersWord);
+                        const sqrDif = (clientsWord.rank - usersWord.rank)**2;
+                        sumSqrDif += sqrDif;
+                    }
+                    console.log(sumSqrDif);
+                    SpearmanCorrelation = 1 - 6*sumSqrDif/(matchesCount*(matchesCount**2 - 1));
+                }
+            }
+            this._createTableRowHTML(this.TD, this.modalRakeWindowCoworkCandidatesTable,
+                3, rowClass, [user.username, matchesCount, (SpearmanCorrelation*100).toFixed(2)]);
+            
         }
     }
 
@@ -492,18 +637,16 @@ export default class App{
     //     }
     // }
     
-
-
-    //  declare constant strings for cell classes
-    _createTableRowHTML(parentalTable, numberOfCells, rowClass, cellValues){
+    _createTableRowHTML(cellTag, parentalTable, numberOfCells, rowClass, cellValues){
         console.log("Creaing a table row, cellValues: ", cellValues);
         const newRow = document.createElement("tr");
         // const cells = new Array();
         // cellValues is an array
         for(let i = 0; i < numberOfCells; i++){
-            const dataCell = document.createElement("td");
+            const dataCell = document.createElement(`${cellTag}`);
             dataCell.classList += rowClass;
             dataCell.innerHTML = cellValues[i];
+            dataCell.setAttribute('title', cellValues[i]);
             newRow.appendChild(dataCell);
         }
         parentalTable.appendChild(newRow);

@@ -36,33 +36,18 @@ if(!empty($_GET)){
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="shortcut icon" href="../images/holmes_icon.png">
     <title>Document</title>
 </head>
 <body>
-    <p class="verification_message"><?=$verification_message?></p>
-    
-    <div class="modal__sign-in__button-wrapper__flex-container">
-        <div class="modal__sign-in__button-wrapper">
-            <button type="submit" class="main_button">Войти</button>
+    <div class="sign-up-redirect__content-wrapper">
+        <div class="sign-up-redirect__text">
+            <p>E-mail успешно подтверждён!</p>
+        </div>
+        <div class="sign-up-redirect__btn__wrapper">
+            <a href="../index.html"><button>На главную</button></a>
         </div>
     </div>
-
-    <style>
-        p.verification_message,
-        button.main_button
-        {
-            text-align: center;
-            /* vertical-align: middle; */
-        }
-        p.verification_message {
-            position: relative;
-            top: -50%;
-            /* left: 50%; */
-            /* transform: translate(-50%, -50%);    */
-        }
-        button.main_button {
-            display: <?=$main_page_link_display?>;
-        }
-    </style>
 </body>
 </html>

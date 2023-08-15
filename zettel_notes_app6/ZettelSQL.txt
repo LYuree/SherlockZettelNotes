@@ -1,0 +1,50 @@
+create table users (id serial primary key not null,
+				   	name varchar(70) not null,
+					email varchar(70) not null,
+					password varchar(70) not null,
+active BOOLEAN default false not null,
+				   );
+
+create table collections(id serial primary key not null,
+					name varchar(70) not null,
+					creation_date timestamptz not null,
+					owner_id integer not null,
+foreign key(owner_id) references users(id) on delete cascade				 
+					);
+
+create table folders(id serial primary key not null,
+					parent_id integer,
+					name varchar(255) not null,
+					collection_id integer not null,
+					foreign key(collection_id) references collections(id) on delete cascade,
+foreign key (parent_id) references folders(id) on delete cascade
+					);
+
+create table notes (id serial primary key,
+				   name varchar(255),
+				   creation_date timestamptz,
+				   note_text varchar(9000),
+					folder_id integer not null,
+					foreign key (folder_id) references folders(id) on delete cascade
+				   );
+
+create table keywords (id serial primary key,
+					  id_note integer not null,
+					  keyword character varying(256) not null,
+occurences integer not null default 1,
+					  foreign key (id_note) references notes(id) on delete cascade
+					  );
+
+create table note_references_note(id_referencing integer,
+								 id_referenced integer,
+								 primary key(id_referencing, id_referenced),
+								 foreign key(id_referencing) references notes(id) on delete cascade,
+								 foreign key(id_referenced) references notes(id) on delete delete cascade
+								 );
+
+
+create table user_tokens(id serial primary key,
+						user_id integer references users(id) on delete cascade,
+						token character varying(70),
+						type character varying(70),
+expires timestamptz not null);

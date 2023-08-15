@@ -27,6 +27,9 @@
                     <label for="modal__sign-in__password-input">Пароль:&nbsp</label>
                     <div class="modal__sign-in__input-wrapper">
                         <input type="password" name="modal__sign-in__password-input" class="modal__sign-in__password-input">
+                        <div class="modal__sign-in__input-wrapper__toggle-visibility">
+                            <img class="modal__sign-in__input-wrapper__toggle-visibility__img1" src="./images/eye-black.png">
+                        </div>
                     </div>
                 </div>
 
@@ -87,6 +90,9 @@
                         <label for="modal__sign-up__password-input">Пароль:&nbsp</label>
                         <div class="modal__sign-up__input-wrapper">
                             <input type="password" name="modal__sign-up__password-input" class="modal__sign-up__password-input">
+                            <div class="modal__sign-in__input-wrapper__toggle-visibility">
+                                <img class="modal__sign-in__input-wrapper__toggle-visibility__img2" src="./images/eye-black.png">
+                            </div>                            <!-- <div class="toggle_visibility" style="background: url(&quot;images/eye-grey.png&quot;);"></div> -->
                         </div>
                     </div>
                     <div class="modal__sign-up__small-wrapper">
@@ -99,6 +105,9 @@
                         <label for="modal__sign-up__repeat-password-input">Подтвердите пароль:&nbsp</label>
                         <div class="modal__sign-up__input-wrapper">
                             <input type="password" name="modal__sign-up__repeat-password-input" class="modal__sign-up__repeat-password-input">
+                            <div class="modal__sign-in__input-wrapper__toggle-visibility">
+                                <img class="modal__sign-in__input-wrapper__toggle-visibility__img3" src="./images/eye-black.png">
+                            </div>
                         </div>
                     </div>
                     <div class="modal__sign-up__small-wrapper">
@@ -141,125 +150,127 @@
         <!-- RAKE WINDOW -->
         <div class="modal__rake_window__background">
             <div id="modal__rake_window">
-                <div class="modal__rake_window__header">
-                    <div class="modal__rake_window__caption">
-                        Анализ
+                <div class="model__rake_window__scroll-wrapper">
+                    <div class="modal__rake_window__header">
+                        <div class="modal__rake_window__caption">
+                            Анализ
+                        </div>
+                        <button class="modal__rake_window__background__close_button">
+                             X
+                        </button>
                     </div>
-                    <button class="modal__rake_window__background__close_button">
-                         X
-                    </button>
-                </div>
-                <div class="modal__rake_window__info">
-                    <!-- Веб-сервис Sherlock Notes может автоматически выделить ключевые слова из Ваших заметок.
-                    <br>
-                    Чтобы выполнить эту процедуру, нажмите на кнопку "Обновить список" под таблицей "Ключевые слова".
-                    <br>
-                    Кроме того, приложение позволяет оценить степень сходства Вашего набора ключевых слов с наборами других пользователей сервиса.
-                    <br>
-                    Так Вы сможете узнать, кто из пользователей может оказаться Вашим товарищем по интересам или даже будущим коллегой по работе.
-                    <br> -->
-                </div>
-                
-                <div class="modal__rake_window__section_flex_container">
-                    <section class="modal__rake_window__user_info">
-                        <img src="./images/holmes_icon.png" alt="avatar">
-                        <span class="modal__rake_window__username">Mr. Holmes</span>
-                        <span class="modal__rake_window__registration_date">2022/22/10</span>
-                    </section>
-
-                    <section class="modal__rake_window__users_keywords">
-                        <div class="modal__rake_window__users_keywords__loader_mask">
-                            <div class="modal__rake_window__users_keywords__loader"></div>
-                        </div>
-
-                        <div class="modal__rake_window__users_keywords__caption">
-                            Ваши ключевые слова
-                        </div>
-                        <table class="modal__rake_window__users_keywords__table">
-                            <tr class="modal__rake_window__users_keywords__table_row">
-                                <th>Слово</th>
-                                <!-- <th>Встречаемость</th> -->
-                            </tr>
-                            <tr class="modal__rake_window__users_keywords_table_row">
-                                <td class="modal__rake_window__users_keywords__table_row__username_col">
-                                    circulatory system
-                                </td>
-                            </tr>
-                            <tr class="modal__rake_window__users_keywords__table_row">
-                                <td class="modal__rake_window__users_keywords__table_row__username_col">
-                                    blood
-                                </td>
-                            </tr>
-                            <!-- <tr>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                            </tr> -->
-                        </table>
-                        <div class="modal__rake_window__button_wrapper">
-                            <button class="modal__rake_window__users_keywords__refresh_keywords_button">
-                                Обновить список
-                            </button>
-                        </div>
-                    </section>
-                    <section class="modal__rake_window__cowork_candidates">
-                        <div class="modal__rake_window__cowork_candidates__loader_mask">
-                            <div class="modal__rake_window__cowork_candidates__loader"></div>
-                        </div>
-                        <div class="modal__rake_window__users_keywords__caption">
-                            Заинтересованы в сотрудничестве?
-                        </div>
-                        <table class="modal__rake_window__cowork_candidates__table">
-                            <tr class="modal__rake_window__cowork_candidates__table_row">
-                                <th>Никнейм</th>
-                                <th>Сходство</th>
-                            </tr>
-                            <tr class="modal__rake_window__cowork_candidates__table_row">
-                                <td class="modal__rake_window__cowork_candidates__table_row__username_col">
-                                    Wolf_Kitsessss
-                                </td>
-                                <td class="modal__rake_window__cowork_candidates__table_row__correlation_col">
-                                    0.87
-                                </td>
-                            </tr>
-                            <tr class="modal__rake_window__cowork_candidates__table_row">
-                                <td class="modal__rake_window__cowork_candidates__table_row__username_col">
-                                    alex
-                                </td>
-                                <td class="modal__rake_window__cowork_candidates__table_row__correlation_col">
-                                    0.79
-                                </td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                        </table>
-                        <div class="modal__rake_window__button_wrapper">
-                            <button class="modal__rake_window__cowork_candidates__refresh_candidates_button">
-                                Обновить список
-                            </button>
-                        </div>
-                    </section>
+                    <div class="modal__rake_window__info">
+                        <!-- Веб-сервис Sherlock Notes может автоматически выделить ключевые слова из Ваших заметок.
+                        <br>
+                        Чтобы выполнить эту процедуру, нажмите на кнопку "Обновить список" под таблицей "Ключевые слова".
+                        <br>
+                        Кроме того, приложение позволяет оценить степень сходства Вашего набора ключевых слов с наборами других пользователей сервиса.
+                        <br>
+                        Так Вы сможете узнать, кто из пользователей может оказаться Вашим товарищем по интересам или даже будущим коллегой по работе.
+                        <br> -->
+                    </div>
+                    
+                    <div class="modal__rake_window__section_flex_container">
+                        <section class="modal__rake_window__user_info">
+                            <img src="./images/holmes_icon.png" alt="avatar">
+                            <div class="modal__rake_window__section__user_text_container">
+                                <span class="modal__rake_window__username">Mr. Holmes</span>
+                                <span class="modal__rake_window__registration_date">Вы с нами с: 2022/22/10</span>
+                            </div>
+                        </section>
+                        <section class="modal__rake_window__users_keywords">
+                            <div class="modal__rake_window__users_keywords__loader_mask">
+                                <div class="modal__rake_window__users_keywords__loader"></div>
+                            </div>
+                            <div class="modal__rake_window__users_keywords__caption modal_window__caption">
+                                ваши ключевые слова
+                            </div>
+                            <div class="modal__rake_window__users_keywords__info">
+                                Приложение может автоматически выделить ключевые слова из ваших заметок.
+                                Эффективнее всего обрабатываются англоязычные тексты.
+                            </div>
+                            
+                            <table class="modal__rake_window__users_keywords__table">
+                                <tr class="modal__rake_window__users_keywords__table_row">
+                                    <th>Слово</th>
+                                    <th>Встречаемость</th>
+                                    <th>Ранг</th>
+                                </tr>
+                                <tr class="modal__rake_window__users_keywords_table_row">
+                                    <td class="modal__rake_window__users_keywords__table_row__username_col">
+                                        circulatory system
+                                    </td>
+                                </tr>
+                                <tr class="modal__rake_window__users_keywords__table_row">
+                                    <td class="modal__rake_window__users_keywords__table_row__username_col">
+                                        blood
+                                    </td>
+                                </tr>
+                                <!-- <tr>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                </tr> -->
+                            </table>
+                            <div class="modal__rake_window__button_wrapper">
+                                <button class="modal__rake_window__users_keywords__refresh_keywords_button">
+                                    Обновить список (авто-выделение)
+                                </button>
+                            </div>
+                        </section>
+                        <section class="modal__rake_window__cowork_candidates">
+                            <div class="modal__rake_window__cowork_candidates__loader_mask">
+                                <div class="modal__rake_window__cowork_candidates__loader"></div>
+                            </div>
+                            <div class="modal__rake_window__users_keywords__caption modal_window__caption">
+                                ищете единомышленников?
+                            </div>
+                            <div class="modal__rake_window__users_keywords__info">
+                                Приложение также может рекомендовать Вам сотрудничество
+                                с другими пользователями на основе сходства наборов ключевых слов
+                                и их иерархии (от наиболее частых до наиболее редких).
+                            </div>
+                            <table class="modal__rake_window__cowork_candidates__table">
+                                <tr class="modal__rake_window__cowork_candidates__table_row">
+                                    <th>Ник</th>
+                                    <th>Общие<br>слова</th>
+                                    <th>Сходство<br>иерархии<br>(%)</th>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </table>
+                            <div class="modal__rake_window__button_wrapper">
+                                <button class="modal__rake_window__cowork_candidates__refresh_candidates_button">
+                                    Поиск
+                                </button>
+                            </div>
+                        </section>
+                    </div>
                 </div>
             </div>
         </div>
