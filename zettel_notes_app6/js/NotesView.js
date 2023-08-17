@@ -11,16 +11,28 @@ export default class NotesView{
         this.activeSmallTitle = null;
         this.activeSmallBody = null;
         this.activeSmallUpdated = null;
-        this.inputTitle = this.root.querySelector('.notes__title');
-        this.inputBody = this.root.querySelector('.notes__body');
+        this.displayTitle = this.root.querySelector('.notes__title_div');
+        this.inputTitle = this.root.querySelector('.notes__title_input');
+        this.displayBody = this.root.querySelector('.notes__body_div');
+        this.inputBody = this.root.querySelector('.notes__body_input');
         this.notePreview = this.root.querySelector('.notes__preview');
         this.notesSidebar = this.root.querySelector('.notes__sidebar');
         this.notesContainer = this.root.querySelector('.notes__list-items__container');
         this.noteAddBtn = this.root.querySelector('.notes__add');
         this.searchField = this.root.querySelector('.search__note');
+        this.editBtn = this.root.querySelector('.notes__preview__top_section__button');
+        this.quill = new Quill('.notes__body__editor', {
+            theme: 'snow'
+        });
+        this.quillToolbar = this.root.querySelector('.ql-toolbar');
+        this.quillContainer = this.root.querySelector('.ql-container');
+        this.qlEditor = this.quillContainer.querySelector('.ql-editor');
+
+        this.editMode = false;
         const _sidebarClickHandler = clickEvent => {
             const eventTarget = clickEvent.target,
                 targetClassList = clickEvent.target.classList;
+            console.log(eventTarget);
             let eventTargetParent = null,
                 activeNoteId = null;
     
@@ -64,13 +76,13 @@ export default class NotesView{
                 this.onNoteAdd();
             });
 
-            this.inputTitle.addEventListener('blur', () => {
-                this.onNoteEdit();
-            });
+            // this.inputTitle.addEventListener('blur', () => {
+            //     this.onNoteEdit();
+            // });
 
-            this.inputBody.addEventListener('blur', () => {
-                this.onNoteEdit();
-            });
+            // this.inputBody.addEventListener('blur', () => {
+            //     this.onNoteEdit();
+            // });
 
             this.searchField.addEventListener("keypress", (event) => {
                 if (event.key == "Enter"){
@@ -80,6 +92,53 @@ export default class NotesView{
             });               
 
             this.notesContainer.addEventListener('click', _sidebarClickHandler);
+
+            // this.quill = new Quill('.notes__body__editor', {
+            //     theme: 'snow'
+            // });
+            // this.quill_toolbar = this.root.querySelector('.ql-toolbar');
+            // this.quill_container = this.root.querySelector('.ql-container');
+            // this.ql_editor = this.quill_container.querySelector('.ql-editor');
+
+            // this.editMode = false;
+
+            this.editBtn.addEventListener('click', () => {
+                // if(this.inputBody.type == "textarea") this.inputBody.type == "div";
+                // console.log(this.quill);
+                // this.bodyEditor.innerHTML = this.inputBody.innerHTML;
+                if(this.editMode == false){
+                    console.log(this.displayTitle, this.displayBody);
+                    this.inputTitle.value = this.displayTitle.innerHTML;
+                    this.qlEditor.innerHTML = this.displayBody.innerHTML;
+                    this.editBtn.innerHTML = "Сохранить";
+
+                    this.displayTitle.style.display = "none";
+                    this.displayBody.style.display = "none";
+                    
+                    this.inputTitle.style.display = "initial";
+                    this.quillContainer.style.display = "initial";
+                    this.quillToolbar.style.display = "initial";
+                    // this.quill.style.display = "initial";
+                    this.editMode = true;
+                }
+                else {
+                    this.onNoteEdit();
+                    this.displayTitle.innerHTML = this.inputTitle.value;
+                    this.displayBody.innerHTML = this.qlEditor.innerHTML;
+                    this.editBtn.innerHTML = "Править";
+                    console.log(this.displayTitle, this.displayBody);
+
+                    this.inputTitle.style.display = "none";
+                    this.quillContainer.style.display = "none";
+                    this.quillToolbar.style.display = "none";
+
+                    this.onNoteEdit();
+
+                    this.displayTitle.style.display = "initial";
+                    this.displayBody.style.display = "initial";
+                    this.editMode = false;
+                }
+            });
     }
 
 
@@ -124,8 +183,10 @@ export default class NotesView{
     }
 
     updateActiveNote(smallTitleText, smallBodyText){
-        this.inputTitle.value = smallTitleText;
-        this.inputBody.value = smallBodyText;
+        // this.inputTitle.value = smallTitleText;
+        // this.inputBody.value = smallBodyText;
+        this.displayTitle.innerHTML = smallTitleText;
+        this.displayBody.innerHTML = smallBodyText;
         this.updatePreviewVisibility(true);
     }
 

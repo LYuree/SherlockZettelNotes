@@ -514,7 +514,7 @@ export default class App{
         this._clearChildNodes(this.modalRakeWindowCoworkCandidatesTable);
         const rowClass = "modal__rake_window__cowork_candidates__table_row";
         this._createTableRowHTML(this.TH, this.modalRakeWindowCoworkCandidatesTable,
-            3, rowClass, ["Ник", "Общие<wbr>слова", "Сходство<wbr>ранжировки<wbr> (%)"]);
+            3, rowClass, ["Ник", "Общие<wbr>слова", "Сходство<wbr>иерархии"]);
         for (let user of usersWithKeywords){
             let clientsKeywords = clientWithKeywords.keywords;
             let usersKeywords = user.keywords;
@@ -577,7 +577,7 @@ export default class App{
                 }
             }
             this._createTableRowHTML(this.TD, this.modalRakeWindowCoworkCandidatesTable,
-                3, rowClass, [user.username, matchesCount, (SpearmanCorrelation*100).toFixed(2)]);
+                3, rowClass, [user.username, matchesCount, SpearmanCorrelation.toFixed(2)]);
             
         }
     }
@@ -681,14 +681,16 @@ export default class App{
             },
 
             onNoteEdit: () => {
+                console.log(this.view.qlEditor);
                 const newTitleText = this.view.inputTitle.value.trim(),
-                    newBodyText = this.view.inputBody.value.trim();
+                    newBodyText = this.view.qlEditor.innerHTML.trim(),
+                    newSmallBodyText = this.view.qlEditor.innerText.trim();
                     console.log("onNoteEdit, activeNoteId: ", this.activeNoteId);
                 NotesAPI.noteSave(this.activeNoteId, newTitleText, newBodyText, this.username);
                 const notesMatrixItem = this.notesMatrix.find(note => note['id'] == this.activeNoteId)
                 notesMatrixItem['note_text'] = newBodyText;
                 notesMatrixItem['name'] = newTitleText;
-                this.view.updateSmallActiveNote(newTitleText, newBodyText);
+                this.view.updateSmallActiveNote(newTitleText, newSmallBodyText);
             },
             
             onNoteDelete: NotesAPI.noteDelete

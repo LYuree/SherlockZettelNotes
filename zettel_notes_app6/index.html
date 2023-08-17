@@ -10,6 +10,10 @@
     <!-- FA-ICONS -->
     <!-- <script src="https://kit.fontawesome.com/e202a65f05.js" crossorigin="anonymous"></script> -->
     <script src="https://kit.fontawesome.com/e202a65f05.js" crossorigin="anonymous"></script>
+    <!-- Include the Quill library -->
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <!-- Include stylesheet -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <title>Project ZettelNotes</title>
 </head>
 <body>
@@ -241,7 +245,7 @@
                                 <tr class="modal__rake_window__cowork_candidates__table_row">
                                     <th>Ник</th>
                                     <th>Общие<br>слова</th>
-                                    <th>Сходство<br>иерархии<br>(%)</th>
+                                    <th>Сходство<br>иерархии</th>
                                 </tr>
                                 <tr>
                                     <td></td>
@@ -308,8 +312,10 @@
             <!-- search field and note-create button  -->
             <div class="notes__sidebar__management__panel">
                 <img src="./images/vintage_ornament_maroon.png" id="vintage__ornament" alt="">
-                <input type="text" name="search__note" id="search__note" class="search__note" placeholder="Search notes...">
-                <button class="notes__add"> New </button>
+                <input type="text" name="search__note" id="search__note"
+                class="search__note" placeholder="Search notes..."
+                title="Поиск заметок по подстроке">
+                <button class="notes__add" title="Создать новую заметку"> New </button>
             </div>
             <!-- the notes previews -->
             <div class="notes__list-items__container">
@@ -317,8 +323,24 @@
         </div>
         <!-- THE MAIN SECTION -->
         <main class="notes__preview">
-            <input type="text" name="" id="" class="notes__title" placeholder="Enter a title...">
-            <textarea class="notes__body" placeholder="Type in your text here..."></textarea>
+            <div class="notes__preview__top_section">
+                <!-- <input type="text" name="" id="" class="notes__title" placeholder="Enter a title..."> -->
+                <!-- <i class="fas fa-edit notes__preview__top_section__edit_button"></i> -->
+                <div class="notes__title_div"></div>
+                <input type="text" name="" id="" class="notes__title_input" placeholder="Enter a title...">
+                <div class="notes__preview__top_section__button-wrapper">
+                    <button type="submit" class="notes__preview__top_section__button">Править</button>
+                </div>
+            </div>
+            <!-- <textarea class="notes__body" placeholder="Type in your text here..."></textarea>
+             -->
+            <div class="notes__body_div" placeholder="Type in your text here..."></div>
+            <div class="notes__body__editor" placeholder="Type in your text here..."></div>
+            <!-- <script>
+                var quill = new Quill('.notes__body__editor', {
+                    theme: 'snow'
+                });
+            </script> -->
         </main>
     </div>
 </body>
