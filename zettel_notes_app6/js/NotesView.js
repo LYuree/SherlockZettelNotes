@@ -29,6 +29,88 @@ export default class NotesView{
         this.qlEditor = this.quillContainer.querySelector('.ql-editor');
 
         this.editMode = false;
+
+        // this.notePreview.addEventListener('click', clickEvent => {
+        //     clickEvent.preventDefault();
+        //     const eventTarget = clickEvent.target,
+        //         targetClassList = clickEvent.target.classList,
+        //         targetTagName = eventTarget.tagName.toLowerCase(),
+        //         targetParentClassList = eventTarget.parentNode.classList;
+        //         console.log(eventTarget);
+        //     if(targetTagName == "a"){
+        //         if(this.editMode == true && targetParentClassList.contains("ql-preview")){
+        //             this._confirmSavingChanges();
+        //         }
+        //         const appsHref = window.location.href,
+        //             eventTargetURL = new URL(eventTarget.href),
+        //             eventTargetURLHref = eventTargetURL.href;
+        //             console.log(eventTargetURLHref);
+        //         if(eventTargetURLHref.indexOf(appsHref) != -1){
+        //             const urlParams = new URLSearchParams(eventTargetURL.search),
+        //                 linkedNoteId = urlParams.get('noteId');
+        //                 console.log("Params: ", urlParams);
+        //                 console.log("URL: ", eventTargetURL);
+        //                 console.log("ID: ", linkedNoteId);
+        //             if(linkedNoteId != null && linkedNoteId != undefined){
+        //                 this.activeNoteId = linkedNoteId;
+        //                 const linkedNote = this._searchHTMLCollection(this.noteListItemsArray, linkedNoteId);
+        //                 // const linkedNote = this.noteListItemsArray.find(element => element.id == linkedNoteId);
+        //                 // console.log(linkedNote);
+        //                 this.activeSmallTitle = linkedNote.querySelector('.notes__small-title');
+        //                 this.activeSmallBody = linkedNote.querySelector('.notes__small-body');
+        //                 this.activeSmallBodyHidden = linkedNote.querySelector('.notes__small-body-hidden');      
+        //                 this.activeSmallUpdated = linkedNote.querySelector('.notes__small-updated');
+        //                 const smallTitleText = this.activeSmallTitle.innerHTML,
+        //                     smallBodyHiddenText = this.activeSmallBodyHidden.innerHTML;
+        //                 // console.log(this);
+        //                 this.onNoteSelect(this.activeNoteId);
+        //                 this.updateActiveNote(smallTitleText, smallBodyHiddenText);
+        //             }
+        //         }
+        //         else window.open(eventTargetURLHref, '_blank').focus();
+        //     }
+            
+            
+        // });
+
+
+        this.notePreview.addEventListener('click', clickEvent => {
+            clickEvent.preventDefault();
+            const eventTarget = clickEvent.target,
+                targetClassList = clickEvent.target.classList,
+                targetTagName = eventTarget.tagName.toLowerCase(),
+                targetParentClassList = eventTarget.parentNode.classList;
+                console.log(eventTarget);
+            if(targetTagName == "a"){
+                if(this.editMode == true){
+                    if(targetClassList.contains("ql-preview")){
+                        const appsHref = window.location.href,
+                        eventTargetURL = new URL(eventTarget.href),
+                        eventTargetURLHref = eventTargetURL.href;
+                        console.log(eventTargetURLHref);
+                        if(eventTargetURLHref.indexOf(appsHref) != -1){
+                            this._confirmSavingChanges();
+                            this._visitLinkedNote(eventTargetURL);
+                        }
+                        else this._visitExternalWebSite(eventTargetURL);
+                    }
+                }
+                else{
+                    const appsHref = window.location.href,
+                        eventTargetURL = new URL(eventTarget.href),
+                        eventTargetURLHref = eventTargetURL.href;
+                        console.log(eventTargetURLHref);
+                        if(eventTargetURLHref.indexOf(appsHref) != -1)
+                            this._visitLinkedNote(eventTargetURL);
+                        else
+                            this._visitExternalWebSite(eventTargetURL);
+                }
+            }
+            
+            
+        });
+
+
         const _sidebarClickHandler = clickEvent => {
             if(this.editMode == true){
                 const save = confirm("Сохранить изменения в текущей заметке?");
@@ -37,7 +119,6 @@ export default class NotesView{
                     this.displayTitle.innerHTML = this.inputTitle.value;
                     this.displayBody.innerHTML = this.qlEditor.innerHTML;
                     this.editBtn.innerHTML = "Править";
-                    console.log(this.displayTitle, this.displayBody);
 
                     this.inputTitle.style.display = "none";
                     this.quillContainer.style.display = "none";
@@ -47,7 +128,6 @@ export default class NotesView{
                 }
                 else {
                     this.editBtn.innerHTML = "Править";
-                    console.log(this.displayTitle, this.displayBody);
 
                     this.inputTitle.style.display = "none";
                     this.quillContainer.style.display = "none";
@@ -155,6 +235,14 @@ export default class NotesView{
     }
 
 
+    _searchHTMLCollection(collection, id){
+        for (const element of collection){
+            if(element.id == id) return element;
+        }
+
+    }
+
+
     static getCurrentDateString(){
         const today = new Date();
         const month = `${(today.getMonth()+1) < 10 ? '0' + (today.getMonth()+1) : (today.getMonth()+1)}`;
@@ -163,6 +251,63 @@ export default class NotesView{
         const time = today.getHours()+ ':' + today.getMinutes() + ':' + today.getSeconds();
         const dateTime = date + ' ' + time;
         return dateTime;
+    }
+
+
+    _visitExternalWebSite(clickTargetURL){
+        window.open(clickTargetURL.href, '_blank').focus();
+    }
+
+    _visitLinkedNote(clickTargetURL){
+        const urlParams = new URLSearchParams(clickTargetURL.search),
+        linkedNoteId = urlParams.get('noteId');
+        console.log("Params: ", urlParams);
+        console.log("URL: ", clickTargetURL);
+        console.log("ID: ", linkedNoteId);
+        if(linkedNoteId != null && linkedNoteId != undefined){
+            this.activeNoteId = linkedNoteId;
+            const linkedNote = this._searchHTMLCollection(this.noteListItemsArray, linkedNoteId);
+            // const linkedNote = this.noteListItemsArray.find(element => element.id == linkedNoteId);
+            // console.log(linkedNote);
+            this.activeSmallTitle = linkedNote.querySelector('.notes__small-title');
+            this.activeSmallBody = linkedNote.querySelector('.notes__small-body');
+            this.activeSmallBodyHidden = linkedNote.querySelector('.notes__small-body-hidden');      
+            this.activeSmallUpdated = linkedNote.querySelector('.notes__small-updated');
+            const smallTitleText = this.activeSmallTitle.innerHTML,
+                smallBodyHiddenText = this.activeSmallBodyHidden.innerHTML;
+            // console.log(this);
+            this.onNoteSelect(this.activeNoteId);
+            this.updateActiveNote(smallTitleText, smallBodyHiddenText);
+        }
+    }
+    
+    _confirmSavingChanges(){
+        const save = confirm("Сохранить изменения в текущей заметке?");
+                if(save) {
+                    this.onNoteEdit();
+                    this.displayTitle.innerHTML = this.inputTitle.value;
+                    this.displayBody.innerHTML = this.qlEditor.innerHTML;
+                    this.editBtn.innerHTML = "Править";
+
+                    this.inputTitle.style.display = "none";
+                    this.quillContainer.style.display = "none";
+                    this.quillToolbar.style.display = "none";
+                    this.displayTitle.style.display = "initial";
+                    this.displayBody.style.display = "initial";
+                }
+                else {
+                    this.editBtn.innerHTML = "Править";
+
+                    this.inputTitle.style.display = "none";
+                    this.quillContainer.style.display = "none";
+                    this.quillToolbar.style.display = "none";
+
+                    // this.onNoteEdit();
+
+                    this.displayTitle.style.display = "initial";
+                    this.displayBody.style.display = "initial";
+                }
+                this.editMode = false;
     }
 
     _toggleEditMode(enable){
