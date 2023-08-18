@@ -477,12 +477,13 @@ export default class App{
         // const keywordTable = this.modalRakeWindowKeywordsTable;
         // const rowClass = "modal__rake_window__users_keywords__table_row";
         // this._clearChildNodes(keywordTable);
-        this.modalRakeWindowRefreshKeywordsLoaderBackgr.classList.add('active');
-        this.modalRakeWindowRefreshKeywordsLoader.classList.add('active');
+        // this.modalRakeWindowRefreshKeywordsLoaderBackgr.classList.add('active');
+        // this.modalRakeWindowRefreshKeywordsLoader.classList.add('active');
+        
         for (let note of this.notesMatrix){
             // this.modalRakeWindowRefreshKeywordsLoaderBackgr.classList += 'active';
             // this.modalRakeWindowRefreshKeywordsLoader.classList += 'active';
-            let noteKeywords = NotesAPI.extractKeywords(note['note_text']);
+            let noteKeywords = NotesAPI.extractKeywords(this._stripHTMLTags(note['note_text']));
             if (note['name'] != '') noteKeywords.push(note['name'].toLowerCase());
             noteKeywords = noteKeywords.map(str => NotesAPI.shieldApostrophes(str));
             // console.log("_refreshUsersKeywords proc, noteKeywords: ", noteKeywords);
@@ -495,14 +496,18 @@ export default class App{
         this._initiateKeywords();
         
         // debugging
-        setTimeout(() => {
-            this.modalRakeWindowRefreshKeywordsLoaderBackgr.classList.remove('active');
-            this.modalRakeWindowRefreshKeywordsLoader.classList.remove('active');
-        },
-        5000);
+        // setTimeout(() => {
+        //     this.modalRakeWindowRefreshKeywordsLoaderBackgr.classList.remove('active');
+        //     this.modalRakeWindowRefreshKeywordsLoader.classList.remove('active');
+        // },
+        // 5000);
 
         // this.modalRakeWindowRefreshKeywordsLoaderBackgr.classList.remove('active');
         // this.modalRakeWindowRefreshKeywordsLoader.classList.remove('active');
+    }
+
+    _stripHTMLTags(html){
+        return (html.replace(/(<([^>]+)>)/gi, ""));
     }
 
 
@@ -684,13 +689,14 @@ export default class App{
                 console.log(this.view.qlEditor);
                 const newTitleText = this.view.inputTitle.value.trim(),
                     newBodyText = this.view.qlEditor.innerHTML.trim(),
-                    newSmallBodyText = this.view.qlEditor.innerText.trim();
+                    newSmallBodyText = this.view.qlEditor.innerText.trim(),
+                    newSmallBodyHiddenHTML = this.view.qlEditor.innerHTML.trim();
                     console.log("onNoteEdit, activeNoteId: ", this.activeNoteId);
                 NotesAPI.noteSave(this.activeNoteId, newTitleText, newBodyText, this.username);
                 const notesMatrixItem = this.notesMatrix.find(note => note['id'] == this.activeNoteId)
                 notesMatrixItem['note_text'] = newBodyText;
                 notesMatrixItem['name'] = newTitleText;
-                this.view.updateSmallActiveNote(newTitleText, newSmallBodyText);
+                this.view.updateSmallActiveNote(newTitleText, newSmallBodyText, newSmallBodyHiddenHTML);
             },
             
             onNoteDelete: NotesAPI.noteDelete

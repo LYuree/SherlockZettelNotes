@@ -884,9 +884,17 @@ div.note__list-item {
     overflow-y: scroll;
     white-space: pre-wrap;
     word-wrap: break-word;
-    max-width: 55vw;
-    max-height: 50vh;
+    width: 52vw;
+    height: 48vh;
+    max-width: 52vw;
+    max-height: 48vh;
 }
+
+.ql-editor p,
+.notes__body_div {
+    text-align: justify;
+}
+
 
 
 .notes__title_div {
@@ -957,6 +965,10 @@ main.notes__preview .ql-toolbar.ql-snow {
     font-size: 2rem;
     font-weight: bold;
     overflow-y: auto;
+}
+
+.notes__small-body-hidden {
+    display: none;
 }
 
 /* redacted */

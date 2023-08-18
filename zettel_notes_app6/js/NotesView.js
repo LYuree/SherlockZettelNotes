@@ -30,6 +30,36 @@ export default class NotesView{
 
         this.editMode = false;
         const _sidebarClickHandler = clickEvent => {
+            if(this.editMode == true){
+                const save = confirm("Сохранить изменения в текущей заметке?");
+                if(save) {
+                    this.onNoteEdit();
+                    this.displayTitle.innerHTML = this.inputTitle.value;
+                    this.displayBody.innerHTML = this.qlEditor.innerHTML;
+                    this.editBtn.innerHTML = "Править";
+                    console.log(this.displayTitle, this.displayBody);
+
+                    this.inputTitle.style.display = "none";
+                    this.quillContainer.style.display = "none";
+                    this.quillToolbar.style.display = "none";
+                    this.displayTitle.style.display = "initial";
+                    this.displayBody.style.display = "initial";
+                }
+                else {
+                    this.editBtn.innerHTML = "Править";
+                    console.log(this.displayTitle, this.displayBody);
+
+                    this.inputTitle.style.display = "none";
+                    this.quillContainer.style.display = "none";
+                    this.quillToolbar.style.display = "none";
+
+                    // this.onNoteEdit();
+
+                    this.displayTitle.style.display = "initial";
+                    this.displayBody.style.display = "initial";
+                }
+                this.editMode = false;
+            }
             const eventTarget = clickEvent.target,
                 targetClassList = clickEvent.target.classList;
             console.log(eventTarget);
@@ -54,21 +84,23 @@ export default class NotesView{
                         activeNoteId = eventTargetParent.id;        
                         this.activeSmallTitle = eventTargetParent.querySelector('.notes__small-title');
                         this.activeSmallBody = eventTargetParent.querySelector('.notes__small-body');
+                        this.activeSmallBodyHidden = eventTargetParent.querySelector('.notes__small-body-hidden');
                         this.activeSmallUpdated = eventTargetParent.querySelector('.notes__small-updated');
                     }
                     else if(targetClassList.contains("note__list-item"))
                     {
                         activeNoteId = eventTarget.id;
                         this.activeSmallTitle = eventTarget.querySelector('.notes__small-title');
-                        this.activeSmallBody = eventTarget.querySelector('.notes__small-body');       
+                        this.activeSmallBody = eventTarget.querySelector('.notes__small-body');
+                        this.activeSmallBodyHidden = eventTarget.querySelector('.notes__small-body-hidden');      
                         this.activeSmallUpdated = eventTarget.querySelector('.notes__small-updated');
                     }
                     
                     const smallTitleText = this.activeSmallTitle.innerHTML,
-                        smallBodyText = this.activeSmallBody.innerHTML;
+                        smallBodyHiddenText = this.activeSmallBodyHidden.innerHTML;
                     // console.log(this);
                     this.onNoteSelect(activeNoteId);
-                    this.updateActiveNote(smallTitleText, smallBodyText);
+                    this.updateActiveNote(smallTitleText, smallBodyHiddenText);
                 }            
             }
 
@@ -111,32 +143,13 @@ export default class NotesView{
                     this.inputTitle.value = this.displayTitle.innerHTML;
                     this.qlEditor.innerHTML = this.displayBody.innerHTML;
                     this.editBtn.innerHTML = "Сохранить";
-
-                    this.displayTitle.style.display = "none";
-                    this.displayBody.style.display = "none";
-                    
-                    this.inputTitle.style.display = "initial";
-                    this.quillContainer.style.display = "initial";
-                    this.quillToolbar.style.display = "initial";
-                    // this.quill.style.display = "initial";
-                    this.editMode = true;
+                    this._toggleEditMode(true);
                 }
                 else {
                     this.onNoteEdit();
                     this.displayTitle.innerHTML = this.inputTitle.value;
                     this.displayBody.innerHTML = this.qlEditor.innerHTML;
-                    this.editBtn.innerHTML = "Править";
-                    console.log(this.displayTitle, this.displayBody);
-
-                    this.inputTitle.style.display = "none";
-                    this.quillContainer.style.display = "none";
-                    this.quillToolbar.style.display = "none";
-
-                    this.onNoteEdit();
-
-                    this.displayTitle.style.display = "initial";
-                    this.displayBody.style.display = "initial";
-                    this.editMode = false;
+                    this._toggleEditMode(false);
                 }
             });
     }
@@ -152,6 +165,29 @@ export default class NotesView{
         return dateTime;
     }
 
+    _toggleEditMode(enable){
+        // activate edit mode
+        if(enable){
+            this.editBtn.innerHTML = "Сохранить";
+            this.displayTitle.style.display = "none";
+            this.displayBody.style.display = "none";            
+            this.inputTitle.style.display = "initial";
+            this.quillContainer.style.display = "initial";
+            this.quillToolbar.style.display = "initial";
+            this.editMode = true;
+        }
+        // deactivate edit mode
+        else {
+            this.editBtn.innerHTML = "Править";
+            this.inputTitle.style.display = "none";
+            this.quillContainer.style.display = "none";
+            this.quillToolbar.style.display = "none";
+            this.displayTitle.style.display = "initial";
+            this.displayBody.style.display = "initial";
+            this.editMode = false;
+        }
+    }
+
     createListItemHTML(id, title, body, lastUpdatedString){
         // console.log(id);
         // console.log(title);
@@ -162,7 +198,14 @@ export default class NotesView{
         newNoteSmallTitle = document.createElement("div"),
         newNoteDeleteBtn = document.createElement("button"),
         newNoteSmallBody = document.createElement("div"),
-        newNoteSmallUpdated = document.createElement("div");
+        newNoteSmallUpdated = document.createElement("div"),
+        newNoteSmallBodyHidden = document.createElement("div");
+        // the smallBody div will contain the note's text without tags
+        // ("innerText-version" of it),
+
+        // whereas the newNoteSmallBodyHidden will hold the full version
+        // of the text with tags (the info to be displayed in the main
+        // window upon clicking on the note's preview)
 
         newNote.classList += "note__list-item";
         newNote.id = id;
@@ -170,16 +213,26 @@ export default class NotesView{
         newNoteDeleteBtn.classList += "notes__delete";
         newNoteSmallBody.classList += "notes__small-body";
         newNoteSmallUpdated.classList += "notes__small-updated";
+        newNoteSmallBodyHidden.classList += "notes__small-body-hidden";
 
         newNoteSmallTitle.innerHTML = title;
         newNoteDeleteBtn.innerHTML = " X ";
-        newNoteSmallBody.innerHTML = body;
+        newNoteSmallBody.innerHTML = this.App._stripHTMLTags(body);
+        newNoteSmallBodyHidden.innerHTML = body;
         newNoteSmallUpdated.innerHTML = lastUpdatedString;
         newNote.appendChild(newNoteSmallTitle);
         newNote.appendChild(newNoteDeleteBtn);
         newNote.appendChild(newNoteSmallBody);
+        newNote.appendChild(newNoteSmallBodyHidden);
         newNote.appendChild(newNoteSmallUpdated);
+
         this.notesContainer.appendChild(newNote);
+    }
+
+    stripHTMLTags(html){
+        const tmp = document.createElement('div');
+        tmp.innerHTML = html;
+        return tmp.innerText; 
     }
 
     updateActiveNote(smallTitleText, smallBodyText){
@@ -190,9 +243,10 @@ export default class NotesView{
         this.updatePreviewVisibility(true);
     }
 
-    updateSmallActiveNote(smallTitleText, smallBodyText){
+    updateSmallActiveNote(smallTitleText, smallBodyText, smallBodyHiddenHTML){
         this.activeSmallTitle.innerHTML = smallTitleText;
         this.activeSmallBody.innerHTML= smallBodyText;
+        this.activeSmallBodyHidden.innerHTML = smallBodyHiddenHTML;
         this.activeSmallUpdated.innerHTML = NotesView.getCurrentDateString();
     }
 
