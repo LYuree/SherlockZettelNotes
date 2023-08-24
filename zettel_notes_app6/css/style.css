@@ -916,6 +916,37 @@ div.note__list-item {
     max-height: 50vh;
 }
 
+.notes__body__editor__drop_down_menu {
+    position: absolute;
+    display: none;
+    overflow-y: scroll;
+    max-height: 8rem;
+    background-color: white;
+}
+
+.ql-tooltip.active {
+    display: block !important;
+}
+
+.notes__body__editor__drop_down_menu__list {
+    list-style-type: none;
+}
+
+.notes__body__editor__drop_down_menu__list li {
+    border: 1px solid black;
+    cursor: pointer;
+}
+
+.notes__body__editor__drop_down_menu__list li:hover{
+    background-color: rgb(233, 233, 233);
+}
+
+.notes__body__editor__drop_down_menu__list li p{
+    text-overflow: ellipsis;
+    width: 17ch;
+    max-width: 17ch;
+}
+
 div.notes__preview__top_section {
     max-width: 55vw;
     max-height: 50vh;
