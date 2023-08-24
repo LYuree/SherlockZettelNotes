@@ -21,12 +21,18 @@ export default class NotesView{
         this.noteAddBtn = this.root.querySelector('.notes__add');
         this.searchField = this.root.querySelector('.search__note');
         this.editBtn = this.root.querySelector('.notes__preview__top_section__button');
+
         this.quill = new Quill('.notes__body__editor', {
             theme: 'snow'
         });
         this.quillToolbar = this.root.querySelector('.ql-toolbar');
         this.quillContainer = this.root.querySelector('.ql-container');
         this.qlEditor = this.quillContainer.querySelector('.ql-editor');
+        this.qlTooltip = this.root.querySelector(".ql-tooltip");
+        this.qlLinkInput = this.qlTooltip.querySelector('input');
+        this.qlDropDownMenu = this.root.querySelector('.notes__body__editor__drop_down_menu');
+        console.log(this.qlDropDownMenu);
+        this.qlDropDownMenuList = this.qlDropDownMenu.querySelector('.notes__body__editor__drop_down_menu__list');
 
         this.editMode = false;
 
@@ -74,6 +80,35 @@ export default class NotesView{
         // });
 
 
+        // document.addEventListener("visibilitychange", event =>{
+        //     if(document.visibilityState == "hidden" && this.editMode == true){
+        //         this._saveChanges();
+        //         this._toggleEditMode(false);
+        //     }
+        // });
+
+        // window.onbeforeunload = event =>{
+        //     // event.preventDefault();
+        //     if(this.editMode == true){
+        //         this._confirmSavingChanges();
+        //         this._toggleEditMode(false);
+        //     }
+        //     location.reload();
+        // };
+
+        
+        this.qlDropDownMenuList.addEventListener('click', clickEvent => {
+            const clickEventTarget = clickEvent.target;
+            if(clickEventTarget.tagName == "li"){
+                this.qlLinkInput.value = window.location.href + "?linkedNoteId=" +
+                    clickEvent.target.linkedNoteId;
+            }
+        });
+
+        this.qlLinkInput.addEventListener('focus', () => {
+            this.qlDropDownMenu.display = 'none';
+        })
+        
         this.notePreview.addEventListener('click', clickEvent => {
             clickEvent.preventDefault();
             const eventTarget = clickEvent.target,
@@ -94,6 +129,48 @@ export default class NotesView{
                         }
                         else this._visitExternalWebSite(eventTargetURL);
                     }
+                    else if (targetClassList.contains("ql-action")){
+                        // const notesMatrix = this.App.notesMatrix;
+                        console.log("action func, this keyword: ", this);
+                        // const qlTooltip = this.root.querySelector(".ql-tooltip");
+                            // linkInput = qlTooltip.querySelector('input'),
+                            // dropDownNotesList = this.root.querySelector('.notes__body__editor__drop_down_notes_list');
+                        let dropDownNotesListCoords = this.qlDropDownMenu.getBoundingClientRect();
+                        console.log(dropDownNotesListCoords.top, dropDownNotesListCoords.left);
+                        // console.log(dropDownNotesList);
+                        this.qlLinkInput.addEventListener('blur', blurEvent => {
+                            console.log(blurEvent.relatedTarget);
+                            const blurRelatedTarget = blurEvent.relatedTarget;
+                            if(!blurRelatedTarget.classList.contains("notes__body__editor__drop_down_menu__list__item")
+                                && !blurRelatedTarget.classList.contains("notes__body__editor__drop_down_menu__list")
+                                && !blurRelatedTarget.classList.contains("notes__body__editor__drop_down_menu")){
+                                this.qlDropDownMenu.style.display = 'none';
+                                this.qlTooltip.classList.remove('active');
+                            }
+                            else this.qlTooltip.classList.add('active');
+                            // else setTimeout(() => {this.qlTooltip.classList.remove('ql-hidden')},
+                                // 0);
+                            console.log(this.qlTooltip);
+                        });
+                        this.qlLinkInput.addEventListener('input', () => {
+                            // this._initiateDropDownList(this.App.notesMatrix);
+                            this._fillDropDown();
+                            const qlLinkInputCoords = this.qlLinkInput.getBoundingClientRect();
+                            // console.log(linkInputCoords.top, linkInputCoords.right,
+                            //     linkInputCoords.bottom, linkInputCoords.left);
+                            const newTop = (+qlLinkInputCoords.bottom),
+                                newLeft = (+qlLinkInputCoords.left + (+this.qlLinkInput.style.width));
+                            console.log(newTop, newLeft);
+                            this.qlDropDownMenu.style.top = newTop + 'px';
+                            this.qlDropDownMenu.style.left = newLeft + 'px';
+                            dropDownNotesListCoords = this.qlDropDownMenu.getBoundingClientRect();
+                            console.log(this.qlDropDownMenu.style.top, this.qlDropDownMenu.style.left);
+                            this.qlDropDownMenu.style.display = 'initial';
+                            // this.qlDropDownMenu.classList.add('active');
+                            this.qlDropDownMenu.style.zIndex = 999;
+                            // this.qlDropDownMenu.focus();
+                        });
+                    }
                 }
                 else{
                     const appsHref = window.location.href,
@@ -106,10 +183,7 @@ export default class NotesView{
                             this._visitExternalWebSite(eventTargetURL);
                 }
             }
-            
-            
         });
-
 
         const _sidebarClickHandler = clickEvent => {
             if(this.editMode == true){
@@ -174,8 +248,7 @@ export default class NotesView{
                         this.activeSmallBody = eventTarget.querySelector('.notes__small-body');
                         this.activeSmallBodyHidden = eventTarget.querySelector('.notes__small-body-hidden');      
                         this.activeSmallUpdated = eventTarget.querySelector('.notes__small-updated');
-                    }
-                    
+                    }                    
                     const smallTitleText = this.activeSmallTitle.innerHTML,
                         smallBodyHiddenText = this.activeSmallBodyHidden.innerHTML;
                     // console.log(this);
@@ -234,6 +307,82 @@ export default class NotesView{
             });
     }
 
+    // _initiateDropDownList() {
+    //     console.log(this.qlLinkInput);
+    //     this.App._clearChildNodes(this.qlDropDownMenu);
+    //     for (const note of this.App.notesMatrix){
+    //         const inputValue = this.qlLinkInput.value;
+    //         if(note['name'].indexOf(inputValue) != -1 || note['note_text'].indexOf(inputValue) != -1 ){
+    //             const listItem = this._createDropDownItem(this.App.notesMatrix, note['name'], note['note_text']);
+    //             this.qlDropDownMenu.appendChild(listItem);
+    //         }
+    //     }
+    // }
+
+    _fillDropDown(){
+        this.App._clearChildNodes(this.qlDropDownMenuList);
+        const inputValue = this.qlLinkInput.value;
+        for (const note of this.App.notesMatrix){
+            const substrTitleIndex = note['name'].toLowerCase().indexOf(inputValue),
+                substrBodyIndex = note['note_text'].toLowerCase().indexOf(inputValue);
+            if(substrBodyIndex != -1 || substrTitleIndex != -1)
+            {
+                // const start = substrBodyIndex-10,
+                //     finish = substrBodyIndex + inputValue.length + 10;
+                const bodyExtract = this._getDropDownSubstring(note['note_text'], substrBodyIndex,
+                    substrBodyIndex + inputValue.length, 17);
+                const dropDownItem = this._createDropDownItem(note['id'], note['name'], bodyExtract);
+                // this.qlDropDownMenu.appendChild(dropDownItem);
+                this.qlDropDownMenuList.appendChild(dropDownItem);
+                console.log(this.qlDropDownMenu);
+            }
+        }        
+    }
+
+    _getDropDownSubstring = (str, start, end, maxLength) => {
+        const substrLength =  end - start;
+        if(substrLength < maxLength) {
+            const spareLength = maxLength - substrLength;
+            start = start - Math.floor(spareLength/2.0);
+            end = start + Math.ceil(spareLength/2.0);
+        }
+        // if (str.length > length) {
+        //  return `${"..." + str.substring(5, length)}...`;
+        // }
+        // return str;
+        return str.substring(start, end+1);
+    };
+
+
+    _createDropDownItem(noteId, title, bodyExtract){
+        const listItem = document.createElement("li"),
+            heading = document.createElement("p"),
+            body = document.createElement("p");
+        listItem.classList += "notes__body__editor__drop_down_menu__list__item";
+        heading.classList += "notes__body__editor__drop_down_menu__list__item__heading";
+        body.classList += heading.classList += "notes__body__editor__drop_down_menu__list__item__text";
+        heading.innerText = title;
+        body.innerText = this.App._stripHTMLTags(bodyExtract);
+        listItem.appendChild(heading);
+        listItem.appendChild(body);
+        listItem.dataset.linkedNoteId = noteId;
+        // tabIndex is needed for a li-element to
+        // be able to receive focus
+        // (is checked upon the blur event occurring
+        // on the qlLinkInput element
+        // when the .relatedTarget is accessed)
+        listItem.tabIndex="0";
+        console.log(listItem);
+        return listItem;
+    }
+
+    // this.searchField.addEventListener("keypress", (event) => {
+    //     if (event.key == "Enter"){
+    //         const substringToSearch = this.searchField.value.toLowerCase();
+    //         this.onNoteSearch(substringToSearch, this.noteListItemsArray);
+    //     }
+    // });      
+
 
     _searchHTMLCollection(collection, id){
         for (const element of collection){
@@ -280,13 +429,17 @@ export default class NotesView{
             this.updateActiveNote(smallTitleText, smallBodyHiddenText);
         }
     }
+
+    _saveChanges(){
+        this.onNoteEdit();
+        this.displayTitle.innerHTML = this.inputTitle.value;
+        this.displayBody.innerHTML = this.qlEditor.innerHTML;
+    }
     
     _confirmSavingChanges(){
         const save = confirm("Сохранить изменения в текущей заметке?");
                 if(save) {
-                    this.onNoteEdit();
-                    this.displayTitle.innerHTML = this.inputTitle.value;
-                    this.displayBody.innerHTML = this.qlEditor.innerHTML;
+                    this._saveChanges();
                     this.editBtn.innerHTML = "Править";
 
                     this.inputTitle.style.display = "none";
@@ -408,7 +561,7 @@ export default class NotesView{
         // console.log(notesMatrix.length);
         if(m > 0){
             for(let note of notesMatrix){
-                // console.log(note);
+                console.log(notesMatrix);
                 this.createListItemHTML(note['id'], note['name'], note['note_text'], note['creation_date']);
             }
         }
