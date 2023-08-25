@@ -144,6 +144,27 @@ export default class NotesView{
             // clickEvent.target.linkedNoteId;
         });
 
+        this.qlLinkInput.addEventListener('input', () => {
+            let dropDownNotesListCoords = this.qlDropDownMenu.getBoundingClientRect();
+            console.log(dropDownNotesListCoords.top, dropDownNotesListCoords.left);
+            // this._initiateDropDownList(this.App.notesMatrix);
+            this._fillDropDown();
+            const qlLinkInputCoords = this.qlLinkInput.getBoundingClientRect();
+            // console.log(linkInputCoords.top, linkInputCoords.right,
+            //     linkInputCoords.bottom, linkInputCoords.left);
+            const newTop = (+qlLinkInputCoords.bottom),
+                newLeft = (+qlLinkInputCoords.left + (+this.qlLinkInput.style.width));
+            // console.log(newTop, newLeft);
+            this.qlDropDownMenu.style.top = newTop + 'px';
+            this.qlDropDownMenu.style.left = newLeft + 'px';
+            dropDownNotesListCoords = this.qlDropDownMenu.getBoundingClientRect();
+            // console.log(this.qlDropDownMenu.style.top, this.qlDropDownMenu.style.left);
+            this.qlDropDownMenu.style.display = 'initial';
+            // this.qlDropDownMenu.classList.add('active');
+            this.qlDropDownMenu.style.zIndex = 999;
+            // this.qlDropDownMenu.focus();
+        });
+
         this.qlEditor.addEventListener('scroll', scrollEvent => {
             const scrollTop = scrollEvent.target.scrollTop;
             this.qlDropDownMenu.style.marginTop = 0 - scrollTop + 'px';
@@ -156,6 +177,22 @@ export default class NotesView{
         this.qlLinkInput.addEventListener('focus', () => {
             this.qlDropDownMenu.display = 'none';
         })
+
+        this.qlLinkInput.addEventListener('blur', blurEvent => {
+            console.log(blurEvent.relatedTarget);
+            const blurRelatedTarget = blurEvent.relatedTarget;
+            if(blurRelatedTarget == null || (!blurRelatedTarget.classList.contains("notes__body__editor__drop_down_menu__list__item")
+                && !blurRelatedTarget.classList.contains("notes__body__editor__drop_down_menu__list")
+                && !blurRelatedTarget.classList.contains("notes__body__editor__drop_down_menu"
+                && !blurRelatedTarget.classList.contains("ql-tooltip")))){
+                this.qlDropDownMenu.style.display = 'none';
+                this.qlTooltip.classList.remove('active');
+            }
+            else this.qlTooltip.classList.add('active');
+            // else setTimeout(() => {this.qlTooltip.classList.remove('ql-hidden')},
+                // 0);
+            // console.log(this.qlTooltip);
+        });
         
         this.notePreview.addEventListener('click', clickEvent => {
             clickEvent.preventDefault();
@@ -190,42 +227,24 @@ export default class NotesView{
                         // const qlTooltip = this.root.querySelector(".ql-tooltip");
                             // linkInput = qlTooltip.querySelector('input'),
                             // dropDownNotesList = this.root.querySelector('.notes__body__editor__drop_down_notes_list');
-                        let dropDownNotesListCoords = this.qlDropDownMenu.getBoundingClientRect();
-                        console.log(dropDownNotesListCoords.top, dropDownNotesListCoords.left);
+                        // let dropDownNotesListCoords = this.qlDropDownMenu.getBoundingClientRect();
+                        // console.log(dropDownNotesListCoords.top, dropDownNotesListCoords.left);
                         // console.log(dropDownNotesList);
-                        this.qlLinkInput.addEventListener('blur', blurEvent => {
-                            console.log(blurEvent.relatedTarget);
-                            const blurRelatedTarget = blurEvent.relatedTarget;
-                            if(blurRelatedTarget == null || (!blurRelatedTarget.classList.contains("notes__body__editor__drop_down_menu__list__item")
-                                && !blurRelatedTarget.classList.contains("notes__body__editor__drop_down_menu__list")
-                                && !blurRelatedTarget.classList.contains("notes__body__editor__drop_down_menu"
-                                && !blurRelatedTarget.classList.contains("ql-tooltip")))){
-                                this.qlDropDownMenu.style.display = 'none';
-                                this.qlTooltip.classList.remove('active');
-                            }
-                            else this.qlTooltip.classList.add('active');
-                            // else setTimeout(() => {this.qlTooltip.classList.remove('ql-hidden')},
-                                // 0);
-                            // console.log(this.qlTooltip);
-                        });
-                        this.qlLinkInput.addEventListener('input', () => {
-                            // this._initiateDropDownList(this.App.notesMatrix);
-                            this._fillDropDown();
-                            const qlLinkInputCoords = this.qlLinkInput.getBoundingClientRect();
-                            // console.log(linkInputCoords.top, linkInputCoords.right,
-                            //     linkInputCoords.bottom, linkInputCoords.left);
-                            const newTop = (+qlLinkInputCoords.bottom),
-                                newLeft = (+qlLinkInputCoords.left + (+this.qlLinkInput.style.width));
-                            // console.log(newTop, newLeft);
-                            this.qlDropDownMenu.style.top = newTop + 'px';
-                            this.qlDropDownMenu.style.left = newLeft + 'px';
-                            dropDownNotesListCoords = this.qlDropDownMenu.getBoundingClientRect();
-                            // console.log(this.qlDropDownMenu.style.top, this.qlDropDownMenu.style.left);
-                            this.qlDropDownMenu.style.display = 'initial';
-                            // this.qlDropDownMenu.classList.add('active');
-                            this.qlDropDownMenu.style.zIndex = 999;
-                            // this.qlDropDownMenu.focus();
-                        });
+                        // this.qlLinkInput.addEventListener('blur', blurEvent => {
+                        //     console.log(blurEvent.relatedTarget);
+                        //     const blurRelatedTarget = blurEvent.relatedTarget;
+                        //     if(blurRelatedTarget == null || (!blurRelatedTarget.classList.contains("notes__body__editor__drop_down_menu__list__item")
+                        //         && !blurRelatedTarget.classList.contains("notes__body__editor__drop_down_menu__list")
+                        //         && !blurRelatedTarget.classList.contains("notes__body__editor__drop_down_menu"
+                        //         && !blurRelatedTarget.classList.contains("ql-tooltip")))){
+                        //         this.qlDropDownMenu.style.display = 'none';
+                        //         this.qlTooltip.classList.remove('active');
+                        //     }
+                        //     else this.qlTooltip.classList.add('active');
+                        //     // else setTimeout(() => {this.qlTooltip.classList.remove('ql-hidden')},
+                        //         // 0);
+                        //     // console.log(this.qlTooltip);
+                        // });
                     }
                 }
                 else{
@@ -473,7 +492,7 @@ export default class NotesView{
         const dateTime = date + ' ' + time;
         return dateTime;
     }
-
+    
 
     _visitExternalWebSite(clickTargetURL){
         window.open(clickTargetURL.href, '_blank').focus();
