@@ -30,6 +30,12 @@ export default class NotesView{
         this.qlEditor = this.quillContainer.querySelector('.ql-editor');
         this.qlTooltip = this.root.querySelector(".ql-tooltip");
         this.qlLinkInput = this.qlTooltip.querySelector('input');
+        // this.qlEditor.innerHTML = `
+        //     <div class="notes__body__editor__drop_down_menu" tabindex="0">
+        //         <ul class="notes__body__editor__drop_down_menu__list" tabindex="0">
+        //         </ul>
+        //     </div>`;
+
         this.qlDropDownMenu = this.root.querySelector('.notes__body__editor__drop_down_menu');
         console.log(this.qlDropDownMenu);
         this.qlDropDownMenuList = this.qlDropDownMenu.querySelector('.notes__body__editor__drop_down_menu__list');
@@ -105,6 +111,17 @@ export default class NotesView{
             }
         });
 
+        this.qlEditor.addEventListener('scroll', scrollEvent => {
+            console.log("Scroll event fired!");
+            const scrollTop = scrollEvent.target.scrollTop;
+            let dropDownNotesListCoords = this.qlDropDownMenu.getBoundingClientRect();
+            console.log(`Scrolltop: ${scrollTop}`);           
+            // this.qlDropDownMenu.style.top = dropDownNotesListCoords.top - scrollTop + 'px';
+            // const menuMarginTop = this.qlDropDownMenu.style.marginTop.replace('px', '');
+            this.qlDropDownMenu.style.marginTop = 0 - scrollTop + 'px';
+            // console.log(`Menu top: ${this.qlDropDownMenu.style.top}`);
+        });
+
         this.qlLinkInput.addEventListener('focus', () => {
             this.qlDropDownMenu.display = 'none';
         })
@@ -143,7 +160,8 @@ export default class NotesView{
                             const blurRelatedTarget = blurEvent.relatedTarget;
                             if(!blurRelatedTarget.classList.contains("notes__body__editor__drop_down_menu__list__item")
                                 && !blurRelatedTarget.classList.contains("notes__body__editor__drop_down_menu__list")
-                                && !blurRelatedTarget.classList.contains("notes__body__editor__drop_down_menu")){
+                                && !blurRelatedTarget.classList.contains("notes__body__editor__drop_down_menu"
+                                && !blurRelatedTarget.classList.contains("ql-tooltip"))){
                                 this.qlDropDownMenu.style.display = 'none';
                                 this.qlTooltip.classList.remove('active');
                             }
@@ -176,7 +194,9 @@ export default class NotesView{
                     const appsHref = window.location.href,
                         eventTargetURL = new URL(eventTarget.href),
                         eventTargetURLHref = eventTargetURL.href;
-                        console.log(eventTargetURLHref);
+                        console.log(eventTargetURLHref, appsHref);
+                        // console.log(eventTargetURLHref.indexOf(appsHref));
+                        // console.log(eventTargetURLHref.indexOf(appsHref));
                         if(eventTargetURLHref.indexOf(appsHref) != -1)
                             this._visitLinkedNote(eventTargetURL);
                         else
@@ -388,7 +408,6 @@ export default class NotesView{
         for (const element of collection){
             if(element.id == id) return element;
         }
-
     }
 
 
@@ -417,7 +436,7 @@ export default class NotesView{
             this.activeNoteId = linkedNoteId;
             const linkedNote = this._searchHTMLCollection(this.noteListItemsArray, linkedNoteId);
             // const linkedNote = this.noteListItemsArray.find(element => element.id == linkedNoteId);
-            // console.log(linkedNote);
+            console.log(linkedNote);
             this.activeSmallTitle = linkedNote.querySelector('.notes__small-title');
             this.activeSmallBody = linkedNote.querySelector('.notes__small-body');
             this.activeSmallBodyHidden = linkedNote.querySelector('.notes__small-body-hidden');      
