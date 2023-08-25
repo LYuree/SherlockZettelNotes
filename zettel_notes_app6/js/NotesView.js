@@ -165,9 +165,10 @@ export default class NotesView{
                 // targetParentClassList = eventTarget.parentNode.classList;
                 console.log(eventTarget);
             let eventTargetLinkElement = eventTarget;
-            while(eventTargetLinkElement != null && eventTargetLinkElement.tagName.toLowerCase() != "a"){
+            while(eventTargetLinkElement && eventTargetLinkElement.tagName &&
+                    eventTargetLinkElement.tagName.toLowerCase() != "a"){
                 eventTargetLinkElement = eventTargetLinkElement.parentNode;
-                console.log(eventTargetLinkElement.tagName.toLowerCase());
+                // console.log(eventTargetLinkElement.tagName.toLowerCase());
             }
             console.log(eventTargetLinkElement);
             if(targetTagName == "a"){
@@ -240,7 +241,10 @@ export default class NotesView{
                         this._visitExternalWebSite(eventTargetURL);
                 }
             }
-            else if (eventTargetLinkElement != null){
+            else if (eventTargetLinkElement != null &&
+                eventTargetLinkElement.tagName != null &&
+                eventTargetLinkElement.tagName.toLowerCase() == "a" &&
+                this.editMode != true){
                 const appsHref = window.location.href,
                     eventTargetLinkElementURL = new URL(eventTargetLinkElement.href),
                     eventTargetLinkElementHref = eventTargetLinkElementURL.href;
