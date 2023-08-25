@@ -30,6 +30,8 @@ export default class NotesView{
         this.qlEditor = this.quillContainer.querySelector('.ql-editor');
         this.qlTooltip = this.root.querySelector(".ql-tooltip");
         this.qlLinkInput = this.qlTooltip.querySelector('input');
+
+        this.qlTooltip.tabIndex = "0";
         // this.qlEditor.innerHTML = `
         //     <div class="notes__body__editor__drop_down_menu" tabindex="0">
         //         <ul class="notes__body__editor__drop_down_menu__list" tabindex="0">
@@ -158,10 +160,10 @@ export default class NotesView{
                         this.qlLinkInput.addEventListener('blur', blurEvent => {
                             console.log(blurEvent.relatedTarget);
                             const blurRelatedTarget = blurEvent.relatedTarget;
-                            if(!blurRelatedTarget.classList.contains("notes__body__editor__drop_down_menu__list__item")
+                            if(blurRelatedTarget == null || (!blurRelatedTarget.classList.contains("notes__body__editor__drop_down_menu__list__item")
                                 && !blurRelatedTarget.classList.contains("notes__body__editor__drop_down_menu__list")
                                 && !blurRelatedTarget.classList.contains("notes__body__editor__drop_down_menu"
-                                && !blurRelatedTarget.classList.contains("ql-tooltip"))){
+                                && !blurRelatedTarget.classList.contains("ql-tooltip")))){
                                 this.qlDropDownMenu.style.display = 'none';
                                 this.qlTooltip.classList.remove('active');
                             }
