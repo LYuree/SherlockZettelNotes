@@ -103,24 +103,44 @@ export default class NotesView{
         //     }
         //     location.reload();
         // };
-
+        this.qlActionBtn = this.qlTooltip.querySelector('.ql-action');
+        this.qlActionBtn.addEventListener('click', () =>{
+            setTimeout(console.log(document.currentScript));
+        });
         
         this.qlDropDownMenuList.addEventListener('click', clickEvent => {
-            const clickEventTarget = clickEvent.target;
-            if(clickEventTarget.tagName == "li"){
-                this.qlLinkInput.value = window.location.href + "?linkedNoteId=" +
-                    clickEvent.target.linkedNoteId;
+            var item = clickEvent.target;
+            // console.log("Item: ", item.classList.contains('notes__body__editor__drop_down_menu__list__item'));
+            while (!item.classList.contains('notes__body__editor__drop_down_menu__list__item')){
+                item = item.parentNode;
+                console.log(item);
             }
+            this.qlLinkInput.value = window.location.href +
+                "?linkedNoteId=" + item.dataset.linkedNoteId;
+            const event = new Event('input', {
+                bubbles: true,
+                cancelable: true,
+            });
+            this.qlLinkInput.dispatchEvent(event);
+
+            // if(item.tagName != "li"){
+            //     item = item.parent;
+            //     while (item.tagName != "li"){
+            //         item = clickEventTargetParent.parent;
+            //     }
+            //     this.qlLinkInput.value = window.location.href + "?linkedNoteId=" +
+            //         clickEventTargetParent.linkedNoteId;
+            // }
+            // else this.qlLinkInput.value = window.location.href + "?linkedNoteId=" +
+            // clickEvent.target.linkedNoteId;
         });
 
         this.qlEditor.addEventListener('scroll', scrollEvent => {
-            console.log("Scroll event fired!");
             const scrollTop = scrollEvent.target.scrollTop;
-            let dropDownNotesListCoords = this.qlDropDownMenu.getBoundingClientRect();
-            console.log(`Scrolltop: ${scrollTop}`);           
+            this.qlDropDownMenu.style.marginTop = 0 - scrollTop + 'px';
+            // let dropDownNotesListCoords = this.qlDropDownMenu.getBoundingClientRect();
             // this.qlDropDownMenu.style.top = dropDownNotesListCoords.top - scrollTop + 'px';
             // const menuMarginTop = this.qlDropDownMenu.style.marginTop.replace('px', '');
-            this.qlDropDownMenu.style.marginTop = 0 - scrollTop + 'px';
             // console.log(`Menu top: ${this.qlDropDownMenu.style.top}`);
         });
 
@@ -134,14 +154,14 @@ export default class NotesView{
                 targetClassList = clickEvent.target.classList,
                 targetTagName = eventTarget.tagName.toLowerCase(),
                 targetParentClassList = eventTarget.parentNode.classList;
-                console.log(eventTarget);
+                // console.log(eventTarget);
             if(targetTagName == "a"){
                 if(this.editMode == true){
                     if(targetClassList.contains("ql-preview")){
                         const appsHref = window.location.href,
                         eventTargetURL = new URL(eventTarget.href),
                         eventTargetURLHref = eventTargetURL.href;
-                        console.log(eventTargetURLHref);
+                        // console.log(eventTargetURLHref);
                         if(eventTargetURLHref.indexOf(appsHref) != -1){
                             this._confirmSavingChanges();
                             this._visitLinkedNote(eventTargetURL);
@@ -150,7 +170,7 @@ export default class NotesView{
                     }
                     else if (targetClassList.contains("ql-action")){
                         // const notesMatrix = this.App.notesMatrix;
-                        console.log("action func, this keyword: ", this);
+                        // console.log("action func, this keyword: ", this);
                         // const qlTooltip = this.root.querySelector(".ql-tooltip");
                             // linkInput = qlTooltip.querySelector('input'),
                             // dropDownNotesList = this.root.querySelector('.notes__body__editor__drop_down_notes_list');
@@ -170,7 +190,7 @@ export default class NotesView{
                             else this.qlTooltip.classList.add('active');
                             // else setTimeout(() => {this.qlTooltip.classList.remove('ql-hidden')},
                                 // 0);
-                            console.log(this.qlTooltip);
+                            // console.log(this.qlTooltip);
                         });
                         this.qlLinkInput.addEventListener('input', () => {
                             // this._initiateDropDownList(this.App.notesMatrix);
@@ -180,11 +200,11 @@ export default class NotesView{
                             //     linkInputCoords.bottom, linkInputCoords.left);
                             const newTop = (+qlLinkInputCoords.bottom),
                                 newLeft = (+qlLinkInputCoords.left + (+this.qlLinkInput.style.width));
-                            console.log(newTop, newLeft);
+                            // console.log(newTop, newLeft);
                             this.qlDropDownMenu.style.top = newTop + 'px';
                             this.qlDropDownMenu.style.left = newLeft + 'px';
                             dropDownNotesListCoords = this.qlDropDownMenu.getBoundingClientRect();
-                            console.log(this.qlDropDownMenu.style.top, this.qlDropDownMenu.style.left);
+                            // console.log(this.qlDropDownMenu.style.top, this.qlDropDownMenu.style.left);
                             this.qlDropDownMenu.style.display = 'initial';
                             // this.qlDropDownMenu.classList.add('active');
                             this.qlDropDownMenu.style.zIndex = 999;
@@ -356,7 +376,7 @@ export default class NotesView{
                 const dropDownItem = this._createDropDownItem(note['id'], note['name'], bodyExtract);
                 // this.qlDropDownMenu.appendChild(dropDownItem);
                 this.qlDropDownMenuList.appendChild(dropDownItem);
-                console.log(this.qlDropDownMenu);
+                // console.log(this.qlDropDownMenu);
             }
         }        
     }
@@ -394,7 +414,7 @@ export default class NotesView{
         // on the qlLinkInput element
         // when the .relatedTarget is accessed)
         listItem.tabIndex="0";
-        console.log(listItem);
+        // console.log(listItem);
         return listItem;
     }
 
@@ -430,7 +450,7 @@ export default class NotesView{
 
     _visitLinkedNote(clickTargetURL){
         const urlParams = new URLSearchParams(clickTargetURL.search),
-        linkedNoteId = urlParams.get('noteId');
+        linkedNoteId = urlParams.get('linkedNoteId');
         console.log("Params: ", urlParams);
         console.log("URL: ", clickTargetURL);
         console.log("ID: ", linkedNoteId);
