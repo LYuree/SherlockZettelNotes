@@ -121,6 +121,15 @@ export default class NotesView{
                 bubbles: true,
                 cancelable: true,
             });
+            // the reason why the decision was made to
+            // manually invoke the 'input' event
+            // is it seems like unless such an event
+            // is fired on the link-input field,
+            // the ql-action (save) button just doesn't
+            // save the changes to href;
+            // and here the value for the input is set not
+            // through users input, but rather via js
+            // (hence the 'input' even doesn't occur)
             this.qlLinkInput.dispatchEvent(event);
 
             // if(item.tagName != "li"){
@@ -152,9 +161,15 @@ export default class NotesView{
             clickEvent.preventDefault();
             const eventTarget = clickEvent.target,
                 targetClassList = clickEvent.target.classList,
-                targetTagName = eventTarget.tagName.toLowerCase(),
-                targetParentClassList = eventTarget.parentNode.classList;
-                // console.log(eventTarget);
+                targetTagName = eventTarget.tagName.toLowerCase();
+                // targetParentClassList = eventTarget.parentNode.classList;
+                console.log(eventTarget);
+            let eventTargetLinkElement = eventTarget;
+            while(eventTargetLinkElement != null && eventTargetLinkElement.tagName.toLowerCase() != "a"){
+                eventTargetLinkElement = eventTargetLinkElement.parentNode;
+                console.log(eventTargetLinkElement.tagName.toLowerCase());
+            }
+            console.log(eventTargetLinkElement);
             if(targetTagName == "a"){
                 if(this.editMode == true){
                     if(targetClassList.contains("ql-preview")){
@@ -217,13 +232,25 @@ export default class NotesView{
                         eventTargetURL = new URL(eventTarget.href),
                         eventTargetURLHref = eventTargetURL.href;
                         console.log(eventTargetURLHref, appsHref);
-                        // console.log(eventTargetURLHref.indexOf(appsHref));
-                        // console.log(eventTargetURLHref.indexOf(appsHref));
-                        if(eventTargetURLHref.indexOf(appsHref) != -1)
-                            this._visitLinkedNote(eventTargetURL);
-                        else
-                            this._visitExternalWebSite(eventTargetURL);
+                    // console.log(eventTargetURLHref.indexOf(appsHref));
+                    // console.log(eventTargetURLHref.indexOf(appsHref));
+                    if(eventTargetURLHref.indexOf(appsHref) != -1)
+                        this._visitLinkedNote(eventTargetURL);
+                    else
+                        this._visitExternalWebSite(eventTargetURL);
                 }
+            }
+            else if (eventTargetLinkElement != null){
+                const appsHref = window.location.href,
+                    eventTargetLinkElementURL = new URL(eventTargetLinkElement.href),
+                    eventTargetLinkElementHref = eventTargetLinkElementURL.href;
+                    console.log(eventTargetLinkElementHref, appsHref);
+                // console.log(eventTargetURLHref.indexOf(appsHref));
+                // console.log(eventTargetURLHref.indexOf(appsHref));
+                if(eventTargetLinkElementHref.indexOf(appsHref) != -1)
+                    this._visitLinkedNote(eventTargetLinkElementURL);
+                else
+                    this._visitExternalWebSite(eventTargetLinkElementURL);
             }
         });
 
