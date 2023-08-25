@@ -183,8 +183,8 @@ export default class NotesView{
             const blurRelatedTarget = blurEvent.relatedTarget;
             if(blurRelatedTarget == null || (!blurRelatedTarget.classList.contains("notes__body__editor__drop_down_menu__list__item")
                 && !blurRelatedTarget.classList.contains("notes__body__editor__drop_down_menu__list")
-                && !blurRelatedTarget.classList.contains("notes__body__editor__drop_down_menu"
-                && !blurRelatedTarget.classList.contains("ql-tooltip")))){
+                && !blurRelatedTarget.classList.contains("notes__body__editor__drop_down_menu")
+                && !blurRelatedTarget.classList.contains("ql-tooltip"))){
                 this.qlDropDownMenu.style.display = 'none';
                 this.qlTooltip.classList.remove('active');
             }

@@ -922,6 +922,8 @@ div.note__list-item {
     overflow-y: scroll;
     max-height: 8rem;
     background-color: white;
+    box-shadow: 2px 2px 10px black;
+    border-radius: 2px;
 }
 
 .ql-tooltip.active {
@@ -930,10 +932,11 @@ div.note__list-item {
 
 .notes__body__editor__drop_down_menu__list {
     list-style-type: none;
+    padding: .25rem;
 }
 
 .notes__body__editor__drop_down_menu__list li {
-    border: 1px solid black;
+    /* border: 1px solid black; */
     cursor: pointer;
 }
 
@@ -943,8 +946,9 @@ div.note__list-item {
 
 .notes__body__editor__drop_down_menu__list li p{
     text-overflow: ellipsis;
-    width: 17ch;
-    max-width: 17ch;
+    width: 50ch;
+    width: 50ch;
+    margin: 0;
 }
 
 div.notes__preview__top_section {
