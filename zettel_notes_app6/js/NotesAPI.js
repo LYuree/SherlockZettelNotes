@@ -7,6 +7,7 @@ export default class NotesAPI{
     static getKeywordsByUsersUrl = './php/get_keywords_by_users.php';
     static getUserEntryUrl = './php/get_user.php';
     static sendEmailUrl = './php/email_send.php'
+    static toggleAccountPublicityUrl = './php/toggle_user_publicity.php';
 
 
     static sendEmail(email, activationCode){
@@ -116,6 +117,26 @@ export default class NotesAPI{
         xhr.send();
         console.log(usersAndKeywords);
         return usersAndKeywords;
+    }
+
+    static toggleAccountPublicity(username){
+        const xhr = new XMLHttpRequest(),
+            params = `username=${username}`;
+        xhr.open('POST', this.toggleAccountPublicityUrl, false);
+        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        // possible result values:
+        // null (failed to proceed);
+        //  true (account is public);
+        //  false (account is private);
+        let accessOpen = null;
+        xhr.onreadystatechange = () => {
+            if(xhr.readyState === 4 && xhr.status === 200){
+                console.log(xhr.responseText);
+                accessOpen = JSON.parse(xhr.response);
+            }
+        }
+        xhr.send(params);
+        return accessOpen;
     }
 
     // static getAllNotes(username, password){
