@@ -8,6 +8,9 @@
     src: url('../fonts/B52.woff');
 }
 
+:root {
+    --dark-green: #336b75;
+}
 
 html,
 body{
@@ -155,6 +158,11 @@ body {
     margin: 1.5rem 0;
 }
 
+/* .modal__rake_window__publicity__button {
+    border: none !important;
+    outline: none !important;
+} */
+
 #modal__rake_window section {
     border: 1px solid black;
     margin: 0 .5rem;
@@ -170,6 +178,7 @@ body {
 #modal__rake_window tr,
 #modal__rake_window th{
     border: 1px solid black;
+    width: 14ch;
 }
 
 #modal__rake_window table {
@@ -215,12 +224,24 @@ body {
 }
 
 .modal__rake_window__users_keywords__refresh_keywords_button,
-.modal__rake_window__cowork_candidates__refresh_candidates_button {
+.modal__rake_window__cowork_candidates__refresh_candidates_button,
+.modal__rake_window__publicity_button {
     width: 100%;
     height: 2rem;
     position: relative;
     bottom: -0;
+    border: none;
 }
+
+.modal__rake_window__publicity_button {
+    display: inline;
+    /* width: initial; */
+}
+
+
+/* .modal__rake_window__cowork_candidates__refresh_candidates_button {
+
+} */
 
 
 .modal__rake_window__user_info img,
@@ -325,7 +346,10 @@ body {
 /* .modal__rake_window__button_wrapper, */
 .modal__sign-in__button-wrapper,
 .modal__sign-up__button-wrapper,
-.notes__preview__top_section__button-wrapper {
+.modal__rake_window__cowork_candidates__refresh_candidates_button
+/* .modal__rake_window__button_wrapper, */
+/* .modal__rake_window__publicity_button-wrapper */
+ {
     background-image: url("../images/blank_stamp6v3.png");
     background-size: 100%;
     background-repeat: no-repeat;
@@ -333,6 +357,10 @@ body {
     display: inline-block;
     position: relative;
     padding: 0.25rem 0.25rem;    
+}
+
+.modal__rake_window__publicity_button-wrapper {
+    display: inline-block;
 }
 
 .modal__sign-up__button-wrapper .modal__sign-up__button,
@@ -355,6 +383,16 @@ body {
 .fas:hover {
     /* box-shadow: 0 0 15px #5c3208 inset; */
     box-shadow: 0 0 20px #9b4e01 inset;
+}
+
+.far.fa-question-circle {
+    cursor: pointer;
+    font-size: 1.5em;
+    vertical-align: middle;
+}
+
+.far.fa-question-circle:hover {
+    color: var(--dark-green);
 }
 
 
@@ -545,7 +583,8 @@ body {
 
 .notes__sidebar__management__panel *,
 .notes__delete,
-.modal__rake_window__background__close_button,
+.modal__rake_window__bacground__close_button,
+/* .modal__rake_window__publicity_button, */
 .modal__sign-in__button,
 .modal__sign-up__button,
 #modal__sign-in input,
@@ -555,7 +594,7 @@ body {
     background: transparent;
     outline: none;
     border-radius: 5px;
-    padding: 0.1rem;
+    padding: 0.6rem 0.4rem;
     /* border-radius: 6px; */
     
 }
@@ -715,10 +754,15 @@ small {
 .modal__rake_window__users_keywords__refresh_keywords_button,
 .modal__rake_window__cowork_candidates__refresh_candidates_button,
 .modal__rake_window__background__close_button,
+.modal__rake_window__publicity_button,
 button {
     cursor: pointer;
     outline: none;
     background: transparent;
+}
+
+button.modal__rake_window__publicity_button {
+    outline: auto;
 }
 
 .notes__add{

@@ -73,11 +73,21 @@ export default class App{
         this.toggleVisibilityBtn1 = document.querySelector('.modal__sign-in__input-wrapper__toggle-visibility__img1');
         this.toggleVisibilityBtn2 = document.querySelector('.modal__sign-in__input-wrapper__toggle-visibility__img2');
         this.toggleVisibilityBtn3 = document.querySelector('.modal__sign-in__input-wrapper__toggle-visibility__img3');
+        this.publicityBtn = document.querySelector('.modal__rake_window__publicity_button');
 
 
         window.onbeforeunload = () => {
             
         };
+
+        this.publicityBtn.addEventListener('click', () => {
+            const accessOpen = NotesAPI.toggleAccountPublicity(this.username);
+            if(accessOpen != null && accessOpen != undefined) alert(`Поздравляем! Доступ к Вашим ключевым словам изменён на: ${(accessOpen) ? 'ОТКРЫТЫЙ (приложение может рекомендовать Вас как коллегу другому клиенту со схожим набором ключ. слов)' :
+                'ЗАКРЫТЫЙ (приложение НЕ ИМЕЕТ доступа к Вашим ключевым словам и не будет рекомендовать другим клиентам сотрудничество с Вами).'}`);
+            else alert(`Ай-ай-ай! Кажется, возникли проблемы при изменении
+                доступа к Вашим ключевым словам. Возможно, стоит
+                повторить попытку позже?`);
+        });
 
         this.toggleVisibilityBtn1.addEventListener('click', ()=>{
             if (this.modalSignInPassword.type === "password") {
@@ -519,7 +529,7 @@ export default class App{
         this._clearChildNodes(this.modalRakeWindowCoworkCandidatesTable);
         const rowClass = "modal__rake_window__cowork_candidates__table_row";
         this._createTableRowHTML(this.TH, this.modalRakeWindowCoworkCandidatesTable,
-            3, rowClass, ["Ник", "Общие<wbr>слова", "Сходство<wbr>иерархии"]);
+            3, rowClass, ["Пользователь", "Общие<br>слова", "Сходство<wbr>иерархий"]);
         for (let user of usersWithKeywords){
             let clientsKeywords = clientWithKeywords.keywords;
             let usersKeywords = user.keywords;
@@ -581,8 +591,10 @@ export default class App{
                     SpearmanCorrelation = 1 - 6*sumSqrDif/(matchesCount*(matchesCount**2 - 1));
                 }
             }
+            console.log(user.email, user.username);
+            const nameCellHTML = `<a href=\'mailto:${user.email}\'>${user.username}</a>`;
             this._createTableRowHTML(this.TD, this.modalRakeWindowCoworkCandidatesTable,
-                3, rowClass, [user.username, matchesCount, SpearmanCorrelation.toFixed(2)]);
+                3, rowClass, [nameCellHTML, matchesCount, SpearmanCorrelation.toFixed(2)]);
             
         }
     }
@@ -651,7 +663,8 @@ export default class App{
             const dataCell = document.createElement(`${cellTag}`);
             dataCell.classList += rowClass;
             dataCell.innerHTML = cellValues[i];
-            dataCell.setAttribute('title', cellValues[i]);
+            const noTagValue = (typeof cellValues[i] == 'string') ? this._stripHTMLTags(cellValues[i]) : cellValues[i];
+            dataCell.setAttribute('title', noTagValue);
             newRow.appendChild(dataCell);
         }
         parentalTable.appendChild(newRow);
