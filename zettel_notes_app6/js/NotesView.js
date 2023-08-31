@@ -10,6 +10,7 @@ export default class NotesView{
         this.noteListItemsArray = this.root.getElementsByClassName('note__list-item');
         this.activeSmallTitle = null;
         this.activeSmallBody = null;
+        this.activeSmallBodyHidden = null;
         this.activeSmallUpdated = null;
         this.displayTitle = this.root.querySelector('.notes__title_div');
         this.inputTitle = this.root.querySelector('.notes__title_input');
@@ -124,14 +125,14 @@ export default class NotesView{
                 targetClassList = clickEvent.target.classList,
                 targetTagName = eventTarget.tagName.toLowerCase();
                 // targetParentClassList = eventTarget.parentNode.classList;
-                console.log(eventTarget);
+                // console.log(eventTarget);
             let eventTargetLinkElement = eventTarget;
             while(eventTargetLinkElement && eventTargetLinkElement.tagName &&
                     eventTargetLinkElement.tagName.toLowerCase() != "a"){
                 eventTargetLinkElement = eventTargetLinkElement.parentNode;
                 // console.log(eventTargetLinkElement.tagName.toLowerCase());
             }
-            console.log(eventTargetLinkElement);
+            // console.log(eventTargetLinkElement);
             if(targetTagName == "a"){
                 if(this.editMode == true){
                     if(targetClassList.contains("ql-preview")){
@@ -275,6 +276,7 @@ export default class NotesView{
 
             this.noteAddBtn.addEventListener('click', () => {
                 this.onNoteAdd();
+                // this.updateActiveNote();
             });
 
             // this.inputTitle.addEventListener('blur', () => {
@@ -308,17 +310,19 @@ export default class NotesView{
                 // console.log(this.quill);
                 // this.bodyEditor.innerHTML = this.inputBody.innerHTML;
                 if(this.editMode == false){
-                    console.log(this.displayTitle, this.displayBody);
+                    // console.log(this.displayTitle, this.displayBody);
                     this.inputTitle.value = this.displayTitle.innerHTML;
                     this.qlEditor.innerHTML = this.displayBody.innerHTML;
                     this.editBtn.innerHTML = "Сохранить";
                     this._toggleEditMode(true);
                 }
                 else {
-                    this.onNoteEdit();
-                    this.displayTitle.innerHTML = this.inputTitle.value;
-                    this.displayBody.innerHTML = this.qlEditor.innerHTML;
-                    this._toggleEditMode(false);
+                    const changesApplied = this.onNoteEdit();
+                    if(changesApplied){
+                        this.displayTitle.innerHTML = this.inputTitle.value;
+                        this.displayBody.innerHTML = this.qlEditor.innerHTML;
+                        this._toggleEditMode(false);
+                    }
                 }
             });
     }
@@ -416,9 +420,9 @@ export default class NotesView{
     _visitLinkedNote(clickTargetURL){
         const urlParams = new URLSearchParams(clickTargetURL.search),
         linkedNoteId = urlParams.get('linkedNoteId');
-        console.log("Params: ", urlParams);
-        console.log("URL: ", clickTargetURL);
-        console.log("ID: ", linkedNoteId);
+        // console.log("Params: ", urlParams);
+        // console.log("URL: ", clickTargetURL);
+        // console.log("ID: ", linkedNoteId);
         if(linkedNoteId != null && linkedNoteId != undefined){
             this.activeNoteId = linkedNoteId;
             const linkedNote = this._searchHTMLCollection(this.noteListItemsArray, linkedNoteId);
@@ -567,7 +571,7 @@ export default class NotesView{
         // console.log(notesMatrix.length);
         if(m > 0){
             for(let note of notesMatrix){
-                console.log(notesMatrix);
+                // console.log(notesMatrix);
                 this.createListItemHTML(note['id'], note['name'], note['note_text'], note['creation_date']);
             }
         }

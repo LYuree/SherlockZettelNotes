@@ -8,6 +8,7 @@ export default class NotesAPI{
     static getUserEntryUrl = './php/get_user.php';
     static sendEmailUrl = './php/email_send.php'
     static toggleAccountPublicityUrl = './php/toggle_user_publicity.php';
+    static updateUserMemoryLimitUrl = './php/update_user_memory_limit.php';
 
 
     static sendEmail(email, activationCode){
@@ -38,12 +39,7 @@ export default class NotesAPI{
         let response = null;
         xhr.onreadystatechange = () => {
             if(xhr.readyState == 4 && xhr.status == 200){
-                //?
-                console.log('query for user creation processed');
-                // console.log(xhr.response);
-                console.log(xhr.response);
                 response = JSON.parse(xhr.response);
-                console.log("Response inside of the onreadystatechange callback: ", response);
             }
         }
         xhr.send(params);
@@ -59,7 +55,6 @@ export default class NotesAPI{
         let userEntry = new Object(); 
         xhr.onreadystatechange = () => {
             if(xhr.readyState == 4 && xhr.status == 200) {
-                console.log(xhr.response);
                 userEntry = JSON.parse(xhr.response);
             }
         }        
@@ -76,7 +71,6 @@ export default class NotesAPI{
         let response = undefined; 
         xhr.onreadystatechange = () => {
             if(xhr.readyState == 4 && xhr.status == 200) {
-                console.log(xhr.response);
                 response = JSON.parse(xhr.response);
             }
         }        
@@ -94,7 +88,6 @@ export default class NotesAPI{
         let keywords = [];
         xhr.onreadystatechange = () => {
             if(xhr.readyState == 4 && xhr.status == 200) {
-                console.log(xhr.response);
                 keywords = JSON.parse(xhr.response);
             }
         }        
@@ -155,7 +148,7 @@ export default class NotesAPI{
     //     return notesMatrix;
     // }
 
-    static noteSave(idToSave = -1, inputTitle, inputBody, username){
+    static noteSave(idToSave = -1, inputTitle, inputBody, username, newMemoryLimit){
         console.log("NotesAPI, notesave, username: ", username);
         inputTitle = this.shieldApostrophes(inputTitle);
         inputBody = this.shieldApostrophes(inputBody);
@@ -163,7 +156,8 @@ export default class NotesAPI{
             noteId = idToSave,
             noteTitle = inputTitle,
             noteText = inputBody,
-            params = "idToSave="+ noteId + "&noteTitle=" + noteTitle + "&noteText=" + noteText + "&username=" + username;
+            params = "idToSave="+ noteId + "&noteTitle=" + noteTitle + "&noteText="
+                + noteText + "&username=" + username + "&newMemoryLimit=" + newMemoryLimit;
         xhr.open('POST', this.url, false);
         xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');    
         let lastNoteId = null;
@@ -202,7 +196,7 @@ export default class NotesAPI{
             noteId = idToRemove,
             params = "idToDelete=" + noteId + "&username=" + username;
         console.log(params);
-        console.log(this);
+        // console.log(this);
         console.log(this.url);
         xhr.open('POST', NotesAPI.url, true);    
         xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');    
@@ -214,6 +208,22 @@ export default class NotesAPI{
         }
         xhr.send(params);
         // eventTarget.parentNode.remove();
+    }
+
+    static updateUserMemoryLimit(username, memoryLimitKB){
+        const xhr = new XMLHttpRequest(),
+            params = "username=" + username + "&newMemoryLimit=" + memoryLimitKB;
+        xhr.open('POST', this.updateUserMemoryLimitUrl, false);
+        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        let updateUserMemoryLimitResponse = null;
+        xhr.onreadystatechange = () => {
+            if(xhr.readyState == 4 && xhr.status == 200){
+                updateUserMemoryLimitResponse = JSON.parse(xhr.response);
+            }
+        }
+        xhr.send(params);
+        console.log(updateUserMemoryLimitResponse);
+        return updateUserMemoryLimitResponse;
     }
 
     // static refreshUsersKeywords(){

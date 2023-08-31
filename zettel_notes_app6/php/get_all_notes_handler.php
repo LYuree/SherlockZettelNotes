@@ -27,6 +27,8 @@ if(!empty($_POST) && isset($_POST['username'])){
             // echo "mkaaaay, trying to insert your little pile of gibberish...";
             // $idToSave = $_POST['idToSave'];
             if($_POST['idToSave'] == -1)
+                // default will stand for the next number
+                // of the auto-increment sequence
                 $idToSave = 'default';
             else
                 $idToSave = $_POST['idToSave'];
@@ -38,9 +40,15 @@ if(!empty($_POST) && isset($_POST['username'])){
                 creation_date = CURRENT_TIMESTAMP(0),
                 note_text = '$noteText' RETURNING id";
             // echo $query_string;
+            $username = $_POST['username'];
+            $newMemoryLimit = $_POST['newMemoryLimit'];
+
+            $updateQuery = "UPDATE users SET memory_limit_kb = $newMemoryLimit WHERE name = '$username'";
+            // print_r($query_string);
             $insertionStatement = $pdo->query($query_string);
             $insertionResult = $insertionStatement->fetch(PDO::FETCH_ASSOC);
             $lastNoteId = $insertionResult['id'];
+            $pdo->query($updateQuery);
             // echo "$lastNoteId";
             echo json_encode($lastNoteId);
         }
