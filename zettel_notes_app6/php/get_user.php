@@ -8,7 +8,7 @@ if(!empty($_POST) && isset($_POST['username'])){
         $username = $_POST['username'];
         //AUTHORIZATION
         try{
-            $results = $pdo->query("SELECT name, password, email, active FROM users
+            $results = $pdo->query("SELECT name, password, email, active, public, memory_limit_kb FROM users
             WHERE name = '$username'
             OR
             email = '$username'");
@@ -36,6 +36,8 @@ if(!empty($_POST) && isset($_POST['username'])){
             else{
                 $userEntry = new stdClass();
                 $userEntry->active = true;
+                $userEntry->memoryLimitKB = $row['memory_limit_kb'];
+                $userEntry->public = $row['public'];
                 echo json_encode($userEntry);
                 exit;
             }

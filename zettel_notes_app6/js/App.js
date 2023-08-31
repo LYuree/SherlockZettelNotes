@@ -14,6 +14,7 @@ export default class App{
         this.activeSmallBody = null;
         this.activeSmallTitle = null;
         this.username = null;
+        this.memoryLimitKB = null;
 
         // table cell tag constants
 
@@ -53,6 +54,9 @@ export default class App{
         this.modalRakeWindowRefreshCoworkCandidatesLoader = document.querySelector('.modal__rake_window__cowork_candidates__loader');
         this.modalRakeWindowKeywordsTable = document.querySelector('.modal__rake_window__users_keywords__table');
         this.modalRakeWindowCoworkCandidatesTable = document.querySelector('.modal__rake_window__cowork_candidates__table');
+        this.modalRakeWindowUsername = this.modalRakeWindow.querySelector('.modal__rake_window__username');
+        this.modalRakeWindowRegistrationDate = this.modalRakeWindow.querySelector('.modal__rake_window__registration_date');
+        this.modalRakeWindowPublicity = this.modalRakeWindow.querySelector('.modal__rake_window__publicity');
         this.modalSignInBtn = document.querySelector('.modal__sign-in__button');
         this.modalSignUpBtn = document.querySelector('.modal__sign-up__button');
         this.modalSignInLogIn = document.querySelector('.modal__sign-in__login-input');
@@ -73,17 +77,32 @@ export default class App{
         this.toggleVisibilityBtn1 = document.querySelector('.modal__sign-in__input-wrapper__toggle-visibility__img1');
         this.toggleVisibilityBtn2 = document.querySelector('.modal__sign-in__input-wrapper__toggle-visibility__img2');
         this.toggleVisibilityBtn3 = document.querySelector('.modal__sign-in__input-wrapper__toggle-visibility__img3');
-        this.publicityBtn = document.querySelector('.modal__rake_window__publicity_button');
+        this.modalRakeWindowPublicityBtn = document.querySelector('.modal__rake_window__publicity_button');
 
 
         window.onbeforeunload = () => {
             
         };
 
-        this.publicityBtn.addEventListener('click', () => {
+        this.modalRakeWindowPublicityBtn.addEventListener('click', () => {
             const accessOpen = NotesAPI.toggleAccountPublicity(this.username);
-            if(accessOpen != null && accessOpen != undefined) alert(`Поздравляем! Доступ к Вашим ключевым словам изменён на: ${(accessOpen) ? 'ОТКРЫТЫЙ (приложение может рекомендовать Вас как коллегу другому клиенту со схожим набором ключ. слов)' :
-                'ЗАКРЫТЫЙ (приложение НЕ ИМЕЕТ доступа к Вашим ключевым словам и не будет рекомендовать другим клиентам сотрудничество с Вами).'}`);
+            // if(accessOpen != null && accessOpen != undefined) {
+            //     alert(`Поздравляем! Доступ к Вашим ключевым словам изменён на: ${(accessOpen) ? 'ОТКРЫТЫЙ (приложение может рекомендовать Вас как коллегу другому клиенту со схожим набором ключ. слов)' :
+            //     'ЗАКРЫТЫЙ (приложение НЕ ИМЕЕТ доступа к Вашим ключевым словам и не будет рекомендовать другим клиентам сотрудничество с Вами).'}`);
+            //     this.modalRakeWindowPublicityBtn.innerText = 
+            // }
+            if(accessOpen == true){
+                alert(`Поздравляем! Доступ к Вашим ключевым словам изменён на: 'ОТКРЫТЫЙ' (приложение может рекомендовать Вас как коллегу другому клиенту со схожим набором ключ. слов)`);
+                this.modalRakeWindowPublicity.innerText = "Публичный аккаунт";
+                this.modalRakeWindowPublicityBtn.innerText = 'Сделать аккаунт закрытым';
+                Cookies.set('publicity', true, 1);
+            }
+            else if(accessOpen == false){
+                alert(`Поздравляем! Доступ к Вашим ключевым словам изменён на: ЗАКРЫТЫЙ (приложение НЕ ИМЕЕТ доступа к Вашим ключевым словам и не будет рекомендовать другим клиентам сотрудничество с Вами).`);
+                this.modalRakeWindowPublicity.innerText = "Закрытый аккаунт";
+                this.modalRakeWindowPublicityBtn.innerText = 'Сделайте свой аккаунт публичным';
+                Cookies.set('publicity', false, 1);
+            }
             else alert(`Ай-ай-ай! Кажется, возникли проблемы при изменении
                 доступа к Вашим ключевым словам. Возможно, стоит
                 повторить попытку позже?`);
@@ -184,16 +203,28 @@ export default class App{
                         // notesArray = NotesAPI.getNotes(login, password);
                         let response = NotesAPI.getNotes(login, password);
                         if(response['verified'] == true){                          
+                            this.memoryLimitKB = +userEntry['memoryLimitKB'];
+                            console.log(this.memoryLimitKB);
                             this.view = new NotesView(this, this.root, this._handlers());
                             this._setNotes(response['notes']);                            
-                            Cookies.set('username', login, 1);
                             this.username = login;
+                            Cookies.set('username', login, 1);
                             Cookies.set('password', password, 1);
                             Cookies.set('authenticated', true, 1);
                             // new
                             this._initiateKeywords();
                             //
                             //loading...
+                            if(userEntry['public'] == true) {
+                                this.modalRakeWindowPublicityBtn.innerText = 'Сделать аккаунт закрытым';
+                                this.modalRakeWindowPublicity.innerText = 'Публичный аккаунт';
+                                Cookies.set('publicity', true, 1);
+                            }
+                            else {
+                                this.modalRakeWindowPublicity.innerText = 'Закрытый аккаунт';
+                                Cookies.set('publicity', false, 1);
+                            }
+                            this.modalRakeWindowUsername.innerText = this.username;
                             this.modalSignInBackground.classList.remove('active');
                             this.modalSignIn.classList.remove('active');
                             this.view.notesSidebar.classList.add('active');
@@ -363,15 +394,26 @@ export default class App{
                 this._setNotes(response['notes']);
                 // Cookies.set('username', login, 1);
                 this.username = Cookies.get('username');
+                this.modalRakeWindowUsername.innerText = this.username;
                 // Cookies.set('password', password, 1);
                 Cookies.set('authenticated', true, 1);
                 // new
                 this._initiateKeywords();
+                // const userEntry = NotesAPI.getUserEntry('username');
                 //
                 //loading...
                 this.modalSignInBackground.classList.remove('active');
                 this.modalSignIn.classList.remove('active');
                 this.view.notesSidebar.classList.add('active');
+                const userEntry = NotesAPI.getUserEntry(this.username, this.password),
+                userPublicity = userEntry['public'];
+                console.log("publicity: ", userPublicity);
+                this.modalRakeWindowPublicity.innerText = (userPublicity) ? "Публичный аккаунт" : "Закрытый аккаунт";
+                this.modalRakeWindowPublicityBtn.innerText = (userPublicity) ? "Сделать аккаунт закрытым" : "Сделайте свой аккаунт публичным";
+                // Cookies.set('publicity', userPublicity, 1);
+                this.memoryLimitKB = +userEntry['memoryLimitKB'];
+                // console.log(this.memoryLimitKB);
+                // Cookies.set('memoryLimitKB', this.memoryLimitKB, 1);
             }
         }
     }
@@ -447,7 +489,7 @@ export default class App{
         console.log("SETTING YOUR NOTES");
         this.notesMatrix = notesMatrix;
         this.view.initiateNotesList(notesMatrix);
-        console.log(this.notesMatrix);
+        // console.log(this.notesMatrix);
         // this.view.updatePreviewVisibility(true);
     }
 
@@ -457,28 +499,17 @@ export default class App{
     }
 
     _initiateKeywords(){
-        // console.log(this);
-        console.log(Cookies.get('authenticated'));
-        console.log(Cookies.get('authenticated') === "true" && this.username !== null);
         if(Cookies.get('authenticated') === "true" && this.username !== null){
             const keywords = NotesAPI.getClientsKeywords(this.username);
-            // copied from _refreshUsersKeywords
-            console.log(keywords);
             const keywordTable = this.modalRakeWindowKeywordsTable;
-            this._clearChildNodes(keywordTable);
             const rowClass = "modal__rake_window__users_keywords__table_row";
+            this._clearChildNodes(keywordTable);
             this._createTableRowHTML(this.TH, keywordTable, 3, rowClass, ['Слово', 'Встреча<wbr>емость', 'Ранг']);
             for (let word of keywords){
-                // console.log(word);
-                // this._createTableRowHTML(keywordTable, 1, rowClass, [word['keyword']]);
                 this._createTableRowHTML(this.TD, keywordTable, 3, rowClass, [word['keyword'], word['occurrences'],
                     word['rank']]);
             }
-            // this.modalRakeWindowRefreshKeywordsLoaderBackgr.classList.remove('active');
-            // this.modalRakeWindowRefreshKeywordsLoader.classList.remove('active');
-            // const keywordsString = noteKeywords.join(",");
-            // // console.log("KEYWORDS STRING, APP: ", keywordsString);
-            // NotesAPI.pushKeywords(this.username, note['id'], keywordsString);
+            this.modalRakeWindowRefreshKeywordsLoaderBackgr.classList.remove('active');
         }
     }
 
@@ -655,7 +686,6 @@ export default class App{
     // }
     
     _createTableRowHTML(cellTag, parentalTable, numberOfCells, rowClass, cellValues){
-        console.log("Creaing a table row, cellValues: ", cellValues);
         const newRow = document.createElement("tr");
         // const cells = new Array();
         // cellValues is an array
@@ -669,6 +699,15 @@ export default class App{
         }
         parentalTable.appendChild(newRow);
     }
+
+    _byteSize(str){
+        return new Blob([str]).size;
+    }
+
+    _byteSizeKB(str){
+        return new Blob([str]).size/1024.0;
+    }
+
 
     _handlers(){
         return {
@@ -687,32 +726,80 @@ export default class App{
                 this._setActiveNote(noteId);
             },
 
-            onNoteAdd: () => {     
-                const lastId = NotesAPI.noteSave(-1, "Новая заметка", "Введите текст...", this.username);
-                // console.log("onNoteAdd, id to add: ", lastId);
-                const currDate = NotesView.getCurrentDateString();
-                this.view.createListItemHTML(lastId, "Новая заметка", "Введите текст...",
-                    currDate);
-                this.notesMatrix.push({id: lastId, name: "Новая заметка", note_text: "Введите текст...",
-                    creation_date: currDate});
-                // console.log(this.notesMatrix);
+            onNoteAdd: () => {
+                const title = "Новая заметка",
+                    body = "Введите текст...",
+                    newMemoryLimit = this.memoryLimitKB - this._byteSizeKB(title + body);
+                console.log("Byte size: ", this._byteSize(title + body));
+                console.log("Byte size (KB): ", this._byteSizeKB(title + body));
+                console.log(this.memoryLimitKB);
+                if(newMemoryLimit < 0) alert (`Лимит памяти превышен на ${Math.abs(newMemoryLimit)} КБ. Изменения не будут сохранены.`);
+                else {
+                    // this.memoryLimitGB
+                    const lastId = NotesAPI.noteSave(-1, "Новая заметка", "Введите текст...",
+                        this.username, newMemoryLimit);
+                    // console.log("onNoteAdd, id to add: ", lastId);
+                    const currDate = NotesView.getCurrentDateString();
+                    this.view.createListItemHTML(lastId, "Новая заметка", "Введите текст...",
+                        currDate);
+                    this.notesMatrix.push({id: lastId, name: "Новая заметка", note_text: "Введите текст...",
+                        creation_date: currDate});
+                    this.memoryLimitKB = newMemoryLimit;
+                    console.log(`Memory limit post change: ${this.memoryLimitKB}`);
+                    // console.log(this.notesMatrix);
+                }
             },
 
             onNoteEdit: () => {
-                console.log(this.view.qlEditor);
                 const newTitleText = this.view.inputTitle.value.trim(),
                     newBodyText = this.view.qlEditor.innerHTML.trim(),
-                    newSmallBodyText = this.view.qlEditor.innerText.trim(),
-                    newSmallBodyHiddenHTML = this.view.qlEditor.innerHTML.trim();
+                    newSmallBodyText = this.view.qlEditor.innerText.trim();
+                const oldBodySize = this._byteSizeKB(this.view.displayBody.innerHTML),
+                    oldTitleSize = this._byteSizeKB(this.view.displayTitle.innerText),
+                    newBodySize = this._byteSizeKB(newBodyText),
+                    newTitleSize = this._byteSizeKB(newTitleText);
+                console.log("Old data: ", this.view.displayBody.innerHTML, this.view.displayTitle.innerText);
+                console.log("Old sizes: ", oldBodySize, oldTitleSize);
+                console.log("New data: ", newBodyText, newTitleText);
+                console.log("New sizes: ", newBodySize, newTitleSize);
+                const bodySizeDif = newBodySize - oldBodySize,
+                    titleSizeDif = newTitleSize - oldTitleSize,
+                    totalDif = bodySizeDif + titleSizeDif;
+                console.log("Total difference: ", totalDif);
+                const newMemoryLimit = this.memoryLimitKB - totalDif;
+                let changesApplied = false;
+                if(newMemoryLimit < 0) alert(`Лимит памяти превышен на ${Math.abs(newMemoryLimit)} КБ. Изменения не будут сохранены.`);
+                else {
+                    console.log(this.view.qlEditor);
+                    const newSmallBodyHiddenHTML = this.view.qlEditor.innerHTML.trim();
                     console.log("onNoteEdit, activeNoteId: ", this.activeNoteId);
-                NotesAPI.noteSave(this.activeNoteId, newTitleText, newBodyText, this.username);
-                const notesMatrixItem = this.notesMatrix.find(note => note['id'] == this.activeNoteId)
-                notesMatrixItem['note_text'] = newBodyText;
-                notesMatrixItem['name'] = newTitleText;
-                this.view.updateSmallActiveNote(newTitleText, newSmallBodyText, newSmallBodyHiddenHTML);
+                    console.log(newMemoryLimit);
+                    NotesAPI.noteSave(this.activeNoteId, newTitleText, newBodyText, this.username, newMemoryLimit);
+                    const notesMatrixItem = this.notesMatrix.find(note => note['id'] == this.activeNoteId)
+                    notesMatrixItem['note_text'] = newBodyText;
+                    notesMatrixItem['name'] = newTitleText;
+                    this.view.updateSmallActiveNote(newTitleText, newSmallBodyText, newSmallBodyHiddenHTML);
+                    this.memoryLimitKB = newMemoryLimit;
+                    console.log(this.memoryLimitKB);
+                    changesApplied = true;
+                }
+                return changesApplied;
             },
             
-            onNoteDelete: NotesAPI.noteDelete
+            onNoteDelete: (idToRemove, username) => {
+                const noteToDelete = this.view._searchHTMLCollection(this.notesMatrix, idToRemove),
+                    noteSize = this._byteSizeKB(noteToDelete['note_text']);
+                console.log(noteToDelete);
+                console.log(`Memory limit before deletion: ${this.memoryLimitKB}`);
+                this.memoryLimitKB += noteSize;
+                console.log(`Deleted note byte size: ${noteSize}`);
+                console.log(`Memory limit after note deletion: ${this.memoryLimitKB}`);
+                let updateUserMemoryLimitResponse = NotesAPI.updateUserMemoryLimit(username, this.memoryLimitKB);
+                console.log(updateUserMemoryLimitResponse);
+                if(!updateUserMemoryLimitResponse)
+                    alert('Ай-ай-ай! Кажется, произошла ошибка при обновлении лимита памяти.');
+                NotesAPI.noteDelete(idToRemove, username);
+            }
         }
     }
     //this is meant to prevent the errors 
