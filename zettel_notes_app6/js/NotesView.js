@@ -74,6 +74,8 @@ export default class NotesView{
             // through users input, but rather via js
             // (hence the 'input' even doesn't occur)
             this.qlLinkInput.dispatchEvent(event);
+            this.qlDropDownMenu.style.display = 'none';
+            this.qlTooltip.classList.remove('active');
         });
 
         this.qlLinkInput.addEventListener('input', () => {
@@ -112,7 +114,9 @@ export default class NotesView{
             if(blurRelatedTarget == null || (!blurRelatedTarget.classList.contains("notes__body__editor__drop_down_menu__list__item")
                 && !blurRelatedTarget.classList.contains("notes__body__editor__drop_down_menu__list")
                 && !blurRelatedTarget.classList.contains("notes__body__editor__drop_down_menu")
-                && !blurRelatedTarget.classList.contains("ql-tooltip"))){
+                && !blurRelatedTarget.classList.contains("ql-tooltip")
+                || blurRelatedTarget.classList.contains("notes__preview__top_section__button")
+                || blurRelatedTarget.classList.contains("ql-action"))){
                 this.qlDropDownMenu.style.display = 'none';
                 this.qlTooltip.classList.remove('active');
             }
@@ -147,29 +151,7 @@ export default class NotesView{
                         else this._visitExternalWebSite(eventTargetURL);
                     }
                     else if (targetClassList.contains("ql-action")){
-                        // const notesMatrix = this.App.notesMatrix;
-                        // console.log("action func, this keyword: ", this);
-                        // const qlTooltip = this.root.querySelector(".ql-tooltip");
-                            // linkInput = qlTooltip.querySelector('input'),
-                            // dropDownNotesList = this.root.querySelector('.notes__body__editor__drop_down_notes_list');
-                        // let dropDownNotesListCoords = this.qlDropDownMenu.getBoundingClientRect();
-                        // console.log(dropDownNotesListCoords.top, dropDownNotesListCoords.left);
-                        // console.log(dropDownNotesList);
-                        // this.qlLinkInput.addEventListener('blur', blurEvent => {
-                        //     console.log(blurEvent.relatedTarget);
-                        //     const blurRelatedTarget = blurEvent.relatedTarget;
-                        //     if(blurRelatedTarget == null || (!blurRelatedTarget.classList.contains("notes__body__editor__drop_down_menu__list__item")
-                        //         && !blurRelatedTarget.classList.contains("notes__body__editor__drop_down_menu__list")
-                        //         && !blurRelatedTarget.classList.contains("notes__body__editor__drop_down_menu"
-                        //         && !blurRelatedTarget.classList.contains("ql-tooltip")))){
-                        //         this.qlDropDownMenu.style.display = 'none';
-                        //         this.qlTooltip.classList.remove('active');
-                        //     }
-                        //     else this.qlTooltip.classList.add('active');
-                        //     // else setTimeout(() => {this.qlTooltip.classList.remove('ql-hidden')},
-                        //         // 0);
-                        //     // console.log(this.qlTooltip);
-                        // });
+                        // ???
                     }
                 }
                 else{
@@ -177,8 +159,8 @@ export default class NotesView{
                         eventTargetURL = new URL(eventTarget.href),
                         eventTargetURLHref = eventTargetURL.href;
                         console.log(eventTargetURLHref, appsHref);
-                    // console.log(eventTargetURLHref.indexOf(appsHref));
-                    // console.log(eventTargetURLHref.indexOf(appsHref));
+                    console.log(eventTargetURLHref.indexOf(appsHref));
+                    console.log(eventTargetURLHref.indexOf(appsHref));
                     if(eventTargetURLHref.indexOf(appsHref) != -1)
                         this._visitLinkedNote(eventTargetURL);
                     else
@@ -474,6 +456,7 @@ export default class NotesView{
     }
 
     _toggleEditMode(enable){
+        this.qlTooltip.classList.remove('active');
         // activate edit mode
         if(enable){
             this.editBtn.innerHTML = "Сохранить";
