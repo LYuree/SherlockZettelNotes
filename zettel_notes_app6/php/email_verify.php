@@ -11,7 +11,8 @@ if(!empty($_GET)){
             WHERE token = '$verificationToken'");
             $row = $results -> fetch(PDO::FETCH_ASSOC);
             $username = $row['name'];
-            $update_query_string = "UPDATE users SET active = true
+            $update_query_string = "UPDATE users SET active = true,
+                            memory_limit_kb = default
                             WHERE name = '$username'";
             $pdo->query($update_query_string);
             $pdo->query("DELETE from user_tokens where token = '$verificationToken'");

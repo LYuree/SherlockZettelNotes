@@ -179,7 +179,64 @@
                                 <span class="modal__rake_window__username"></span>
                                 <span class="modal__rake_window__publicity"></span>
                                 <span class="modal__rake_window__memory_limit"></span>
-                                <span class="modal__rake_window__registration_date">Вы с нами с: 2022/22/10</span>
+                                <span class="modal__rake_window__registration_date"></span>
+                                <div class="modal__rake_window__memory_progress_bar__wrapper">
+                                    <div class="modal__rake_window__memory_progress_bar"></div>
+                                </div>
+                                <!-- label? -->
+                                <span class="modal__rake_window__memory_progress_bar_label">1.26 ГБ/ 2 ГБ</span>
+
+
+                                <style>
+                                    .modal__rake_window__memory_progress_bar__wrapper {
+                                        /* width: 100%; */
+                                        background: transparent;
+                                        border: 2px solid black;
+                                        border-radius: .2rem;
+                                        padding: .2rem;
+                                        /* margin-bottom: .25rem; */
+                                        margin: .5rem;
+                                        /* background-color: none; */
+                                    }
+
+                                    .modal__rake_window__memory_progress_bar {
+                                        width: 1%;
+                                        height: .6rem;
+                                        /* margin: .5rem; */
+                                        transition: .35s;
+                                        background-color: black;
+                                    }
+                                    
+                                    .modal__rake_window__memory_progress_bar_label {
+                                        /* text-align: center; */
+                                        /* margin-bottom: .5rem; */
+                                        margin: .5rem;
+                                    }
+                                </style>
+
+
+                                <script>
+                                    var i = 0;
+                                    function move() {
+                                        if (i == 0) {
+                                            i = 1;
+                                            var elem = document.getElementById("myBar");
+                                            var width = 1;
+                                            var id = setInterval(frame, 10);
+                                            function frame() {
+                                            if (width >= 100) {
+                                                clearInterval(id);
+                                                i = 0;
+                                            } else {
+                                                width++;
+                                                elem.style.width = width + "%";
+                                            }
+                                            }
+                                        }
+                                    }
+                                </script>
+
+
                                 <div class="modal__rake_window__user_info__controls">
                                     <div class="modal__rake_window__publicity_button-wrapper">
                                         <button type="submit" class="modal__rake_window__publicity_button">

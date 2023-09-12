@@ -39,6 +39,7 @@ export default class NotesAPI{
         let response = null;
         xhr.onreadystatechange = () => {
             if(xhr.readyState == 4 && xhr.status == 200){
+                console.log(xhr.response);
                 response = JSON.parse(xhr.response);
             }
         }

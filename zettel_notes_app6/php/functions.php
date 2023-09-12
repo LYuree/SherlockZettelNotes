@@ -125,7 +125,7 @@
         // key='.$key.'&email='.$email.'&action=reset" target="_blank">
         // https://www.allphptricks.com/forgot-password/reset-password.php
         // ?key='.$key.'&email='.$email.'&action=reset</a></p>';	
-        $output.='<p><a href="http://localhost:3000/PHP/zettel_notes_app6/php/email_verify.php?verification_code='.$key;
+        $output.='<p><a href="http://localhost:3000/zettel_notes_app6/php/email_verify.php?verification_code='.$key;
         $output.='&action="reset" target="_blank">sherlocknotes.php?verification_code='.$key.'</a></p>';
 
         $output.='<p>-------------------------------------------------------------</p>';
