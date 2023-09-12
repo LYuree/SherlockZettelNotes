@@ -8,7 +8,8 @@ if(!empty($_POST) && isset($_POST['username'])){
         $username = $_POST['username'];
         //AUTHORIZATION
         try{
-            $results = $pdo->query("SELECT name, password, email, active, public, memory_limit_kb FROM users
+            $results = $pdo->query("SELECT name, password, email, active, public,
+            memory_limit_kb, registration_date FROM users
             WHERE name = '$username'
             OR
             email = '$username'");
@@ -38,6 +39,7 @@ if(!empty($_POST) && isset($_POST['username'])){
                 $userEntry->active = true;
                 $userEntry->memoryLimitKB = $row['memory_limit_kb'];
                 $userEntry->public = $row['public'];
+                $userEntry->regDate = $row['registration_date'];
                 echo json_encode($userEntry);
                 exit;
             }

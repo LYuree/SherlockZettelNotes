@@ -533,7 +533,9 @@ export default class NotesView{
         newNote.appendChild(newNoteSmallBody);
         newNote.appendChild(newNoteSmallBodyHidden);
         newNote.appendChild(newNoteSmallUpdated);
-
+        
+        // const newNoteCoords = document.getBoundingClientRect(newNote);
+        // newNote.style.top = newNoteCoords.top
         this.notesContainer.appendChild(newNote);
     }
 

@@ -6,6 +6,8 @@ import Cookies from './js_cookies/js.cookie.mjs'
 
 
 export default class App{
+    static KB = 2097152/2;
+
     constructor(root){
         //these should also be assigned conditionally?
         this.root = root;
@@ -15,7 +17,8 @@ export default class App{
         this.activeSmallTitle = null;
         this.username = null;
         this.memoryLimitKB = null;
-
+        this.registrationDate = null;
+        this.publicity = null;
         // table cell tag constants
 
         Object.defineProperty(this, "TD", {
@@ -55,7 +58,7 @@ export default class App{
         this.modalRakeWindowKeywordsTable = document.querySelector('.modal__rake_window__users_keywords__table');
         this.modalRakeWindowCoworkCandidatesTable = document.querySelector('.modal__rake_window__cowork_candidates__table');
         this.modalRakeWindowUsername = this.modalRakeWindow.querySelector('.modal__rake_window__username');
-        this.modalRakeWindowRegistrationDate = this.modalRakeWindow.querySelector('.modal__rake_window__registration_date');
+        this.modalRakeWindowRegDate = this.modalRakeWindow.querySelector('.modal__rake_window__registration_date');
         this.modalRakeWindowPublicity = this.modalRakeWindow.querySelector('.modal__rake_window__publicity');
         this.modalSignInBtn = document.querySelector('.modal__sign-in__button');
         this.modalSignUpBtn = document.querySelector('.modal__sign-up__button');
@@ -78,6 +81,12 @@ export default class App{
         this.toggleVisibilityBtn2 = document.querySelector('.modal__sign-in__input-wrapper__toggle-visibility__img2');
         this.toggleVisibilityBtn3 = document.querySelector('.modal__sign-in__input-wrapper__toggle-visibility__img3');
         this.modalRakeWindowPublicityBtn = document.querySelector('.modal__rake_window__publicity_button');
+        this.modalRakeWindowMemoryProgressBar = document.querySelector('.modal__rake_window__memory_progress_bar');
+        this.modalRakeWindowMemoryProgressBarLabel = document.querySelector('.modal__rake_window__memory_progress_bar_label');
+
+        this.modalRakeWindowMemoryProgressBar.style.width = (this.memoryLimitKB? (App.KB*2-this.memoryLimitKB)/(App.KB*2)*100.0 + '%' : '0');
+        this.modalRakeWindowMemoryProgressBarLabel.innerText = `${this.memoryLimitKB ? (this.memoryLimitKB/App.KB).toFixed(2) : 0} ГБ / 2.00 ГБ свободно`;
+        // console.log()
 
 
         window.onbeforeunload = () => {
@@ -95,12 +104,14 @@ export default class App{
                 alert(`Поздравляем! Доступ к Вашим ключевым словам изменён на: 'ОТКРЫТЫЙ' (приложение может рекомендовать Вас как коллегу другому клиенту со схожим набором ключ. слов)`);
                 this.modalRakeWindowPublicity.innerText = "Публичный аккаунт";
                 this.modalRakeWindowPublicityBtn.innerText = 'Сделать аккаунт закрытым';
+                this.publicity = !this.publicity;
                 Cookies.set('publicity', true, 1);
             }
             else if(accessOpen == false){
                 alert(`Поздравляем! Доступ к Вашим ключевым словам изменён на: ЗАКРЫТЫЙ (приложение НЕ ИМЕЕТ доступа к Вашим ключевым словам и не будет рекомендовать другим клиентам сотрудничество с Вами).`);
                 this.modalRakeWindowPublicity.innerText = "Закрытый аккаунт";
                 this.modalRakeWindowPublicityBtn.innerText = 'Сделайте свой аккаунт публичным';
+                this.publicity = !this.publicity;
                 Cookies.set('publicity', false, 1);
             }
             else alert(`Ай-ай-ай! Кажется, возникли проблемы при изменении
@@ -158,7 +169,8 @@ export default class App{
         });
 
         this.modalRakeWindowRefreshCandidatesBtn.addEventListener('click', ()=>{
-            this._refreshUsersCoworkCandidates();
+            if(!this.publicity) alert(`Ваш аккаунт является закрытым. Сделайте свой аккаунт публичным, чтобы приложение могло сравнить ваш набор ключевых слов с наборами других пользователей.`);
+            else this._refreshUsersCoworkCandidates();
         });
 
         this.signOutBtn.addEventListener('click', () => {
@@ -196,6 +208,7 @@ export default class App{
                 if((_isAlpha(login) || this._isValidEmail(login)) && !(password.length < 5)){
                     // get user!
                     const userEntry = NotesAPI.getUserEntry(login, password);
+                    this.publicity = userEntry['publicity'];
                     console.log(userEntry);
                     // console.log(`user entry: ${userEntry['active']}`);
                     if(userEntry != null && userEntry['active'] == true) {
@@ -205,6 +218,10 @@ export default class App{
                         if(response['verified'] == true){                          
                             this.memoryLimitKB = +userEntry['memoryLimitKB'];
                             console.log(this.memoryLimitKB);
+                            this.modalRakeWindowMemoryProgressBar.style.width = (this.memoryLimitKB? (App.KB*2-this.memoryLimitKB)/(App.KB*2)*100.0 + '%' : '0');
+                            this.modalRakeWindowMemoryProgressBarLabel.innerText = `${this.memoryLimitKB ? (this.memoryLimitKB/App.KB).toFixed(2) : 0} ГБ / 2.00 ГБ свободно`;
+                            this.registrationDate = userEntry['regDate'];
+                            this.modalRakeWindowRegDate.innerText = `Вы с нами с: ${this.registrationDate}`;
                             this.view = new NotesView(this, this.root, this._handlers());
                             this._setNotes(response['notes']);                            
                             this.username = login;
@@ -218,10 +235,12 @@ export default class App{
                             if(userEntry['public'] == true) {
                                 this.modalRakeWindowPublicityBtn.innerText = 'Сделать аккаунт закрытым';
                                 this.modalRakeWindowPublicity.innerText = 'Публичный аккаунт';
+                                this.publicity = true;
                                 Cookies.set('publicity', true, 1);
                             }
                             else {
                                 this.modalRakeWindowPublicity.innerText = 'Закрытый аккаунт';
+                                this.publicity = false;
                                 Cookies.set('publicity', false, 1);
                             }
                             this.modalRakeWindowUsername.innerText = this.username;
@@ -405,14 +424,23 @@ export default class App{
                 this.modalSignInBackground.classList.remove('active');
                 this.modalSignIn.classList.remove('active');
                 this.view.notesSidebar.classList.add('active');
-                const userEntry = NotesAPI.getUserEntry(this.username, this.password),
-                userPublicity = userEntry['public'];
-                console.log("publicity: ", userPublicity);
-                this.modalRakeWindowPublicity.innerText = (userPublicity) ? "Публичный аккаунт" : "Закрытый аккаунт";
-                this.modalRakeWindowPublicityBtn.innerText = (userPublicity) ? "Сделать аккаунт закрытым" : "Сделайте свой аккаунт публичным";
+                const userEntry = NotesAPI.getUserEntry(this.username, this.password);
+                this.publicity = userEntry['public'];
+                // console.log("publicity: ", this.publicity);
+                this.modalRakeWindowPublicity.innerText = (this.publicity) ? "Публичный аккаунт" : "Закрытый аккаунт";
+                this.modalRakeWindowPublicityBtn.innerText = (this.publicity) ? "Сделать аккаунт закрытым" : "Сделайте свой аккаунт публичным";
                 // Cookies.set('publicity', userPublicity, 1);
                 this.memoryLimitKB = +userEntry['memoryLimitKB'];
+                this.registrationDate = userEntry['regDate'];
+                this.modalRakeWindowRegDate.innerText = `Вы с нами с: ${this.registrationDate}`;
+                // this.memoryLimitKB = 2097152/2;
+                this.modalRakeWindowMemoryProgressBar.style.width = (this.memoryLimitKB? (App.KB*2-this.memoryLimitKB)/(App.KB*2)*100.0 + '%' : '0');
+                console.log(App.KB);
+                console.log(this.memoryLimitKB);
+                console.log(this.modalRakeWindowMemoryProgressBar.style.width);
                 // console.log(this.memoryLimitKB);
+                // console.log((App.KB-this.memoryLimitKB)/100.0);
+                this.modalRakeWindowMemoryProgressBarLabel.innerText = `${this.memoryLimitKB ? (this.memoryLimitKB/App.KB).toFixed(2) : 0} ГБ / 2.00 ГБ свободно`;
                 // Cookies.set('memoryLimitKB', this.memoryLimitKB, 1);
             }
         }
@@ -746,6 +774,8 @@ export default class App{
                         creation_date: currDate});
                     this.memoryLimitKB = newMemoryLimit;
                     console.log(`Memory limit post change: ${this.memoryLimitKB}`);
+                    this.modalRakeWindowMemoryProgressBar.style.width = (this.memoryLimitKB? (App.KB*2-this.memoryLimitKB)/(App.KB*2)*100.0 + '%' : '0');
+                    this.modalRakeWindowMemoryProgressBarLabel.innerText = `${this.memoryLimitKB ? (this.memoryLimitKB/App.KB).toFixed(2) : 0} ГБ / 2.00 ГБ свободно`;
                     // console.log(this.notesMatrix);
                 }
             },
@@ -758,9 +788,9 @@ export default class App{
                     oldTitleSize = this._byteSizeKB(this.view.displayTitle.innerText),
                     newBodySize = this._byteSizeKB(newBodyText),
                     newTitleSize = this._byteSizeKB(newTitleText);
-                console.log("Old data: ", this.view.displayBody.innerHTML, this.view.displayTitle.innerText);
+                // console.log("Old data: ", this.view.displayBody.innerHTML, this.view.displayTitle.innerText);
                 console.log("Old sizes: ", oldBodySize, oldTitleSize);
-                console.log("New data: ", newBodyText, newTitleText);
+                // console.log("New data: ", newBodyText, newTitleText);
                 console.log("New sizes: ", newBodySize, newTitleSize);
                 const bodySizeDif = newBodySize - oldBodySize,
                     titleSizeDif = newTitleSize - oldTitleSize,
@@ -782,6 +812,8 @@ export default class App{
                     this.memoryLimitKB = newMemoryLimit;
                     console.log(this.memoryLimitKB);
                     changesApplied = true;
+                    this.modalRakeWindowMemoryProgressBar.style.width = (this.memoryLimitKB? (1-this.memoryLimitKB)/App.KB*100.0 + '%' : '0');
+                    this.modalRakeWindowMemoryProgressBarLabel.innerText = `${this.memoryLimitKB ? (this.memoryLimitKB/App.KB).toFixed(2) : 0} ГБ / 2.00 ГБ свободно`;
                 }
                 return changesApplied;
             },
@@ -792,6 +824,8 @@ export default class App{
                 console.log(noteToDelete);
                 console.log(`Memory limit before deletion: ${this.memoryLimitKB}`);
                 this.memoryLimitKB += noteSize;
+                this.modalRakeWindowMemoryProgressBar.style.width = (this.memoryLimitKB? (App.KB*2-this.memoryLimitKB)/(App.KB*2)*100.0 + '%' : '0');
+                this.modalRakeWindowMemoryProgressBarLabel.innerText = `${this.memoryLimitKB ? (this.memoryLimitKB/App.KB).toFixed(2) : 0} ГБ / 2.00 ГБ свободно`;
                 console.log(`Deleted note byte size: ${noteSize}`);
                 console.log(`Memory limit after note deletion: ${this.memoryLimitKB}`);
                 let updateUserMemoryLimitResponse = NotesAPI.updateUserMemoryLimit(username, this.memoryLimitKB);

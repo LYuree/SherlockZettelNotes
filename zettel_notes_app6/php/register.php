@@ -8,7 +8,8 @@ function generate_activation_code(){
 }
 
 
-if(!empty($_POST) && isset($_POST['username']) && isset($_POST['password']) && isset($_POST['email'])){    try{
+if(!empty($_POST) && isset($_POST['username']) && isset($_POST['password']) && isset($_POST['email'])){   
+    try{
         $response = array();
         $response['usernameExists'] = false;
         $response['emailExists'] = false;
@@ -21,7 +22,10 @@ if(!empty($_POST) && isset($_POST['username']) && isset($_POST['password']) && i
         if(empty($usernameResultsRow) && empty($emailResultsRow)){
             $email = $_POST['email'];
             $passwordHash = password_hash($_POST['password'], PASSWORD_BCRYPT);
-            $results = $pdo->query("INSERT into users values (default, '$username', '$email', '$passwordHash') RETURNING id");
+            $results = $pdo->query("INSERT into users values
+                            (default, '$username', '$email', '$passwordHash',
+                            false, false, 0,
+                            CURRENT_TIMESTAMP(0)) RETURNING id");
             $resultsArray = $results->fetch(PDO::FETCH_NUM);
             $newUserId = $resultsArray[0];
             $newCollectionName = $username ."''s First Collection";
@@ -52,5 +56,5 @@ if(!empty($_POST) && isset($_POST['username']) && isset($_POST['password']) && i
         exit;
     }
 }
-else echo "Post is empty, my lad :("
+// else echo "Post is empty, my lad :("
 ?>
