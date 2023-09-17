@@ -522,8 +522,22 @@ export default class App{
     }
 
     _setActiveNote(noteId){
+        const currActiveNote = this.activeNoteId ? this.view._searchHTMLCollection(this.view.noteListItemsArray, this.activeNoteId) : null;
+        // console.log(currActiveNote);
+        if(currActiveNote){
+            currActiveNote.classList.remove('selected');
+            const nextNote = NotesView._getNextNoteItem(currActiveNote);
+            currActiveNote.classList.remove('active');
+            nextNote.style.marginTop = '-200px';
+        }
         this.activeNoteId = noteId;
-        this.view.updateActiveNote(noteId);
+        const newActiveNote = this.view._searchHTMLCollection(this.view.noteListItemsArray, noteId);
+        newActiveNote.classList.add('selected');
+        // console.log(newActiveNote);
+        const nextNote = NotesView._getNextNoteItem(newActiveNote);
+        nextNote.style.marginTop = 0;
+        // console.log(nextNote);
+        this.view.updateActiveNote(this.activeNoteId);
     }
 
     _initiateKeywords(){

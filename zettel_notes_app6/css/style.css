@@ -271,6 +271,14 @@ div.modal__rake_window__section__user_text_container {
     .modal__rake_window__section__user_text_container * {
         text-align: center;
     }
+
+    /* .modal__rake_window__memory_progress_bar__wrapper {
+        text-align: center;
+    } */
+
+    div.modal__rake_window__memory_progress_bar__wrapper {
+        margin: auto;
+    }
 }
 
 /* @media screen and (max-width: 1000px) {
@@ -616,6 +624,33 @@ button:hover {
     /* bottom: 0; */
 }
 
+
+.modal__rake_window__memory_progress_bar__wrapper {
+    /* width: 100%; */
+    width: 15rem;
+    background: transparent;
+    border: 2px solid black;
+    border-radius: .2rem;
+    padding: .2rem;
+    /* margin-bottom: .25rem; */
+    margin: .5rem;
+    /* background-color: none; */
+}
+
+.modal__rake_window__memory_progress_bar {
+    width: 1%;
+    height: .6rem;
+    /* margin: .5rem; */
+    transition: .35s;
+    background-color: black;
+}
+
+.modal__rake_window__memory_progress_bar_label {
+    /* text-align: center; */
+    /* margin-bottom: .5rem; */
+    margin: .5rem;
+}
+
 .modal__rake_window__header {
     /* position: relative; */
     border-bottom: 2px solid black;
@@ -858,6 +893,7 @@ div.note__list-item {
     font-size: 0.8em;
     cursor: pointer;
     margin: 0;
+    transition: .5s;
 
     /* new */
     height: 300px;
@@ -877,6 +913,10 @@ div.note__list-item {
 div.note__list-item:first-child {
     margin-top: 0px !important;
 }
+
+/* div.note__list-item.active {
+
+} */
 
 
 /* .note__list-item::hover{

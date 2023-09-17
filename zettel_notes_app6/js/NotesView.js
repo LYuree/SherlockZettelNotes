@@ -276,7 +276,36 @@ export default class NotesView{
                 }
             });               
 
+
             this.notesContainer.addEventListener('click', _sidebarClickHandler);
+            
+            this.notesContainer.addEventListener('mouseover', event => {
+                const eventTarget = event.target;
+                // console.log(eventTarget);
+                if(!eventTarget.classList.contains('notes__list-items__container')){
+                    try{
+                        const targetNote = NotesView._getNoteItem(eventTarget);
+                        const nextNote = NotesView._getNextNoteItem(targetNote);
+                        targetNote.classList.add('active');
+                        nextNote.style.marginTop = 0;
+                    }
+                    catch (err) {
+                        console.log(eventTarget);
+                    }
+                }
+            });
+
+            this.notesContainer.addEventListener('mouseout', event => {
+                const eventTarget = event.target;
+                if(!eventTarget.classList.contains('notes__list-items__container')){
+                    const targetNote = NotesView._getNoteItem(eventTarget);
+                    if(!targetNote.classList.contains('selected')){
+                        const nextNote = NotesView._getNextNoteItem(targetNote);
+                        targetNote.classList.remove('active');
+                        nextNote.style.marginTop = '-200px';
+                    }
+                }
+            });
 
             // this.quill = new Quill('.notes__body__editor', {
             //     theme: 'snow'
@@ -310,6 +339,26 @@ export default class NotesView{
     }
 
 
+    static _getNoteItem(eventTarget){
+        const targetClassList = eventTarget.classList;
+        let nextNote = null;
+        if (targetClassList.contains("notes__small-title")
+            || targetClassList.contains("notes__small-body")
+            || targetClassList.contains("notes__small-updated")
+            || targetClassList.contains("notes__delete"))
+            {
+                return eventTarget.parentNode;
+            }
+            else if(targetClassList.contains("note__list-item"))
+            {
+                return eventTarget;
+            }
+        return nextNote;
+    }
+
+    static _getNextNoteItem(targetNote){
+        return targetNote.nextSibling;
+    }
 
 
     _fillDropDown(){
