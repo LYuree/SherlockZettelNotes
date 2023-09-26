@@ -72,83 +72,67 @@ export default class NotesAPI{
         const params = "username=" + username + "&password=" + password;
         xhr.open('POST', this.getUserEntryUrl, true);
         xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');   
-        let userEntry = new Object();
+        // let userEntry = new Object();
         console.log('Hey there!');
-        xhr.onreadystatechange = () => {
+        xhr.onreadystatechange = async () => {
             if(xhr.readyState == 4 && xhr.status == 200) {
                 console.log('response ready');
-                userEntry = JSON.parse(xhr.response);
+                const userEntry = JSON.parse(xhr.response);
                 console.log(xhr.response);
                 appObj.publicity = userEntry['public'];
                 console.log(appObj.publicity);
 
                 console.log(userEntry);
-                    // console.log(`user entry: ${userEntry['active']}`);
-                    if(userEntry != null && userEntry['active'] == true) {
-                        // console.log("user entry active!");
-                        // notesArray = NotesAPI.getNotes(login, password);
-                        let response = NotesAPI.getNotes(username, password);
-                        console.log(response['verified']);
-                        if(response['verified'] == true){
-                            appObj.setUserName(username);
-                            appObj.setUserPublicity(userEntry['public']);
-                            appObj.setUserMemoryLimit(+userEntry['memoryLimitKB']);
-                            appObj.setUserRegDate(userEntry['regDate']);
-                            appObj.setUserCookies(username, password, appObj.publicity);
-                            // toggle sign in window (off)
-                            appObj.toggleModalSignInWindow(false);
-                            // appObj.modalSignInBackground.classList.remove('active');
-                            // appObj.modalSignIn.classList.remove('active');
-                            // appObj.view.notesSidebar.classList.add('active');
-                            console.log(appObj.memoryLimitKB);
-                            
-                            // appObj.view = new NotesView(appObj, appObj.root, appObj._handlers());
-                            appObj.initiateNotesView();
-                            appObj.setNotes(response['notes']);                            
-                            appObj.initiateKeywords();
-                            appObj.view.toggleNotesSidebar(true);                            
-                            
-                        }
-                        else {
-                            // set sign in form errors
-                            console.log("something went wrong");
-                            appObj.setSignInErrors();
-                        }
+                if(userEntry != null && userEntry['active'] == true) {
+                    // let response = await NotesAPI.getNotes(username, password);
+                    const response = await NotesAPI.getNotesNew(username, password);
+                    // const responseText = await response.text();
+                    // console.log(responseText);
+                    const responseJson = await response.json();
+                    // console.log(responseJson['verified']);
+                    if(responseJson['verified'] == true){
+                        appObj.setUserName(username);
+                        appObj.setUserPublicity(userEntry['public']);
+                        appObj.setUserMemoryLimit(+userEntry['memoryLimitKB']);
+                        appObj.setUserRegDate(userEntry['regDate']);
+                        appObj.setUserCookies(username, password, appObj.publicity);
+                        appObj.toggleModalSignInWindow(false);
+                        console.log(appObj.memoryLimitKB);
+                        appObj.initiateNotesView();
+                        appObj.setNotes(responseJson['notes']);                            
+                        appObj.initiateKeywords();
+                        appObj.view.toggleNotesSidebar(true);   
                     }
-                    // else{
-                    //     console.log("something went wrong");
-                    //     appObj.setSignInErrors();
-                    // }
+                    else {
+                        appObj.setSignInErrors();
+                    }
+                }
+                appObj.toggleLoader(appObj.mainLoader, false);
             }
         }        
         xhr.send(params);
-        // return userEntry;
+        appObj.toggleLoader(appObj.mainLoader, true);
     }
 
 
-    static getUserEntry(username, password, appObj){
-        // console.log(appObj);
-        const xhr = new XMLHttpRequest();
-        const params = "username=" + username + "&password=" + password;
-        xhr.open('POST', this.getUserEntryUrl, true);
-        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');   
-        let userEntry = new Object(); 
-        xhr.onreadystatechange = () => {
-            if(xhr.readyState == 4 && xhr.status == 200) {
-                userEntry = JSON.parse(xhr.response);
-                console.log(xhr.response);
-                appObj.publicity = userEntry['public'];
-                console.log(appObj.publicity);
-            }
-        }        
-        xhr.send(params);
-        // return userEntry;
-    }
-
-    // static setAppUserPublicity(appObj, publicityStatus){
-    //     appObj.publicity = publicityStatus;
+    // static getUserEntry(username, password, appObj){
+    //     const xhr = new XMLHttpRequest();
+    //     const params = "username=" + username + "&password=" + password;
+    //     xhr.open('POST', this.getUserEntryUrl, true);
+    //     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');   
+    //     let userEntry = new Object(); 
+    //     xhr.onreadystatechange = () => {
+    //         if(xhr.readyState == 4 && xhr.status == 200) {
+    //             userEntry = JSON.parse(xhr.response);
+    //             console.log(xhr.response);
+    //             appObj.publicity = userEntry['public'];
+    //             console.log(appObj.publicity);
+    //         }
+    //     }        
+    //     xhr.send(params);
     // }
-    
+
+   
     static getNotes(username, password){
         const xhr = new XMLHttpRequest();
         const params = "username=" + username + "&password=" + password;
@@ -163,6 +147,29 @@ export default class NotesAPI{
         xhr.send(params);
         // console.log(xhr.response);
         return response;
+    }
+
+    static getNotesNew(username, password){        
+        const reqObj = {
+                method: "POST",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+                },
+                // the JSON.stringify thing
+                // is accepted by the server in
+                // another way: json_decode,
+                // not $_POST
+
+                // body: JSON.stringify({
+                //     name: myName,
+                //     password: myPassword
+                //   })
+                body: "username=" + username +
+                "&password=" + password
+            };
+        console.log(reqObj);
+        return fetch(this.url, reqObj);
     }
 
 

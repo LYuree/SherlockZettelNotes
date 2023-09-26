@@ -1,6 +1,7 @@
 <?php
 require "./db_con.php";
 require "./functions.php";
+// print_r($_REQUEST);
 if(!empty($_POST) && isset($_POST['username'])){
     if(isset($_POST['idToSave']) && isset($_POST['noteTitle']) && isset($_POST['noteText'])){
         //NOTE INSERTION/UPDATE

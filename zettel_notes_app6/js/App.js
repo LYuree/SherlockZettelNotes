@@ -84,6 +84,9 @@ export default class App{
         this.modalRakeWindowPublicityBtn = document.querySelector('.modal__rake_window__publicity_button');
         this.modalRakeWindowMemoryProgressBar = document.querySelector('.modal__rake_window__memory_progress_bar');
         this.modalRakeWindowMemoryProgressBarLabel = document.querySelector('.modal__rake_window__memory_progress_bar_label');
+        this.mainLoader = document.querySelector('.main-loader');
+        this.keywordsLoader = document.querySelector('.keywords-loader');
+        this.coworkCandidatesLoader = document.querySelector('.cowork_candidates-loader');
 
         this.modalRakeWindowMemoryProgressBar.style.width = (this.memoryLimitKB? (App.KB*2-this.memoryLimitKB)/(App.KB*2)*100.0 + '%' : '0');
         this.modalRakeWindowMemoryProgressBarLabel.innerText = `${this.memoryLimitKB ? (this.memoryLimitKB/App.KB).toFixed(2) : 0} ГБ / 2.00 ГБ свободно`;
@@ -342,59 +345,8 @@ export default class App{
             const username = Cookies.get('username');
             const password = Cookies.get('password');
             NotesAPI.setUserData(username, password, this);
-            // const response = NotesAPI.getNotes(Cookies.get('username'), Cookies.get('password'));
-            // console.log(notesArray);
-            // if (notesArray.notes === null) {
-
-            // check in the NotesAPI func
-
-            // if (response['verified'] === false) { 
-            //     // console.log(notesArray.password);
-            //     // console.log(notesArray.hash);
-            //     // console.log(notesArray.verified);
-
-            //     // um... how is this gonna appear on screen if
-            //     // the modal window is invisible x)
-            //     this.modalSignInLogIn.classList.add('error', 'wrong-username-or-pw');
-            //     this.modalSignInPassword.classList.add('error', 'invalid-password');
-            // }
-            // else{
-            //     this.view = new NotesView(this, this.root, this._handlers());
-            //     this.setNotes(response['notes']);
-            //     this.username = Cookies.get('username');
-            //     this.modalRakeWindowUsername.innerText = this.username;
-            //     Cookies.set('authenticated', true, 1);
-            //     this.initiateKeywords();
-            //     this.modalSignInBackground.classList.remove('active');
-            //     this.modalSignIn.classList.remove('active');
-            //     this.view.notesSidebar.classList.add('active');
-            //     // NotesAPI.getUserEntry(this.username, this.password, this);
-
-            //     console.log(this);
-            //     this.modalRakeWindowPublicity.innerText = (this.publicity) ? "Публичный аккаунт" : "Закрытый аккаунт";
-            //     this.modalRakeWindowPublicityBtn.innerText = (this.publicity) ? "Сделать аккаунт закрытым" : "Сделайте свой аккаунт публичным";
-            // }
         }
     }
-
-
-    // haven't managed to get done with proper file imports
-
-    // _extractKeywordsFromNote_obsolete(){
-    //     if(this.notesMatrix.length > 0)
-    //         for(note of notesMatrix){
-    //             const keywordsFromNoteTitle = rake(note['name']).join(",");
-    //             const keywordsFromNoteBody = rake(note['note_text']).join(",");
-    //             const keywordsString = keywordsFromNoteTitle + ','
-    //             + keywordsFromNoteBody;
-    //             return keywordsString;
-    //         }
-    // }
-
-
-    // now add an eventlistener with a callback of a method that'll call this._extractKeywords
-    // + NotesAPI.pushKeywods
-
 
     setUserCookies(login, password, publicity){
         Cookies.set('username', login, 1);
@@ -536,6 +488,11 @@ export default class App{
         // this.view.updatePreviewVisibility(true);
     }
 
+    toggleLoader(loaderObj, active){
+        if(active) loaderObj.classList.add('active');
+        else loaderObj.classList.remove('active');
+    }
+
     _setActiveNote(noteId){
         const currActiveNote = this.activeNoteId ? this.view._searchHTMLCollection(this.view.noteListItemsArray, this.activeNoteId) : null;
         console.log(currActiveNote);
@@ -570,7 +527,7 @@ export default class App{
                 this._createTableRowHTML(this.TD, keywordTable, 3, rowClass, [word['keyword'], word['occurrences'],
                     word['rank']]);
             }
-            this.modalRakeWindowRefreshKeywordsLoaderBackgr.classList.remove('active');
+            // this.modalRakeWindowRefreshKeywordsLoaderBackgr.classList.remove('active');
         }
     }
 
