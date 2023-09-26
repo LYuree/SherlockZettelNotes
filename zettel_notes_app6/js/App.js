@@ -112,7 +112,7 @@ export default class App{
             else if(accessOpen == false){
                 alert(`Поздравляем! Доступ к Вашим ключевым словам изменён на: ЗАКРЫТЫЙ (приложение НЕ ИМЕЕТ доступа к Вашим ключевым словам и не будет рекомендовать другим клиентам сотрудничество с Вами).`);
                 this.modalRakeWindowPublicity.innerText = "Закрытый аккаунт";
-                this.modalRakeWindowPublicityBtn.innerText = 'Сделайте свой аккаунт публичным';
+                this.modalRakeWindowPublicityBtn.innerText = 'Сделать аккаунт публичным';
                 this.publicity = !this.publicity;
                 Cookies.set('publicity', false, 1);
             }
@@ -308,17 +308,20 @@ export default class App{
 
                 if(inputError != true && response.activationCode != null) {
                     //verification message window: active
-                    NotesAPI.sendEmail(email, response.activationCode);
-                    this.modalVerificationLink.addEventListener('click', () => {
-                        this.modalVerificationBackground.classList.remove('active');
-                        this.modalVerification.classList.remove('active');
-                        this.modalSignUp.classList.remove('active');
-                        this.modalSignUpBackground.classList.remove('active');
-                        this.modalSignInBackground.classList.add('active');
-                        this.modalSignIn.classList.add('active');
-                    });
-                    this.modalVerificationBackground.classList.add('active');
-                    this.modalVerification.classList.add('active');
+                    NotesAPI.sendEmail(email, response.activationCode, this);
+
+                    //call verification window
+
+                    // this.modalVerificationLink.addEventListener('click', () => {
+                    //     this.modalVerificationBackground.classList.remove('active');
+                    //     this.modalVerification.classList.remove('active');
+                    //     this.modalSignUp.classList.remove('active');
+                    //     this.modalSignUpBackground.classList.remove('active');
+                    //     this.modalSignInBackground.classList.add('active');
+                    //     this.modalSignIn.classList.add('active');
+                    // });
+                    // this.modalVerificationBackground.classList.add('active');
+                    // this.modalVerification.classList.add('active');
                 }
                 else console.log("ERROR: email verification code might be undefined...");
             }
@@ -339,34 +342,38 @@ export default class App{
             const username = Cookies.get('username');
             const password = Cookies.get('password');
             NotesAPI.setUserData(username, password, this);
-            const response = NotesAPI.getNotes(Cookies.get('username'), Cookies.get('password'));
+            // const response = NotesAPI.getNotes(Cookies.get('username'), Cookies.get('password'));
             // console.log(notesArray);
             // if (notesArray.notes === null) {
 
             // check in the NotesAPI func
-            if (response['verified'] === false) { 
-                // console.log(notesArray.password);
-                // console.log(notesArray.hash);
-                // console.log(notesArray.verified);
-                this.modalSignInLogIn.classList.add('error', 'wrong-username-or-pw');
-                this.modalSignInPassword.classList.add('error', 'invalid-password');
-            }
-            else{
-                this.view = new NotesView(this, this.root, this._handlers());
-                this.setNotes(response['notes']);
-                this.username = Cookies.get('username');
-                this.modalRakeWindowUsername.innerText = this.username;
-                Cookies.set('authenticated', true, 1);
-                this.initiateKeywords();
-                this.modalSignInBackground.classList.remove('active');
-                this.modalSignIn.classList.remove('active');
-                this.view.notesSidebar.classList.add('active');
-                // NotesAPI.getUserEntry(this.username, this.password, this);
 
-                console.log(this);
-                this.modalRakeWindowPublicity.innerText = (this.publicity) ? "Публичный аккаунт" : "Закрытый аккаунт";
-                this.modalRakeWindowPublicityBtn.innerText = (this.publicity) ? "Сделать аккаунт закрытым" : "Сделайте свой аккаунт публичным";
-            }
+            // if (response['verified'] === false) { 
+            //     // console.log(notesArray.password);
+            //     // console.log(notesArray.hash);
+            //     // console.log(notesArray.verified);
+
+            //     // um... how is this gonna appear on screen if
+            //     // the modal window is invisible x)
+            //     this.modalSignInLogIn.classList.add('error', 'wrong-username-or-pw');
+            //     this.modalSignInPassword.classList.add('error', 'invalid-password');
+            // }
+            // else{
+            //     this.view = new NotesView(this, this.root, this._handlers());
+            //     this.setNotes(response['notes']);
+            //     this.username = Cookies.get('username');
+            //     this.modalRakeWindowUsername.innerText = this.username;
+            //     Cookies.set('authenticated', true, 1);
+            //     this.initiateKeywords();
+            //     this.modalSignInBackground.classList.remove('active');
+            //     this.modalSignIn.classList.remove('active');
+            //     this.view.notesSidebar.classList.add('active');
+            //     // NotesAPI.getUserEntry(this.username, this.password, this);
+
+            //     console.log(this);
+            //     this.modalRakeWindowPublicity.innerText = (this.publicity) ? "Публичный аккаунт" : "Закрытый аккаунт";
+            //     this.modalRakeWindowPublicityBtn.innerText = (this.publicity) ? "Сделать аккаунт закрытым" : "Сделайте свой аккаунт публичным";
+            // }
         }
     }
 
@@ -401,6 +408,19 @@ export default class App{
         console.log(this.username);
     }
 
+    callVerificationWindow(){
+        this.modalVerificationLink.addEventListener('click', () => {
+            this.modalVerificationBackground.classList.remove('active');
+            this.modalVerification.classList.remove('active');
+            this.modalSignUp.classList.remove('active');
+            this.modalSignUpBackground.classList.remove('active');
+            this.modalSignInBackground.classList.add('active');
+            this.modalSignIn.classList.add('active');
+        });
+        this.modalVerificationBackground.classList.add('active');
+        this.modalVerification.classList.add('active');
+    }
+
     setUserPublicity(publicityStatus){
         this.publicity = publicityStatus;
         console.log(publicityStatus);
@@ -409,6 +429,7 @@ export default class App{
             this.modalRakeWindowPublicity.innerText = 'Публичный аккаунт';
         }
         else {
+            this.modalRakeWindowPublicityBtn.innerText = 'Сделать аккаунт публичным';
             this.modalRakeWindowPublicity.innerText = 'Закрытый аккаунт';
         }
     }
