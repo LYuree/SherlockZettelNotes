@@ -6,6 +6,7 @@ if(!empty($_POST) && isset($_POST['username'])){
     $queryString = "SELECT public FROM users where name = '$username'";
     $results = $pdo->query($queryString);
     $row = $results->fetch(PDO::FETCH_ASSOC);
+    // echo(json_encode($row));
     $newPublicityStatus = ($row['public']) ? 'false' : 'true';
     $queryString = "UPDATE users SET public = '$newPublicityStatus' WHERE name = '$username'";
     if($pdo->query($queryString)) echo $newPublicityStatus;

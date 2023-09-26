@@ -287,7 +287,9 @@ export default class NotesView{
                         const targetNote = NotesView._getNoteItem(eventTarget);
                         const nextNote = NotesView._getNextNoteItem(targetNote);
                         targetNote.classList.add('active');
-                        nextNote.style.marginTop = 0;
+                        if(nextNote){
+                            nextNote.style.marginTop = 0;
+                        }
                     }
                     catch (err) {
                         console.log(eventTarget);
@@ -302,7 +304,9 @@ export default class NotesView{
                     if(!targetNote.classList.contains('selected')){
                         const nextNote = NotesView._getNextNoteItem(targetNote);
                         targetNote.classList.remove('active');
-                        nextNote.style.marginTop = '-200px';
+                        if(nextNote){
+                            nextNote.style.marginTop = '-200px';
+                        }
                     }
                 }
             });
@@ -357,9 +361,14 @@ export default class NotesView{
     }
 
     static _getNextNoteItem(targetNote){
-        return targetNote.nextSibling;
+        return targetNote.nextSibling ?? null;
     }
 
+
+    toggleNotesSidebar(active){
+        if(active) this.notesSidebar.classList.add('active');
+        else this.notesSidebar.classList.remove('active');
+    }
 
     _fillDropDown(){
         this.App._clearChildNodes(this.qlDropDownMenuList);

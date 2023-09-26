@@ -48,20 +48,104 @@ export default class NotesAPI{
         return response;
     }
 
-    static getUserEntry(username, password){
+    // static getUserEntry(username, password){
+    //     const xhr = new XMLHttpRequest();
+    //     const params = "username=" + username + "&password=" + password;
+    //     xhr.open('POST', this.getUserEntryUrl, false);
+    //     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');   
+    //     let userEntry = new Object(); 
+    //     xhr.onreadystatechange = () => {
+    //         if(xhr.readyState == 4 && xhr.status == 200) {
+    //             userEntry = JSON.parse(xhr.response);
+    //         }
+    //     }        
+    //     xhr.send(params);
+    //     // console.log(xhr.response);
+    //     return userEntry;
+    // }
+
+    // static getUserEntry(username, password, appObj){
+
+    static setUserData(username, password, appObj){
         const xhr = new XMLHttpRequest();
         const params = "username=" + username + "&password=" + password;
-        xhr.open('POST', this.getUserEntryUrl, false);
+        xhr.open('POST', this.getUserEntryUrl, true);
+        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');   
+        let userEntry = new Object();
+        console.log('Hey there!');
+        xhr.onreadystatechange = () => {
+            if(xhr.readyState == 4 && xhr.status == 200) {
+                console.log('response ready');
+                userEntry = JSON.parse(xhr.response);
+                console.log(xhr.response);
+                appObj.publicity = userEntry['public'];
+                console.log(appObj.publicity);
+
+                console.log(userEntry);
+                    // console.log(`user entry: ${userEntry['active']}`);
+                    if(userEntry != null && userEntry['active'] == true) {
+                        // console.log("user entry active!");
+                        // notesArray = NotesAPI.getNotes(login, password);
+                        let response = NotesAPI.getNotes(username, password);
+                        console.log(response['verified']);
+                        if(response['verified'] == true){
+                            appObj.setUserName(username);
+                            appObj.setUserPublicity(userEntry['public']);
+                            appObj.setUserMemoryLimit(+userEntry['memoryLimitKB']);
+                            appObj.setUserRegDate(userEntry['regDate']);
+                            appObj.setUserCookies(username, password, appObj.publicity);
+                            // toggle sign in window (off)
+                            appObj.toggleModalSignInWindow(false);
+                            // appObj.modalSignInBackground.classList.remove('active');
+                            // appObj.modalSignIn.classList.remove('active');
+                            // appObj.view.notesSidebar.classList.add('active');
+                            console.log(appObj.memoryLimitKB);
+                            
+                            // appObj.view = new NotesView(appObj, appObj.root, appObj._handlers());
+                            appObj.initiateNotesView();
+                            appObj.setNotes(response['notes']);                            
+                            appObj.initiateKeywords();
+                            appObj.view.toggleNotesSidebar(true);                            
+                            
+                        }
+                        else {
+                            // set sign in form errors
+                            console.log("something went wrong");
+                            appObj.setSignInErrors();
+                        }
+                    }
+                    // else{
+                    //     console.log("something went wrong");
+                    //     appObj.setSignInErrors();
+                    // }
+            }
+        }        
+        xhr.send(params);
+        // return userEntry;
+    }
+
+
+    static getUserEntry(username, password, appObj){
+        // console.log(appObj);
+        const xhr = new XMLHttpRequest();
+        const params = "username=" + username + "&password=" + password;
+        xhr.open('POST', this.getUserEntryUrl, true);
         xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');   
         let userEntry = new Object(); 
         xhr.onreadystatechange = () => {
             if(xhr.readyState == 4 && xhr.status == 200) {
                 userEntry = JSON.parse(xhr.response);
+                console.log(xhr.response);
+                appObj.publicity = userEntry['public'];
+                console.log(appObj.publicity);
             }
         }        
         xhr.send(params);
-        // console.log(xhr.response);
-        return userEntry;
+        // return userEntry;
+    }
+
+    static setAppUserPublicity(appObj, publicityStatus){
+        appObj.publicity = publicityStatus;
     }
     
     static getNotes(username, password){
@@ -97,20 +181,25 @@ export default class NotesAPI{
         return keywords;
     }
 
-    static getKeywordsByUsers(){
+    static refreshUsersCoworkCandidates(appObj){       
         const xhr = new XMLHttpRequest();
         xhr.open('GET', this.getKeywordsByUsersUrl, false);
         xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');   
-        let usersAndKeywords = [];
+        
+        let usersWithKeywords = [];
         xhr.onreadystatechange = () => {
             if(xhr.readyState == 4 && xhr.status == 200){
                 // console.log(xhr.response);
-                usersAndKeywords = JSON.parse(xhr.response);
+                usersWithKeywords = JSON.parse(xhr.response);
+                const index = usersWithKeywords.findIndex(user => user.username == appObj.username);
+                const clientWithKeywords = usersWithKeywords[index];
+                usersWithKeywords.splice(index, 1);
+                console.log(clientWithKeywords, usersWithKeywords);
+                appObj._setCoworkersTable(clientWithKeywords, usersWithKeywords);
             }
         }
         xhr.send();
-        console.log(usersAndKeywords);
-        return usersAndKeywords;
+        // return usersAndKeywords;
     }
 
     static toggleAccountPublicity(username){

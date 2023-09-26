@@ -19,6 +19,7 @@ export default class App{
         this.memoryLimitKB = null;
         this.registrationDate = null;
         this.publicity = null;
+        this.view = null;
         // table cell tag constants
 
         Object.defineProperty(this, "TD", {
@@ -95,6 +96,7 @@ export default class App{
 
         this.modalRakeWindowPublicityBtn.addEventListener('click', () => {
             const accessOpen = NotesAPI.toggleAccountPublicity(this.username);
+            console.log(`Access open: ${accessOpen}`);
             // if(accessOpen != null && accessOpen != undefined) {
             //     alert(`Поздравляем! Доступ к Вашим ключевым словам изменён на: ${(accessOpen) ? 'ОТКРЫТЫЙ (приложение может рекомендовать Вас как коллегу другому клиенту со схожим набором ключ. слов)' :
             //     'ЗАКРЫТЫЙ (приложение НЕ ИМЕЕТ доступа к Вашим ключевым словам и не будет рекомендовать другим клиентам сотрудничество с Вами).'}`);
@@ -170,7 +172,7 @@ export default class App{
 
         this.modalRakeWindowRefreshCandidatesBtn.addEventListener('click', ()=>{
             if(!this.publicity) alert(`Ваш аккаунт является закрытым. Сделайте свой аккаунт публичным, чтобы приложение могло сравнить ваш набор ключевых слов с наборами других пользователей.`);
-            else this._refreshUsersCoworkCandidates();
+            else NotesAPI.refreshUsersCoworkCandidates(this);
         });
 
         this.signOutBtn.addEventListener('click', () => {
@@ -202,78 +204,14 @@ export default class App{
         this.modalSignInBtn.addEventListener('click', () =>{
             const login = this.modalSignInLogIn.value.trim(),
                 password = this.modalSignInPassword.value.trim();
-
                 const _isAlpha = str => /^[a-zA-Z]*$/.test(str);
-                // !(login.length < 8) && !(login.length > 15) && 
                 if((_isAlpha(login) || this._isValidEmail(login)) && !(password.length < 5)){
-                    // get user!
-                    const userEntry = NotesAPI.getUserEntry(login, password);
-                    this.publicity = userEntry['publicity'];
-                    console.log(userEntry);
-                    // console.log(`user entry: ${userEntry['active']}`);
-                    if(userEntry != null && userEntry['active'] == true) {
-                        // console.log("user entry active!");
-                        // notesArray = NotesAPI.getNotes(login, password);
-                        let response = NotesAPI.getNotes(login, password);
-                        if(response['verified'] == true){                          
-                            this.memoryLimitKB = +userEntry['memoryLimitKB'];
-                            console.log(this.memoryLimitKB);
-                            this.modalRakeWindowMemoryProgressBar.style.width = (this.memoryLimitKB? (App.KB*2-this.memoryLimitKB)/(App.KB*2)*100.0 + '%' : '0');
-                            this.modalRakeWindowMemoryProgressBarLabel.innerText = `${this.memoryLimitKB ? (this.memoryLimitKB/App.KB).toFixed(2) : 0} ГБ / 2.00 ГБ свободно`;
-                            this.registrationDate = userEntry['regDate'];
-                            this.modalRakeWindowRegDate.innerText = `Вы с нами с: ${this.registrationDate}`;
-                            this.view = new NotesView(this, this.root, this._handlers());
-                            this._setNotes(response['notes']);                            
-                            this.username = login;
-                            Cookies.set('username', login, 1);
-                            Cookies.set('password', password, 1);
-                            Cookies.set('authenticated', true, 1);
-                            // new
-                            this._initiateKeywords();
-                            //
-                            //loading...
-                            if(userEntry['public'] == true) {
-                                this.modalRakeWindowPublicityBtn.innerText = 'Сделать аккаунт закрытым';
-                                this.modalRakeWindowPublicity.innerText = 'Публичный аккаунт';
-                                this.publicity = true;
-                                Cookies.set('publicity', true, 1);
-                            }
-                            else {
-                                this.modalRakeWindowPublicity.innerText = 'Закрытый аккаунт';
-                                this.publicity = false;
-                                Cookies.set('publicity', false, 1);
-                            }
-                            this.modalRakeWindowUsername.innerText = this.username;
-                            this.modalSignInBackground.classList.remove('active');
-                            this.modalSignIn.classList.remove('active');
-                            this.view.notesSidebar.classList.add('active');
-                        }
-                        else {
-                            this.modalSignInLogIn.classList.add('error', 'wrong-username-or-pw');
-                            this.modalSignInPassword.classList.add('error', 'invalid-password');
-                            this.modalSignInError.classList.add('active');
-                        }
-                    }
-                    else{
-                        console.log("something went wrong");
-                        // console.log(!(login.length < 8));
-                        // console.log(!(login.length > 14));
-                        // console.log(_isAlpha(login));
-                        // console.log(!(password.length < 8));
-                        // console.log(notesArray.password);
-                        // console.log(notesArray.hash);
-                        // console.log(notesArray.verified);
-                        this.modalSignInLogIn.classList.add('error', 'wrong-username-or-pw');
-                        this.modalSignInPassword.classList.add('error', 'invalid-password');
-                        this.modalSignInError.classList.add('active');
-                        // this.modalLogInInput.classList.add('error', 'invalid-username');
-                        // this.modalLogInError.classList.add('active');
-                        // this.modalPasswordInput.classList.add('error', 'invalid-password');
-                        // this.modalPasswordError.classList.add('active');
-                        // this.modalLogInError.innerHTML += 'Логин не может быть короче 8 символов.';
-                        // this.modalPasswordError.innerHTML += 'Логин не может быть короче 8 символов.';
-                    }
-                }         
+                    NotesAPI.setUserData(login, password, this);
+                }
+                else{
+                    console.log("something went wrong");
+                    this.setSignInErrors();
+                }  
         });
 
         this.modalSignUpBtn.addEventListener('click', () => {
@@ -398,50 +336,36 @@ export default class App{
             this._callSignInWindow();
         }
         else{
+            const username = Cookies.get('username');
+            const password = Cookies.get('password');
+            NotesAPI.setUserData(username, password, this);
             const response = NotesAPI.getNotes(Cookies.get('username'), Cookies.get('password'));
             // console.log(notesArray);
             // if (notesArray.notes === null) {
+
+            // check in the NotesAPI func
             if (response['verified'] === false) { 
-                console.log(notesArray.password);
-                console.log(notesArray.hash);
-                console.log(notesArray.verified);
+                // console.log(notesArray.password);
+                // console.log(notesArray.hash);
+                // console.log(notesArray.verified);
                 this.modalSignInLogIn.classList.add('error', 'wrong-username-or-pw');
                 this.modalSignInPassword.classList.add('error', 'invalid-password');
             }
             else{
                 this.view = new NotesView(this, this.root, this._handlers());
-                this._setNotes(response['notes']);
-                // Cookies.set('username', login, 1);
+                this.setNotes(response['notes']);
                 this.username = Cookies.get('username');
                 this.modalRakeWindowUsername.innerText = this.username;
-                // Cookies.set('password', password, 1);
                 Cookies.set('authenticated', true, 1);
-                // new
-                this._initiateKeywords();
-                // const userEntry = NotesAPI.getUserEntry('username');
-                //
-                //loading...
+                this.initiateKeywords();
                 this.modalSignInBackground.classList.remove('active');
                 this.modalSignIn.classList.remove('active');
                 this.view.notesSidebar.classList.add('active');
-                const userEntry = NotesAPI.getUserEntry(this.username, this.password);
-                this.publicity = userEntry['public'];
-                // console.log("publicity: ", this.publicity);
+                // NotesAPI.getUserEntry(this.username, this.password, this);
+
+                console.log(this);
                 this.modalRakeWindowPublicity.innerText = (this.publicity) ? "Публичный аккаунт" : "Закрытый аккаунт";
                 this.modalRakeWindowPublicityBtn.innerText = (this.publicity) ? "Сделать аккаунт закрытым" : "Сделайте свой аккаунт публичным";
-                // Cookies.set('publicity', userPublicity, 1);
-                this.memoryLimitKB = +userEntry['memoryLimitKB'];
-                this.registrationDate = userEntry['regDate'];
-                this.modalRakeWindowRegDate.innerText = `Вы с нами с: ${this.registrationDate}`;
-                // this.memoryLimitKB = 2097152/2;
-                this.modalRakeWindowMemoryProgressBar.style.width = (this.memoryLimitKB? (App.KB*2-this.memoryLimitKB)/(App.KB*2)*100.0 + '%' : '0');
-                console.log(App.KB);
-                console.log(this.memoryLimitKB);
-                console.log(this.modalRakeWindowMemoryProgressBar.style.width);
-                // console.log(this.memoryLimitKB);
-                // console.log((App.KB-this.memoryLimitKB)/100.0);
-                this.modalRakeWindowMemoryProgressBarLabel.innerText = `${this.memoryLimitKB ? (this.memoryLimitKB/App.KB).toFixed(2) : 0} ГБ / 2.00 ГБ свободно`;
-                // Cookies.set('memoryLimitKB', this.memoryLimitKB, 1);
             }
         }
     }
@@ -464,7 +388,77 @@ export default class App{
     // now add an eventlistener with a callback of a method that'll call this._extractKeywords
     // + NotesAPI.pushKeywods
 
-    
+
+    setUserCookies(login, password, publicity){
+        Cookies.set('username', login, 1);
+        Cookies.set('password', password, 1);
+        Cookies.set('authenticated', true, 1);
+    }
+
+    setUserName(login){
+        this.username = login;
+        this.modalRakeWindowUsername.innerText = this.username;
+        console.log(this.username);
+    }
+
+    setUserPublicity(publicityStatus){
+        this.publicity = publicityStatus;
+        console.log(publicityStatus);
+        if(this.publicity == true) {
+            this.modalRakeWindowPublicityBtn.innerText = 'Сделать аккаунт закрытым';
+            this.modalRakeWindowPublicity.innerText = 'Публичный аккаунт';
+        }
+        else {
+            this.modalRakeWindowPublicity.innerText = 'Закрытый аккаунт';
+        }
+    }
+
+    setUserMemoryLimit(memoryLimitKB){
+        this.memoryLimitKB = memoryLimitKB;
+        // console.log(App.KB);
+        // console.log(this.memoryLimitKB);
+        this.modalRakeWindowMemoryProgressBar.style.width = (this.memoryLimitKB? (App.KB*2-this.memoryLimitKB)/(App.KB*2)*100.0 + '%' : '0');
+        // console.log(this.modalRakeWindowMemoryProgressBar.style.width);
+        this.modalRakeWindowMemoryProgressBarLabel.innerText = `${this.memoryLimitKB ? (this.memoryLimitKB/App.KB).toFixed(2) : 0} ГБ / 2.00 ГБ свободно`;
+    }
+
+    setUserRegDate(registrationDate){
+        this.registrationDate = registrationDate;
+        this.modalRakeWindowRegDate.innerText = `Вы с нами с: ${this.registrationDate}`;
+    }
+
+    initiateNotesView(){
+        this.view = new NotesView(this, this.root, this._handlers());
+    }
+
+    toggleModalSignInWindow(active){
+        if(active) {
+            this.modalSignInBackground.classList.add('active');
+            this.modalSignIn.classList.add('active');    
+        }
+        else {
+            this.modalSignInBackground.classList.remove('active');
+            this.modalSignIn.classList.remove('active');
+        }
+    }
+
+    toggleModalSignUpWindow(active){
+        if(active) {
+            this.modalSignUpBackground.classList.add('active');
+            this.modalSignUp.classList.add('active');    
+        }
+        else {
+            this.modalSignUpBackground.classList.remove('active');
+            this.modalSignUp.classList.remove('active');
+        }
+    }
+
+    setSignInErrors(){
+        this.modalSignInLogIn.classList.add('error', 'wrong-username-or-pw');
+        this.modalSignInPassword.classList.add('error', 'invalid-password');
+        this.modalSignInError.classList.add('active'); 
+    }
+   
     _setErrorFor(inputElement, message){
         const formControl = ((inputElement.parentElement).parentElement).parentElement;
         const small = formControl.querySelector("small");
@@ -513,7 +507,7 @@ export default class App{
         this.modalSignUp.classList.add('active');
     }
 
-    _setNotes(notesMatrix){
+    setNotes(notesMatrix){
         console.log("SETTING YOUR NOTES");
         this.notesMatrix = notesMatrix;
         this.view.initiateNotesList(notesMatrix);
@@ -523,24 +517,28 @@ export default class App{
 
     _setActiveNote(noteId){
         const currActiveNote = this.activeNoteId ? this.view._searchHTMLCollection(this.view.noteListItemsArray, this.activeNoteId) : null;
-        // console.log(currActiveNote);
+        console.log(currActiveNote);
         if(currActiveNote){
             currActiveNote.classList.remove('selected');
             const nextNote = NotesView._getNextNoteItem(currActiveNote);
-            currActiveNote.classList.remove('active');
-            nextNote.style.marginTop = '-200px';
+            if(nextNote){
+                currActiveNote.classList.remove('active');
+                nextNote.style.marginTop = '-200px';
+            }
         }
         this.activeNoteId = noteId;
         const newActiveNote = this.view._searchHTMLCollection(this.view.noteListItemsArray, noteId);
         newActiveNote.classList.add('selected');
         // console.log(newActiveNote);
         const nextNote = NotesView._getNextNoteItem(newActiveNote);
-        nextNote.style.marginTop = 0;
+        if(nextNote){
+            nextNote.style.marginTop = 0;
+        }
         // console.log(nextNote);
         this.view.updateActiveNote(this.activeNoteId);
     }
 
-    _initiateKeywords(){
+    initiateKeywords(){
         if(Cookies.get('authenticated') === "true" && this.username !== null){
             const keywords = NotesAPI.getClientsKeywords(this.username);
             const keywordTable = this.modalRakeWindowKeywordsTable;
@@ -576,7 +574,7 @@ export default class App{
             const keywordsString = noteKeywords.join(",");
             NotesAPI.pushKeywords(this.username, note['id'], keywordsString);
         }
-        this._initiateKeywords();
+        this.initiateKeywords();
         
         // debugging
         // setTimeout(() => {
@@ -594,16 +592,23 @@ export default class App{
     }
 
 
-    _refreshUsersCoworkCandidates(){
-        let usersWithKeywords = NotesAPI.getKeywordsByUsers();
-        const index = usersWithKeywords.findIndex(user => user.username == this.username);
-        const clientWithKeywords = usersWithKeywords[index];
-        usersWithKeywords.splice(index, 1);
+    // _refreshUsersCoworkCandidates(){
+    //     // let usersWithKeywords = NotesAPI.getKeywordsByUsers();
+    //     // renaming the func to
+    //     let usersWithKeywords = NotesAPI.getKeywordsByUsers();
+    //     const index = usersWithKeywords.findIndex(user => user.username == this.username);
+    //     const clientWithKeywords = usersWithKeywords[index];
+    //     usersWithKeywords.splice(index, 1);
+    //     this._setCoworkersTable(clientWithKeywords, usersWithKeywords);
+    // }
+
+    _setCoworkersTable(clientWithKeywords, othersWithKeywords){
+        console.log(this);
         this._clearChildNodes(this.modalRakeWindowCoworkCandidatesTable);
         const rowClass = "modal__rake_window__cowork_candidates__table_row";
         this._createTableRowHTML(this.TH, this.modalRakeWindowCoworkCandidatesTable,
             3, rowClass, ["Пользователь", "Общие<br>слова", "Сходство<wbr>иерархий"]);
-        for (let user of usersWithKeywords){
+        for (let user of othersWithKeywords){
             let clientsKeywords = clientWithKeywords.keywords;
             let usersKeywords = user.keywords;
             // getting an array of keywords with occurrences and ranks
