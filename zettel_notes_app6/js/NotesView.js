@@ -257,6 +257,8 @@ export default class NotesView{
             }
 
             this.noteAddBtn.addEventListener('click', () => {
+                console.log('add btn click');
+                console.log(this);
                 this.onNoteAdd();
                 // this.updateActiveNote();
             });
@@ -606,6 +608,7 @@ export default class NotesView{
     }
 
     initiateNotesList(notesMatrix){
+        console.log("initiating the notes list");
         //this method is only used for the initial client-side note items list load,
         //when the user gets authorized and the browser sends a query to get all the notes from the user's collection;
         //further updates to the client-side display of the notes list are acomplished without using this method;

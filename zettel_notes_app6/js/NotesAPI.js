@@ -11,7 +11,7 @@ export default class NotesAPI{
     static updateUserMemoryLimitUrl = './php/update_user_memory_limit.php';
 
 
-    static sendEmail(email, activationCode){
+    static sendEmail(email, activationCode, appObj){
         const xhr = new XMLHttpRequest(),
             params = "email=" + email + "&activationCode=" + activationCode;
         console.log(params);
@@ -23,6 +23,7 @@ export default class NotesAPI{
                 console.log('query for VERIFICATION EMAIL processed');
                 // console.log(xhr.response);
                 console.log(xhr.response);
+                appObj.callVerificationWindow();
                 // response = JSON.parse(xhr.response);
                 // console.log("Response inside of the onreadystatechange callback: ", response);
             }
@@ -144,9 +145,9 @@ export default class NotesAPI{
         // return userEntry;
     }
 
-    static setAppUserPublicity(appObj, publicityStatus){
-        appObj.publicity = publicityStatus;
-    }
+    // static setAppUserPublicity(appObj, publicityStatus){
+    //     appObj.publicity = publicityStatus;
+    // }
     
     static getNotes(username, password){
         const xhr = new XMLHttpRequest();
