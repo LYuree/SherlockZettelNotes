@@ -229,15 +229,15 @@ export default class App{
             let inputError = false;
 
             if(username === '') {
-                this._setErrorFor(this.modalSignUpLogin, "Имя пользователя не может быть пустым");
+                this.setErrorFor(this.modalSignUpLogin, "Имя пользователя не может быть пустым");
                 inputError = true;
             }
             else if (username.length < 4 || username.length > 14){
-                this._setErrorFor(this.modalSignUpLogin, "Имя пользователя должно состоять из 4-14 символов");
+                this.setErrorFor(this.modalSignUpLogin, "Имя пользователя должно состоять из 4-14 символов");
                 inputError = true;
             }
             else if(this._checkLettersEN(username) === false){
-                this._setErrorFor(this.modalSignUpLogin, "Имя пользователя должно содержать только символы a-z");
+                this.setErrorFor(this.modalSignUpLogin, "Имя пользователя должно содержать только символы a-z");
                 inputError = true;
             }
             else {
@@ -250,11 +250,11 @@ export default class App{
 
 
             if(email === '') {
-                this._setErrorFor(this.modalSignUpEmail, "E-mail не может быть пустым");
+                this.setErrorFor(this.modalSignUpEmail, "E-mail не может быть пустым");
                 inputError = true;
             }
             else if (!this._isValidEmail(email)) {
-                this._setErrorFor(this.modalSignUpEmail, 'E-mail недействителен');
+                this.setErrorFor(this.modalSignUpEmail, 'E-mail недействителен');
                 inputError = true;
             }
             else {
@@ -265,11 +265,11 @@ export default class App{
         
         
             if(password === '') {
-                this._setErrorFor(this.modalSignUpPassword, "Пароль не может быть пустым");
+                this.setErrorFor(this.modalSignUpPassword, "Пароль не может быть пустым");
                 inputError = true;
             }
             else if(password.length < 6 || password.length > 10){
-                this._setErrorFor(this.modalSignUpPassword, "Пароль должен содержать 6-10 символов");
+                this.setErrorFor(this.modalSignUpPassword, "Пароль должен содержать 6-10 символов");
                 inputError = true;
             }
             else {
@@ -280,11 +280,11 @@ export default class App{
         
         
             if(passwordRepeat === '') {
-                this._setErrorFor(this.modalSignUpPasswordRepeat, "Пароль не может быть пустым");
+                this.setErrorFor(this.modalSignUpPasswordRepeat, "Пароль не может быть пустым");
                 inputError = true;
             }
             else if(passwordRepeat !== password) {
-                this._setErrorFor(this.modalSignUpPasswordRepeat, "Пароли не совпадают");
+                this.setErrorFor(this.modalSignUpPasswordRepeat, "Пароли не совпадают");
                 inputError = true;
             }
             else {
@@ -293,40 +293,27 @@ export default class App{
             }
             //SENDING A QUERY
             if(inputError != true){
-                const response = NotesAPI.createUser(username, email, password);
-                console.log(response);
-                if(response.usernameExists == true){
-                    console.log("Username already occupied");
-                    this._setErrorFor(this.modalSignUpLogin, "Пользователь с таким именем уже существует");
-                    inputError = true;
-                }
+                NotesAPI.createUser(username, email, password, this);
+                // const response = NotesAPI.createUser(username, email, password);
+                // console.log(response);
                 
-                if(response.emailExists == true){
-                    console.log("Email already occupied");
-                    this._setErrorFor(this.modalSignUpEmail, "На этот адрес уже зарегистрирован другой аккаунт");
-                    inputError = true;
-                }
+                // // move this to async NotesAPI method?
+                // if(response.usernameExists == true){
+                //     console.log("Username already occupied");
+                //     this._setErrorFor(this.modalSignUpLogin, "Пользователь с таким именем уже существует");
+                //     inputError = true;
+                // }
                 
-                console.log(response.activationCode != null);
-
-                if(inputError != true && response.activationCode != null) {
-                    //verification message window: active
-                    NotesAPI.sendEmail(email, response.activationCode, this);
-
-                    //call verification window
-
-                    // this.modalVerificationLink.addEventListener('click', () => {
-                    //     this.modalVerificationBackground.classList.remove('active');
-                    //     this.modalVerification.classList.remove('active');
-                    //     this.modalSignUp.classList.remove('active');
-                    //     this.modalSignUpBackground.classList.remove('active');
-                    //     this.modalSignInBackground.classList.add('active');
-                    //     this.modalSignIn.classList.add('active');
-                    // });
-                    // this.modalVerificationBackground.classList.add('active');
-                    // this.modalVerification.classList.add('active');
-                }
-                else console.log("ERROR: email verification code might be undefined...");
+                // if(response.emailExists == true){
+                //     console.log("Email already occupied");
+                //     this._setErrorFor(this.modalSignUpEmail, "На этот адрес уже зарегистрирован другой аккаунт");
+                //     inputError = true;
+                // }                
+                // // if(inputError != true && response.activationCode != null) {
+                // if(response.activationCode != null) {
+                //     NotesAPI.sendEmail(email, response.activationCode, this);
+                // }
+                // else console.log("ERROR: email verification code might be undefined...");
             }
             
 
@@ -432,7 +419,7 @@ export default class App{
         this.modalSignInError.classList.add('active'); 
     }
    
-    _setErrorFor(inputElement, message){
+    setErrorFor(inputElement, message){
         const formControl = ((inputElement.parentElement).parentElement).parentElement;
         const small = formControl.querySelector("small");
         //add error messge text inside small 
@@ -519,6 +506,7 @@ export default class App{
     initiateKeywords(){
         if(Cookies.get('authenticated') === "true" && this.username !== null){
             const keywords = NotesAPI.getClientsKeywords(this.username);
+            // move to NotesAPI func?
             const keywordTable = this.modalRakeWindowKeywordsTable;
             const rowClass = "modal__rake_window__users_keywords__table_row";
             this._clearChildNodes(keywordTable);

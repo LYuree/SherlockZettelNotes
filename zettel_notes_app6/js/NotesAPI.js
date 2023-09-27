@@ -32,21 +32,44 @@ export default class NotesAPI{
     }
 
 
-    static createUser(username, email, password){
+    static createUser(username, email, password, appObj){
         const xhr = new XMLHttpRequest(),
             params = "username=" + username + "&email=" + email + "&password=" + password;
-        xhr.open('POST', this.registerUrl, false);
+        xhr.open('POST', this.registerUrl, true);
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         let response = null;
         xhr.onreadystatechange = () => {
             if(xhr.readyState == 4 && xhr.status == 200){
                 console.log(xhr.response);
                 response = JSON.parse(xhr.response);
+                console.log(response);
+                
+                // move this to async NotesAPI method?
+                if(response.usernameExists == true){
+                    console.log("Username already occupied");
+                    appObj.toggleLoader(appObj.mainLoader, false);
+                    appObj.setErrorFor(appObj.modalSignUpLogin, "Пользователь с таким именем уже существует");
+                    inputError = true;
+                }
+                
+                if(response.emailExists == true){
+                    console.log("Email already occupied");
+                    appObj.toggleLoader(appObj.mainLoader, false);
+                    appObj.setErrorFor(appObj.modalSignUpEmail, "На этот адрес уже зарегистрирован другой аккаунт");
+                    inputError = true;
+                }                
+                // if(inputError != true && response.activationCode != null) {
+                if(response.activationCode != null) {
+                    appObj.toggleLoader(appObj.mainLoader, false);
+                    NotesAPI.sendEmail(email, response.activationCode, appObj);
+                }
+                else console.log("ERROR: email verification code might be undefined...");
             }
         }
         xhr.send(params);
-        console.log("Response OUTSIDE of the onreadystatechange callback: ", response);
-        return response;
+        appObj.toggleLoader(appObj.mainLoader, true);
+        // console.log("Response OUTSIDE of the onreadystatechange callback: ", response);
+        // return response;
     }
 
     // static getUserEntry(username, password){
@@ -81,15 +104,10 @@ export default class NotesAPI{
                 console.log(xhr.response);
                 appObj.publicity = userEntry['public'];
                 console.log(appObj.publicity);
-
                 console.log(userEntry);
-                if(userEntry != null && userEntry['active'] == true) {
-                    // let response = await NotesAPI.getNotes(username, password);
+                if(userEntry != null && userEntry['active'] == true){
                     const response = await NotesAPI.getNotesNew(username, password);
-                    // const responseText = await response.text();
-                    // console.log(responseText);
                     const responseJson = await response.json();
-                    // console.log(responseJson['verified']);
                     if(responseJson['verified'] == true){
                         appObj.setUserName(username);
                         appObj.setUserPublicity(userEntry['public']);
@@ -107,6 +125,7 @@ export default class NotesAPI{
                         appObj.setSignInErrors();
                     }
                 }
+                else appObj.setSignInErrors();
                 appObj.toggleLoader(appObj.mainLoader, false);
             }
         }        
@@ -191,7 +210,7 @@ export default class NotesAPI{
 
     static refreshUsersCoworkCandidates(appObj){       
         const xhr = new XMLHttpRequest();
-        xhr.open('GET', this.getKeywordsByUsersUrl, false);
+        xhr.open('GET', this.getKeywordsByUsersUrl, true);
         xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');   
         
         let usersWithKeywords = [];
@@ -204,9 +223,11 @@ export default class NotesAPI{
                 usersWithKeywords.splice(index, 1);
                 console.log(clientWithKeywords, usersWithKeywords);
                 appObj._setCoworkersTable(clientWithKeywords, usersWithKeywords);
+                appObj.toggleLoader(appObj.coworkCandidatesLoader, false);
             }
         }
         xhr.send();
+        appObj.toggleLoader(appObj.coworkCandidatesLoader, true);
         // return usersAndKeywords;
     }
 
