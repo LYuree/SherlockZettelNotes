@@ -526,20 +526,30 @@ export default class App{
     }
 
     // move the whole thing  to NotesAPI?
-    _refreshUsersKeywords(){
+    async _refreshUsersKeywords(){
         console.log("App, refreshing user's keywords, showing notesMatrix: ", this.notesMatrix);      
+        let notesCount = this.notesMatrix.length;
         this.notesMatrix.forEach(note => {
-            setZeroTimeout(()=>{
-                let noteKeywords = NotesAPI.extractKeywords(this._stripHTMLTags(note['note_text']));
+            setZeroTimeout(async ()=>{
+                let response = await NotesAPI.extractKeywords(this._stripHTMLTags(note['note_text']));
+                let noteKeywords = await response.json();
                 if (note['name'] != '') noteKeywords.push(note['name'].toLowerCase());
                 noteKeywords = noteKeywords.map(str => NotesAPI.shieldApostrophes(str));
                 const keywordsString = noteKeywords.join(",");
                 NotesAPI.pushKeywords(this.username, note['id'], keywordsString);
-            }, 0);
+                notesCount--;
+                if(notesCount == 0){
+                    console.log("UPDATING THE KEYWORDS TABLE!");
+                    NotesAPI.getClientsKeywordsRanked(this.username, this);
+                }
+            });
         });
-        setTimeout(()=>{
-            NotesAPI.getClientsKeywordsRanked(this.username, this);
-        });
+        // setZeroTimeout(()=>{
+        //     setZeroTimeout(() => {
+        //         console.log("UPDATING THE KEYWORDS TABLE!");
+        //         NotesAPI.getClientsKeywordsRanked(this.username, this);
+        //     });
+        // });
         this.toggleLoader(this.keywordsLoader, true);
     }
 
