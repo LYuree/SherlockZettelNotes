@@ -1,7 +1,7 @@
 import NotesView from "./NotesView.js";
 import NotesAPI from "./NotesAPI.js";
 import Cookies from './js_cookies/js.cookie.mjs';
-// import '/node_modules/zero-timeout';
+import '/node_modules/zero-timeout/index.js';
 // import rake from '../node_modules/rake-js/src/lib/rake.ts'
 // import rake from '../node_modules/rake-js/dist/lib/index.js'
 
@@ -529,7 +529,7 @@ export default class App{
     _refreshUsersKeywords(){
         console.log("App, refreshing user's keywords, showing notesMatrix: ", this.notesMatrix);      
         this.notesMatrix.forEach(note => {
-            setTimeout(()=>{
+            setZeroTimeout(()=>{
                 let noteKeywords = NotesAPI.extractKeywords(this._stripHTMLTags(note['note_text']));
                 if (note['name'] != '') noteKeywords.push(note['name'].toLowerCase());
                 noteKeywords = noteKeywords.map(str => NotesAPI.shieldApostrophes(str));
