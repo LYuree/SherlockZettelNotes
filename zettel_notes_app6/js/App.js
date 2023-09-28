@@ -1,6 +1,7 @@
 import NotesView from "./NotesView.js";
 import NotesAPI from "./NotesAPI.js";
-import Cookies from './js_cookies/js.cookie.mjs'
+import Cookies from './js_cookies/js.cookie.mjs';
+// import '/node_modules/zero-timeout';
 // import rake from '../node_modules/rake-js/src/lib/rake.ts'
 // import rake from '../node_modules/rake-js/dist/lib/index.js'
 
@@ -412,6 +413,7 @@ export default class App{
             this.modalSignUp.classList.remove('active');
         }
     }
+    
 
     setSignInErrors(){
         this.modalSignInLogIn.classList.add('error', 'wrong-username-or-pw');
@@ -476,6 +478,7 @@ export default class App{
     }
 
     toggleLoader(loaderObj, active){
+        console.log("toggling loader: ", loaderObj, " => ", active);
         if(active) loaderObj.classList.add('active');
         else loaderObj.classList.remove('active');
     }
@@ -505,52 +508,39 @@ export default class App{
 
     initiateKeywords(){
         if(Cookies.get('authenticated') === "true" && this.username !== null){
-            const keywords = NotesAPI.getClientsKeywords(this.username);
+            // const keywords = NotesAPI.getClientsKeywords(this.username, this);
+            NotesAPI.getClientsKeywordsRanked(this.username, this);
+
             // move to NotesAPI func?
-            const keywordTable = this.modalRakeWindowKeywordsTable;
-            const rowClass = "modal__rake_window__users_keywords__table_row";
-            this._clearChildNodes(keywordTable);
-            this._createTableRowHTML(this.TH, keywordTable, 3, rowClass, ['Слово', 'Встреча<wbr>емость', 'Ранг']);
-            for (let word of keywords){
-                this._createTableRowHTML(this.TD, keywordTable, 3, rowClass, [word['keyword'], word['occurrences'],
-                    word['rank']]);
-            }
+
+            // const keywordTable = this.modalRakeWindowKeywordsTable;
+            // const rowClass = "modal__rake_window__users_keywords__table_row";
+            // this._clearChildNodes(keywordTable);
+            // this._createTableRowHTML(this.TH, keywordTable, 3, rowClass, ['Слово', 'Встреча<wbr>емость', 'Ранг']);
+            // for (let word of keywords){
+            //     this._createTableRowHTML(this.TD, keywordTable, 3, rowClass, [word['keyword'], word['occurrences'],
+            //         word['rank']]);
+            // }
             // this.modalRakeWindowRefreshKeywordsLoaderBackgr.classList.remove('active');
         }
     }
 
+    // move the whole thing  to NotesAPI?
     _refreshUsersKeywords(){
-        console.log("App, refreshing user's keywords, showing notesMatrix: ", this.notesMatrix);
-        // const keywordTable = this.modalRakeWindowKeywordsTable;
-        // const rowClass = "modal__rake_window__users_keywords__table_row";
-        // this._clearChildNodes(keywordTable);
-        // this.modalRakeWindowRefreshKeywordsLoaderBackgr.classList.add('active');
-        // this.modalRakeWindowRefreshKeywordsLoader.classList.add('active');
-        
-        for (let note of this.notesMatrix){
-            // this.modalRakeWindowRefreshKeywordsLoaderBackgr.classList += 'active';
-            // this.modalRakeWindowRefreshKeywordsLoader.classList += 'active';
-            let noteKeywords = NotesAPI.extractKeywords(this._stripHTMLTags(note['note_text']));
-            if (note['name'] != '') noteKeywords.push(note['name'].toLowerCase());
-            noteKeywords = noteKeywords.map(str => NotesAPI.shieldApostrophes(str));
-            // console.log("_refreshUsersKeywords proc, noteKeywords: ", noteKeywords);
-            // for (let word of noteKeywords){
-            //     this._createTableRowHTML(keywordTable, 1, rowClass, [word]);
-            // }
-            const keywordsString = noteKeywords.join(",");
-            NotesAPI.pushKeywords(this.username, note['id'], keywordsString);
-        }
-        this.initiateKeywords();
-        
-        // debugging
-        // setTimeout(() => {
-        //     this.modalRakeWindowRefreshKeywordsLoaderBackgr.classList.remove('active');
-        //     this.modalRakeWindowRefreshKeywordsLoader.classList.remove('active');
-        // },
-        // 5000);
-
-        // this.modalRakeWindowRefreshKeywordsLoaderBackgr.classList.remove('active');
-        // this.modalRakeWindowRefreshKeywordsLoader.classList.remove('active');
+        console.log("App, refreshing user's keywords, showing notesMatrix: ", this.notesMatrix);      
+        this.notesMatrix.forEach(note => {
+            setTimeout(()=>{
+                let noteKeywords = NotesAPI.extractKeywords(this._stripHTMLTags(note['note_text']));
+                if (note['name'] != '') noteKeywords.push(note['name'].toLowerCase());
+                noteKeywords = noteKeywords.map(str => NotesAPI.shieldApostrophes(str));
+                const keywordsString = noteKeywords.join(",");
+                NotesAPI.pushKeywords(this.username, note['id'], keywordsString);
+            }, 0);
+        });
+        setTimeout(()=>{
+            NotesAPI.getClientsKeywordsRanked(this.username, this);
+        });
+        this.toggleLoader(this.keywordsLoader, true);
     }
 
     _stripHTMLTags(html){
