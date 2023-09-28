@@ -373,29 +373,41 @@ export default class NotesAPI{
     // }
 
     
+    // static extractKeywords(noteBody){ //this is sync
+    //     const xhr = new XMLHttpRequest();
+    //     const params = "noteText=" + noteBody;
+    //     xhr.open('POST', this.rakeUrl, false);
+    //     xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    //     let noteBodyKeywords = new Array();
+    //     xhr.onreadystatechange = function(){
+    //         if(xhr.readyState === 4 && xhr.status === 200){
+    //             noteBodyKeywords = JSON.parse(xhr.response);
+    //             noteBodyKeywords = NotesAPI._cutInternalWhitespace(noteBodyKeywords);
+    //             noteBodyKeywords.forEach(string => {
+    //                 return string.trim();
+    //             });
+    //             // toggle loader visibility: OFF
+    //             // console.log("NotesAPI, extractKeywords:\n", noteBodyKeywords); //works fine
+    //         }
+    //     }
+    //     // toggle loader visibility: ON
+    //     xhr.send(params);
+    //     console.log(xhr.response);
+    //     console.log("NotesAPI, extractKeywords:\n", noteBodyKeywords); //empty... why?
+    //     return noteBodyKeywords; //this function shouldn't return a value earlier than
+    //                             // then request gets ready
+    // }
+
     static extractKeywords(noteBody){ //this is sync
-        const xhr = new XMLHttpRequest();
-        const params = "noteText=" + noteBody;
-        xhr.open('POST', this.rakeUrl, false);
-        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        let noteBodyKeywords = new Array();
-        xhr.onreadystatechange = function(){
-            if(xhr.readyState === 4 && xhr.status === 200){
-                noteBodyKeywords = JSON.parse(xhr.response);
-                noteBodyKeywords = NotesAPI._cutInternalWhitespace(noteBodyKeywords);
-                noteBodyKeywords.forEach(string => {
-                    return string.trim();
-                });
-                // toggle loader visibility: OFF
-                // console.log("NotesAPI, extractKeywords:\n", noteBodyKeywords); //works fine
-            }
-        }
-        // toggle loader visibility: ON
-        xhr.send(params);
-        console.log(xhr.response);
-        console.log("NotesAPI, extractKeywords:\n", noteBodyKeywords); //empty... why?
-        return noteBodyKeywords; //this function shouldn't return a value earlier than
-                                // then request gets ready
+        const reqObj = {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: "noteText=" + noteBody
+        };
+        return fetch(this.rakeUrl, reqObj);
     }
 
     // static async extractKeywords(noteBody){ //this is an attempt of async programming
