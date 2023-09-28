@@ -3,7 +3,7 @@ export default class NotesAPI{
     static registerUrl = './php/register.php';
     static rakeUrl = './php/RAKE.php';
     static pushKeywordsUrl = './php/push_keywords.php';
-    static getClientsKeywordsUrl = './php/get_clients_keywords.php';
+    static getClientsKeywordsRankedUrl = './php/get_clients_keywords.php';
     static getKeywordsByUsersUrl = './php/get_keywords_by_users.php';
     static getUserEntryUrl = './php/get_user.php';
     static sendEmailUrl = './php/email_send.php'
@@ -192,20 +192,34 @@ export default class NotesAPI{
     }
 
 
-    static getClientsKeywords(username){
+    static getClientsKeywordsRanked(username, appObj){
         const xhr = new XMLHttpRequest();
         const params = "username=" + username;
-        xhr.open('POST', this.getClientsKeywordsUrl, false);
+        xhr.open('POST', this.getClientsKeywordsRankedUrl, true);
         xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');   
         let keywords = [];
         xhr.onreadystatechange = () => {
             if(xhr.readyState == 4 && xhr.status == 200) {
+                // let i = 0;
+                // while(i < 1e9){
+                //     i++;
+                // }
                 keywords = JSON.parse(xhr.response);
+                const keywordTable = appObj.modalRakeWindowKeywordsTable;
+                const rowClass = "modal__rake_window__users_keywords__table_row";
+                appObj._clearChildNodes(keywordTable);
+                appObj._createTableRowHTML(appObj.TH, keywordTable, 3, rowClass, ['Слово', 'Встреча<wbr>емость', 'Ранг']);
+                for (let word of keywords){
+                    appObj._createTableRowHTML(appObj.TD, keywordTable, 3, rowClass, [word['keyword'], word['occurrences'],
+                        word['rank']]);
+                }
+                appObj.toggleLoader(appObj.keywordsLoader, false);
             }
         }        
+        // appObj.toggleLoader(appObj.keywordsLoader, true);
         xhr.send(params);
         // console.log(xhr.response);
-        return keywords;
+        // return keywords;
     }
 
     static refreshUsersCoworkCandidates(appObj){       
@@ -447,7 +461,7 @@ export default class NotesAPI{
 
     
     // static pushKeywords(username, noteId, keywordsStr){
-        static pushKeywords(username, noteId, keywordsStr){
+        static pushKeywords(username, noteId, keywordsStr, appObj){
         const xhr = new XMLHttpRequest();
         const params = "username=" + username
             + "&noteId=" + noteId
@@ -460,9 +474,10 @@ export default class NotesAPI{
         xhr.onreadystatechange = function(){
             if(xhr.readyState === 4 && xhr.status === 200){
                 // console.log("Keywords insertion query successfully processed!");
-                console.log(xhr.responseText);
+                // console.log(xhr.responseText);
                 // const response = JSON.parse(xhr.response);
                 // console.log(response);
+                // appObj.toggleLoader(appObj.keywordsLoader, false);
             }
         };
         xhr.send(params);
