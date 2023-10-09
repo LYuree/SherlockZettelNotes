@@ -484,6 +484,7 @@ export default class App{
     }
 
     _setActiveNote(noteId){
+        this.activeNoteId = noteId;
         const currActiveNote = this.activeNoteId ? this.view._searchHTMLCollection(this.view.noteListItemsArray, this.activeNoteId) : null;
         console.log(currActiveNote);
         if(currActiveNote){
@@ -494,7 +495,6 @@ export default class App{
                 nextNote.style.marginTop = '-200px';
             }
         }
-        this.activeNoteId = noteId;
         const newActiveNote = this.view._searchHTMLCollection(this.view.noteListItemsArray, noteId);
         newActiveNote.classList.add('selected');
         // console.log(newActiveNote);
@@ -510,18 +510,6 @@ export default class App{
         if(Cookies.get('authenticated') === "true" && this.username !== null){
             // const keywords = NotesAPI.getClientsKeywords(this.username, this);
             NotesAPI.getClientsKeywordsRanked(this.username, this);
-
-            // move to NotesAPI func?
-
-            // const keywordTable = this.modalRakeWindowKeywordsTable;
-            // const rowClass = "modal__rake_window__users_keywords__table_row";
-            // this._clearChildNodes(keywordTable);
-            // this._createTableRowHTML(this.TH, keywordTable, 3, rowClass, ['Слово', 'Встреча<wbr>емость', 'Ранг']);
-            // for (let word of keywords){
-            //     this._createTableRowHTML(this.TD, keywordTable, 3, rowClass, [word['keyword'], word['occurrences'],
-            //         word['rank']]);
-            // }
-            // this.modalRakeWindowRefreshKeywordsLoaderBackgr.classList.remove('active');
         }
     }
 
@@ -643,6 +631,81 @@ export default class App{
         }
     }
 
+    // _setCoworkersTable(clientWithKeywords, othersWithKeywords){
+    //     console.log(this);
+    //     this._clearChildNodes(this.modalRakeWindowCoworkCandidatesTable);
+    //     const rowClass = "modal__rake_window__cowork_candidates__table_row";
+    //     this._createTableRowHTML(this.TH, this.modalRakeWindowCoworkCandidatesTable,
+    //         3, rowClass, ["Пользователь", "Общие<br>слова", "Сходство<wbr>иерархий"]);
+    //     for (let user of othersWithKeywords){
+    //         let clientsKeywords = clientWithKeywords.keywords;
+    //         let usersKeywords = user.keywords;
+    //         // getting an array of keywords with occurrences and ranks
+    //         // const matchingKeywords = usersKeywords.filter(keyword => clientsKeywords.includes(keyword));
+    //         usersKeywords = usersKeywords.filter(function(usersItem){
+    //             for (let clientsItem of clientsKeywords)
+    //                 if(usersItem.keyword === clientsItem.keyword) return true;
+    //             return false;
+    //         });
+    //         clientsKeywords = clientsKeywords.filter(function(clientsItem){
+    //             for (let usersItem of usersKeywords)
+    //                 if(usersItem.keyword === clientsItem.keyword) return true;
+    //             return false;
+    //         });
+    //         const matchesCount = clientsKeywords.length;
+    //         let SpearmanCorrelation = 0;
+    //         if(matchesCount > 0){
+    //             if(matchesCount == 1) SpearmanCorrelation = 1;
+    //             else{
+    //                 let newRank = matchesCount;
+
+    //                 for (let word of clientsKeywords){
+    //                     word.rank = newRank;
+    //                     newRank--;
+    //                 }
+
+    //                 newRank = matchesCount;
+    //                 for (let word of usersKeywords){
+    //                     word.rank = newRank;
+    //                     newRank--;
+    //                 }
+
+    //                 // RECALCULATING THE RANKS FOR BOTH ARRAYS
+    //                 // ======================================================
+    //                 // since two users may have a big difference in the total
+    //                 // number of the keywords they possess,
+    //                 // when we find the intersection of their keyword arrays,
+    //                 // we'll have to recalculate the ranks of those keywords,
+    //                 // so that their keyword ranking systems are comparable.
+    //                 // ======================================================
+
+    //                 let sumSqrDif = 0;
+
+    //                 // HOW WE CALCULATE THE SQUARE DIFFERENCES FOR THE SPEARMAN'S RHO
+    //                 // we have to take THE SAME keyword and look at the difference between
+    //                 // two ranks
+    //                 // so we'll have to find corresponding 
+    //                 // objects by property at each iteration
+                    
+    //                 for (let clientsWord of clientsKeywords){
+    //                     // console.log(usersKeywords,clientsKeywords);
+    //                     const usersWord = usersKeywords.find(item => item.keyword == clientsWord.keyword);
+    //                     console.log(clientsWord, usersWord);
+    //                     const sqrDif = (clientsWord.rank - usersWord.rank)**2;
+    //                     sumSqrDif += sqrDif;
+    //                 }
+    //                 console.log(sumSqrDif);
+    //                 SpearmanCorrelation = 1 - 6*sumSqrDif/(matchesCount*(matchesCount**2 - 1));
+    //             }
+    //         }
+    //         console.log(user.email, user.username);
+    //         const nameCellHTML = `<a href=\'mailto:${user.email}\'>${user.username}</a>`;
+    //         this._createTableRowHTML(this.TD, this.modalRakeWindowCoworkCandidatesTable,
+    //             3, rowClass, [nameCellHTML, matchesCount, SpearmanCorrelation.toFixed(2)]);
+            
+    //     }
+    // }
+
 
     // based on the general computer-science considerations,
     // it's generally quicker to remove the last element
@@ -739,7 +802,7 @@ export default class App{
                 this._setActiveNote(noteId);
             },
 
-            onNoteAdd: () => {
+            onNoteAdd: async () => {
                 const title = "Новая заметка",
                     body = "Введите текст...",
                     newMemoryLimit = this.memoryLimitKB - this._byteSizeKB(title + body);
@@ -748,10 +811,14 @@ export default class App{
                 console.log(this.memoryLimitKB);
                 if(newMemoryLimit < 0) alert (`Лимит памяти превышен на ${Math.abs(newMemoryLimit)} КБ. Изменения не будут сохранены.`);
                 else {
-                    // this.memoryLimitGB
-                    const lastId = NotesAPI.noteSave(-1, "Новая заметка", "Введите текст...",
+                    // const lastId = NotesAPI.noteSave(-1, "Новая заметка", "Введите текст...",
+                    //     this.username, newMemoryLimit);
+                    // this.toggleLoader(this.mainLoader, true);
+                    const response = await NotesAPI.noteSave(-1, "Новая заметка", "Введите текст...",
                         this.username, newMemoryLimit);
-                    // console.log("onNoteAdd, id to add: ", lastId);
+                    const lastId = await response.json();
+                    // this.toggleLoader(this.mainLoader, false);
+                        // console.log("onNoteAdd, id to add: ", lastId);
                     const currDate = NotesView.getCurrentDateString();
                     this.view.createListItemHTML(lastId, "Новая заметка", "Введите текст...",
                         currDate);
@@ -765,7 +832,7 @@ export default class App{
                 }
             },
 
-            onNoteEdit: () => {
+            onNoteEdit: async () => {
                 const newTitleText = this.view.inputTitle.value.trim(),
                     newBodyText = this.view.qlEditor.innerHTML.trim(),
                     newSmallBodyText = this.view.qlEditor.innerText.trim();
@@ -789,7 +856,9 @@ export default class App{
                     const newSmallBodyHiddenHTML = this.view.qlEditor.innerHTML.trim();
                     console.log("onNoteEdit, activeNoteId: ", this.activeNoteId);
                     console.log(newMemoryLimit);
-                    NotesAPI.noteSave(this.activeNoteId, newTitleText, newBodyText, this.username, newMemoryLimit);
+                    this.toggleLoader(this.mainLoader, true);
+                    const _ = await NotesAPI.noteSave(this.activeNoteId, newTitleText, newBodyText, this.username, newMemoryLimit);
+                    this.toggleLoader(this.mainLoader, false);
                     const notesMatrixItem = this.notesMatrix.find(note => note['id'] == this.activeNoteId)
                     notesMatrixItem['note_text'] = newBodyText;
                     notesMatrixItem['name'] = newTitleText;

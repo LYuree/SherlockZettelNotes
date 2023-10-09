@@ -913,6 +913,13 @@ div.note__list-item {
 
 /* .sk-circle */
 /* .main-loader.sk-circle-wrapper */
+
+.keywords-loader_label{
+    color: white;
+    text-align: center;
+    margin: auto;
+}
+
 .sk-circle-wrapper{
     display: none;
     
