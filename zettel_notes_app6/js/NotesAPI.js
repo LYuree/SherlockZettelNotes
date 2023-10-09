@@ -200,10 +200,6 @@ export default class NotesAPI{
         let keywords = [];
         xhr.onreadystatechange = () => {
             if(xhr.readyState == 4 && xhr.status == 200) {
-                // let i = 0;
-                // while(i < 1e9){
-                //     i++;
-                // }
                 keywords = JSON.parse(xhr.response);
                 const keywordTable = appObj.modalRakeWindowKeywordsTable;
                 const rowClass = "modal__rake_window__users_keywords__table_row";
@@ -216,10 +212,7 @@ export default class NotesAPI{
                 appObj.toggleLoader(appObj.keywordsLoader, false);
             }
         }        
-        // appObj.toggleLoader(appObj.keywordsLoader, true);
         xhr.send(params);
-        // console.log(xhr.response);
-        // return keywords;
     }
 
     static refreshUsersCoworkCandidates(appObj){       
@@ -231,6 +224,10 @@ export default class NotesAPI{
         xhr.onreadystatechange = () => {
             if(xhr.readyState == 4 && xhr.status == 200){
                 // console.log(xhr.response);
+                // for(let j = 0; j < 10; j++ ){
+                //     let i = 0;
+                //     while(i < 1e9) i++;
+                // }
                 usersWithKeywords = JSON.parse(xhr.response);
                 const index = usersWithKeywords.findIndex(user => user.username == appObj.username);
                 const clientWithKeywords = usersWithKeywords[index];
@@ -281,30 +278,51 @@ export default class NotesAPI{
     //     return notesMatrix;
     // }
 
+
     static noteSave(idToSave = -1, inputTitle, inputBody, username, newMemoryLimit){
         console.log("NotesAPI, notesave, username: ", username);
         inputTitle = this.shieldApostrophes(inputTitle);
         inputBody = this.shieldApostrophes(inputBody);
-        const xhr = new XMLHttpRequest(),
-            noteId = idToSave,
-            noteTitle = inputTitle,
-            noteText = inputBody,
-            params = "idToSave="+ noteId + "&noteTitle=" + noteTitle + "&noteText="
-                + noteText + "&username=" + username + "&newMemoryLimit=" + newMemoryLimit;
-        xhr.open('POST', this.url, false);
-        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');    
-        let lastNoteId = null;
-        xhr.onreadystatechange = function() {//Call a function when the state changes.
-            if(xhr.readyState == 4 && xhr.status == 200) {
-                console.log("Updating the note...");
-                console.log(xhr.response);
-                lastNoteId = JSON.parse(xhr.response);
-                console.log(lastNoteId);
-            }
-        }        
-        xhr.send(params);
-        return lastNoteId;
+        const noteId = idToSave,
+                noteTitle = inputTitle,
+                noteText = inputBody;
+        const reqObj = {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: "idToSave="+ noteId + "&noteTitle=" + noteTitle + "&noteText=" +
+                        noteText + "&username=" + username + "&newMemoryLimit=" + newMemoryLimit
+        }
+        return fetch(this.url, reqObj);
     }
+    
+
+    // static noteSave(idToSave = -1, inputTitle, inputBody, username, newMemoryLimit){
+    //     console.log("NotesAPI, notesave, username: ", username);
+    //     inputTitle = this.shieldApostrophes(inputTitle);
+    //     inputBody = this.shieldApostrophes(inputBody);
+    //     const xhr = new XMLHttpRequest(),
+    //         noteId = idToSave,
+    //         noteTitle = inputTitle,
+    //         noteText = inputBody,
+    //         params = "idToSave="+ noteId + "&noteTitle=" + noteTitle + "&noteText="
+    //             + noteText + "&username=" + username + "&newMemoryLimit=" + newMemoryLimit;
+    //     xhr.open('POST', this.url, false);
+    //     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');    
+    //     let lastNoteId = null;
+    //     xhr.onreadystatechange = function() {//Call a function when the state changes.
+    //         if(xhr.readyState == 4 && xhr.status == 200) {
+    //             console.log("Updating the note...");
+    //             console.log(xhr.response);
+    //             lastNoteId = JSON.parse(xhr.response);
+    //             console.log(lastNoteId);
+    //         }
+    //     }        
+    //     xhr.send(params);
+    //     return lastNoteId;
+    // }
 
 
     
