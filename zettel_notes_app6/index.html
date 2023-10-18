@@ -178,41 +178,52 @@
                              X
                         </button>
                     </div>
-                    <div class="modal__rake_window__info">
-                        <!-- Веб-сервис Sherlock Notes может автоматически выделить ключевые слова из Ваших заметок.
-                        <br>
-                        Чтобы выполнить эту процедуру, нажмите на кнопку "Обновить список" под таблицей "Ключевые слова".
-                        <br>
-                        Кроме того, приложение позволяет оценить степень сходства Вашего набора ключевых слов с наборами других пользователей сервиса.
-                        <br>
-                        Так Вы сможете узнать, кто из пользователей может оказаться Вашим товарищем по интересам или даже будущим коллегой по работе.
-                        <br> -->
-                    </div>
                     
                     <div class="modal__rake_window__section_flex_container">
-                        <section class="modal__rake_window__user_info">
-                            <img src="./images/holmes_icon.png" alt="avatar">
-                            <div class="modal__rake_window__section__user_text_container">
-                                <span class="modal__rake_window__username"></span>
-                                <span class="modal__rake_window__publicity"></span>
-                                <span class="modal__rake_window__memory_limit"></span>
-                                <span class="modal__rake_window__registration_date"></span>
-                                <div class="modal__rake_window__memory_progress_bar__wrapper">
-                                    <div class="modal__rake_window__memory_progress_bar"></div>
-                                </div>
-                                <!-- label? -->
-                                <span class="modal__rake_window__memory_progress_bar_label">1.26 ГБ/ 2 ГБ</span>
-
-                                <div class="modal__rake_window__user_info__controls">
-                                    <div class="modal__rake_window__publicity_button-wrapper">
-                                        <button type="submit" class="modal__rake_window__publicity_button">
-                                        </button>
+                        <div class="modal__rake_window_user_info-wrapper">
+                            <section class="modal__rake_window__user_info">
+                                <div class="user_info-loader sk-circle-wrapper">
+                                    <div class="sk-circle sk-center">
+                                        <div class="sk-circle-dot"></div>
+                                        <div class="sk-circle-dot"></div>
+                                        <div class="sk-circle-dot"></div>
+                                        <div class="sk-circle-dot"></div>
+                                        <div class="sk-circle-dot"></div>
+                                        <div class="sk-circle-dot"></div>
+                                        <div class="sk-circle-dot"></div>
+                                        <div class="sk-circle-dot"></div>
+                                        <div class="sk-circle-dot"></div>
+                                        <div class="sk-circle-dot"></div>
+                                        <div class="sk-circle-dot"></div>
+                                        <div class="sk-circle-dot"></div>
                                     </div>
-                                    <i class="far fa-question-circle" title="Нажав на эту кнопку, Вы откроете доступ к информации о ключевых словах из Ваших заметок. Приложение сможет порекомендовать Вас в качестве возможного сотрудника другим клиентам сервиса, чьи наборы ключевых слов окажутся схожими с Вашим.">
-                                    </i>
+                                    <div class="user_info-loader_label">Идёт процесс выделения ключевых слов<br>Это может занять некоторое время...</div>
                                 </div>
-                            </div>
-                        </section>
+                            
+                                <img src="./images/holmes_icon.png" alt="avatar">
+                                <div class="modal__rake_window__section__user_text_container">
+                                    <span class="modal__rake_window__username"></span>
+                                    <span class="modal__rake_window__publicity"></span>
+                                    <span class="modal__rake_window__memory_limit"></span>
+                                    <span class="modal__rake_window__registration_date"></span>
+                                    <div class="modal__rake_window__memory_progress_bar__wrapper">
+                                        <div class="modal__rake_window__memory_progress_bar"></div>
+                                    </div>
+                                    <!-- label? -->
+                                    <span class="modal__rake_window__memory_progress_bar_label">1.26 ГБ/ 2 ГБ</span>
+                                    <div class="modal__rake_window__user_info__controls">
+                                        <div class="modal__rake_window__publicity_button-wrapper">
+                                            <button type="submit" class="modal__rake_window__publicity_button">
+                                            </button>
+                                        </div>
+                                        <i class="far fa-question-circle" title="Нажав на эту кнопку, Вы откроете доступ к информации о ключевых словах из Ваших заметок. Приложение сможет порекомендовать Вас в качестве возможного сотрудника другим клиентам сервиса, чьи наборы ключевых слов окажутся схожими с Вашим.">
+                                        </i>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+
+                        
                         <section class="modal__rake_window__users_keywords">
                             <!-- <div class="modal__rake_window__users_keywords__loader_mask">
                                 <div class="modal__rake_window__users_keywords__loader"></div>

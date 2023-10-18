@@ -86,6 +86,7 @@ export default class App{
         this.modalRakeWindowMemoryProgressBar = document.querySelector('.modal__rake_window__memory_progress_bar');
         this.modalRakeWindowMemoryProgressBarLabel = document.querySelector('.modal__rake_window__memory_progress_bar_label');
         this.mainLoader = document.querySelector('.main-loader');
+        this.userInfoLoader = document.querySelector('.user_info-loader');
         this.keywordsLoader = document.querySelector('.keywords-loader');
         this.coworkCandidatesLoader = document.querySelector('.cowork_candidates-loader');
 
@@ -98,9 +99,12 @@ export default class App{
             
         };
 
-        this.modalRakeWindowPublicityBtn.addEventListener('click', () => {
-            const accessOpen = NotesAPI.toggleAccountPublicity(this.username);
+        this.modalRakeWindowPublicityBtn.addEventListener('click', async () => {
+            this.toggleLoader(this.userInfoLoader, true);
+            const response = await NotesAPI.toggleAccountPublicity(this.username);
+            const accessOpen = await response.json();
             console.log(`Access open: ${accessOpen}`);
+            this.toggleLoader(this.userInfoLoader, false);
             // if(accessOpen != null && accessOpen != undefined) {
             //     alert(`Поздравляем! Доступ к Вашим ключевым словам изменён на: ${(accessOpen) ? 'ОТКРЫТЫЙ (приложение может рекомендовать Вас как коллегу другому клиенту со схожим набором ключ. слов)' :
             //     'ЗАКРЫТЫЙ (приложение НЕ ИМЕЕТ доступа к Вашим ключевым словам и не будет рекомендовать другим клиентам сотрудничество с Вами).'}`);
@@ -555,6 +559,12 @@ export default class App{
     //     usersWithKeywords.splice(index, 1);
     //     this._setCoworkersTable(clientWithKeywords, usersWithKeywords);
     // }
+    doHeavyLifting(){
+        let i = 0;
+        while (i < 1e6){
+            i++;
+        }
+    }
 
     _setCoworkersTable(clientWithKeywords, othersWithKeywords){
         console.log(this);
@@ -562,73 +572,76 @@ export default class App{
         const rowClass = "modal__rake_window__cowork_candidates__table_row";
         this._createTableRowHTML(this.TH, this.modalRakeWindowCoworkCandidatesTable,
             3, rowClass, ["Пользователь", "Общие<br>слова", "Сходство<wbr>иерархий"]);
-        for (let user of othersWithKeywords){
-            let clientsKeywords = clientWithKeywords.keywords;
-            let usersKeywords = user.keywords;
-            // getting an array of keywords with occurrences and ranks
-            // const matchingKeywords = usersKeywords.filter(keyword => clientsKeywords.includes(keyword));
-            usersKeywords = usersKeywords.filter(function(usersItem){
-                for (let clientsItem of clientsKeywords)
-                    if(usersItem.keyword === clientsItem.keyword) return true;
-                return false;
-            });
-            clientsKeywords = clientsKeywords.filter(function(clientsItem){
-                for (let usersItem of usersKeywords)
-                    if(usersItem.keyword === clientsItem.keyword) return true;
-                return false;
-            });
-            const matchesCount = clientsKeywords.length;
-            let SpearmanCorrelation = 0;
-            if(matchesCount > 0){
-                if(matchesCount == 1) SpearmanCorrelation = 1;
-                else{
-                    let newRank = matchesCount;
+        // for (let user of othersWithKeywords)
+        othersWithKeywords.forEach(user => {
+                setZeroTimeout(() => {
+                // doHeavyLifting();
+                let clientsKeywords = clientWithKeywords.keywords;
+                let usersKeywords = user.keywords;
+                // getting an array of keywords with occurrences and ranks
+                // const matchingKeywords = usersKeywords.filter(keyword => clientsKeywords.includes(keyword));
+                usersKeywords = usersKeywords.filter(function(usersItem){
+                    for (let clientsItem of clientsKeywords)
+                        if(usersItem.keyword === clientsItem.keyword) return true;
+                    return false;
+                });
+                clientsKeywords = clientsKeywords.filter(function(clientsItem){
+                    for (let usersItem of usersKeywords)
+                        if(usersItem.keyword === clientsItem.keyword) return true;
+                    return false;
+                });
+                const matchesCount = clientsKeywords.length;
+                let SpearmanCorrelation = 0;
+                if(matchesCount > 0){
+                    if(matchesCount == 1) SpearmanCorrelation = 1;
+                    else{
+                        let newRank = matchesCount;
 
-                    for (let word of clientsKeywords){
-                        word.rank = newRank;
-                        newRank--;
+                        for (let word of clientsKeywords){
+                            word.rank = newRank;
+                            newRank--;
+                        }
+
+                        newRank = matchesCount;
+                        for (let word of usersKeywords){
+                            word.rank = newRank;
+                            newRank--;
+                        }
+
+                        // RECALCULATING THE RANKS FOR BOTH ARRAYS
+                        // ======================================================
+                        // since two users may have a big difference in the total
+                        // number of the keywords they possess,
+                        // when we find the intersection of their keyword arrays,
+                        // we'll have to recalculate the ranks of those keywords,
+                        // so that their keyword ranking systems are comparable.
+                        // ======================================================
+
+                        let sumSqrDif = 0;
+
+                        // HOW WE CALCULATE THE SQUARE DIFFERENCES FOR THE SPEARMAN'S RHO
+                        // we have to take THE SAME keyword and look at the difference between
+                        // two ranks
+                        // so we'll have to find corresponding 
+                        // objects by property at each iteration
+                        
+                        for (let clientsWord of clientsKeywords){
+                            // console.log(usersKeywords,clientsKeywords);
+                            const usersWord = usersKeywords.find(item => item.keyword == clientsWord.keyword);
+                            console.log(clientsWord, usersWord);
+                            const sqrDif = (clientsWord.rank - usersWord.rank)**2;
+                            sumSqrDif += sqrDif;
+                        }
+                        console.log(sumSqrDif);
+                        SpearmanCorrelation = 1 - 6*sumSqrDif/(matchesCount*(matchesCount**2 - 1));
                     }
-
-                    newRank = matchesCount;
-                    for (let word of usersKeywords){
-                        word.rank = newRank;
-                        newRank--;
-                    }
-
-                    // RECALCULATING THE RANKS FOR BOTH ARRAYS
-                    // ======================================================
-                    // since two users may have a big difference in the total
-                    // number of the keywords they possess,
-                    // when we find the intersection of their keyword arrays,
-                    // we'll have to recalculate the ranks of those keywords,
-                    // so that their keyword ranking systems are comparable.
-                    // ======================================================
-
-                    let sumSqrDif = 0;
-
-                    // HOW WE CALCULATE THE SQUARE DIFFERENCES FOR THE SPEARMAN'S RHO
-                    // we have to take THE SAME keyword and look at the difference between
-                    // two ranks
-                    // so we'll have to find corresponding 
-                    // objects by property at each iteration
-                    
-                    for (let clientsWord of clientsKeywords){
-                        // console.log(usersKeywords,clientsKeywords);
-                        const usersWord = usersKeywords.find(item => item.keyword == clientsWord.keyword);
-                        console.log(clientsWord, usersWord);
-                        const sqrDif = (clientsWord.rank - usersWord.rank)**2;
-                        sumSqrDif += sqrDif;
-                    }
-                    console.log(sumSqrDif);
-                    SpearmanCorrelation = 1 - 6*sumSqrDif/(matchesCount*(matchesCount**2 - 1));
                 }
-            }
-            console.log(user.email, user.username);
-            const nameCellHTML = `<a href=\'mailto:${user.email}\'>${user.username}</a>`;
-            this._createTableRowHTML(this.TD, this.modalRakeWindowCoworkCandidatesTable,
-                3, rowClass, [nameCellHTML, matchesCount, SpearmanCorrelation.toFixed(2)]);
-            
-        }
+                console.log(user.email, user.username);
+                const nameCellHTML = `<a href=\'mailto:${user.email}\'>${user.username}</a>`;
+                this._createTableRowHTML(this.TD, this.modalRakeWindowCoworkCandidatesTable,
+                    3, rowClass, [nameCellHTML, matchesCount, SpearmanCorrelation.toFixed(2)]);
+            });
+        });
     }
 
     // _setCoworkersTable(clientWithKeywords, othersWithKeywords){
