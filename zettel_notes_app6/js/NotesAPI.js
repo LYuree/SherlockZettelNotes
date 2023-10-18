@@ -241,26 +241,38 @@ export default class NotesAPI{
         appObj.toggleLoader(appObj.coworkCandidatesLoader, true);
         // return usersAndKeywords;
     }
-
+    
     static toggleAccountPublicity(username){
-        const xhr = new XMLHttpRequest(),
-            params = `username=${username}`;
-        xhr.open('POST', this.toggleAccountPublicityUrl, false);
-        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-        // possible result values:
-        // null (failed to proceed);
-        //  true (account is public);
-        //  false (account is private);
-        let accessOpen = null;
-        xhr.onreadystatechange = () => {
-            if(xhr.readyState === 4 && xhr.status === 200){
-                console.log(xhr.responseText);
-                accessOpen = JSON.parse(xhr.response);
-            }
-        }
-        xhr.send(params);
-        return accessOpen;
+        const reqObj = {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `username=${username}`
+        };
+        return fetch(this.toggleAccountPublicityUrl, reqObj);
     }
+
+    // static toggleAccountPublicity(username){
+    //     const xhr = new XMLHttpRequest(),
+    //         params = `username=${username}`;
+    //     xhr.open('POST', this.toggleAccountPublicityUrl, false);
+    //     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    //     // possible result values:
+    //     // null (failed to proceed);
+    //     //  true (account is public);
+    //     //  false (account is private);
+    //     let accessOpen = null;
+    //     xhr.onreadystatechange = () => {
+    //         if(xhr.readyState === 4 && xhr.status === 200){
+    //             console.log(xhr.responseText);
+    //             accessOpen = JSON.parse(xhr.response);
+    //         }
+    //     }
+    //     xhr.send(params);
+    //     return accessOpen;
+    // }
 
     // static getAllNotes(username, password){
     //     const xhr = new XMLHttpRequest();
