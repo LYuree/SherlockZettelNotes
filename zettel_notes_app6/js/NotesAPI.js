@@ -227,7 +227,20 @@ export default class NotesAPI{
                 // for(let j = 0; j < 10; j++ ){
                 //     let i = 0;
                 //     while(i < 1e9) i++;
+                // }this.notesMatrix.forEach(note => {
+
+                // debugging heavylifting
+
+                // let j = 0;
+                // const launchCallbacks = function(func) {
+                //     while(j < 1e3) setZeroTimeout(func);
                 // }
+                // const testCallback = function(){
+                //     j--;
+                //     // console.log(j);
+                // }
+                // launchCallbacks(testCallback);
+
                 usersWithKeywords = JSON.parse(xhr.response);
                 const index = usersWithKeywords.findIndex(user => user.username == appObj.username);
                 const clientWithKeywords = usersWithKeywords[index];

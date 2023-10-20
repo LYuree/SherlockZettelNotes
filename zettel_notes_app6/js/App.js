@@ -521,8 +521,26 @@ export default class App{
     async _refreshUsersKeywords(){
         console.log("App, refreshing user's keywords, showing notesMatrix: ", this.notesMatrix);      
         let notesCount = this.notesMatrix.length;
-        this.notesMatrix.forEach(note => {
-            setZeroTimeout(async ()=>{
+        // this.notesMatrix.forEach(note => {
+        //     console.log("launching callback for a note");
+        //     setZeroTimeout(async ()=>{
+        //         let response = await NotesAPI.extractKeywords(this._stripHTMLTags(note['note_text']));
+        //         let noteKeywords = await response.json();
+        //         if (note['name'] != '') noteKeywords.push(note['name'].toLowerCase());
+        //         noteKeywords = noteKeywords.map(str => NotesAPI.shieldApostrophes(str));
+        //         const keywordsString = noteKeywords.join(",");
+        //         NotesAPI.pushKeywords(this.username, note['id'], keywordsString);
+        //         notesCount--;
+        //         if(notesCount == 0){
+        //             console.log("UPDATING THE KEYWORDS TABLE!");
+        //             NotesAPI.getClientsKeywordsRanked(this.username, this);
+        //         }
+        //     });
+        // });
+
+
+        this.notesMatrix.forEach(async note => {
+            console.log("launching callback for a note");
                 let response = await NotesAPI.extractKeywords(this._stripHTMLTags(note['note_text']));
                 let noteKeywords = await response.json();
                 if (note['name'] != '') noteKeywords.push(note['name'].toLowerCase());
@@ -534,8 +552,9 @@ export default class App{
                     console.log("UPDATING THE KEYWORDS TABLE!");
                     NotesAPI.getClientsKeywordsRanked(this.username, this);
                 }
-            });
         });
+
+
         // setZeroTimeout(()=>{
         //     setZeroTimeout(() => {
         //         console.log("UPDATING THE KEYWORDS TABLE!");
@@ -574,7 +593,6 @@ export default class App{
             3, rowClass, ["Пользователь", "Общие<br>слова", "Сходство<wbr>иерархий"]);
         // for (let user of othersWithKeywords)
         othersWithKeywords.forEach(user => {
-                setZeroTimeout(() => {
                 // doHeavyLifting();
                 let clientsKeywords = clientWithKeywords.keywords;
                 let usersKeywords = user.keywords;
@@ -640,7 +658,6 @@ export default class App{
                 const nameCellHTML = `<a href=\'mailto:${user.email}\'>${user.username}</a>`;
                 this._createTableRowHTML(this.TD, this.modalRakeWindowCoworkCandidatesTable,
                     3, rowClass, [nameCellHTML, matchesCount, SpearmanCorrelation.toFixed(2)]);
-            });
         });
     }
 
