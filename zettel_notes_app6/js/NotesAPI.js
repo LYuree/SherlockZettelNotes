@@ -200,7 +200,9 @@ export default class NotesAPI{
         let keywords = [];
         xhr.onreadystatechange = () => {
             if(xhr.readyState == 4 && xhr.status == 200) {
+                console.log(xhr.response);
                 keywords = JSON.parse(xhr.response);
+                console.log("keywords ranked: ", keywords);
                 const keywordTable = appObj.modalRakeWindowKeywordsTable;
                 const rowClass = "modal__rake_window__users_keywords__table_row";
                 appObj._clearChildNodes(keywordTable);
@@ -516,7 +518,7 @@ export default class NotesAPI{
 
     
     // static pushKeywords(username, noteId, keywordsStr){
-        static pushKeywords(username, noteId, keywordsStr, appObj){
+    static pushKeywords(username, noteId, keywordsStr, appObj){
         const xhr = new XMLHttpRequest();
         const params = "username=" + username
             + "&noteId=" + noteId
@@ -528,8 +530,8 @@ export default class NotesAPI{
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         xhr.onreadystatechange = function(){
             if(xhr.readyState === 4 && xhr.status === 200){
-                // console.log("Keywords insertion query successfully processed!");
-                // console.log(xhr.responseText);
+                console.log("Keywords insertion query successfully processed!");
+                console.log(xhr.responseText);
                 // const response = JSON.parse(xhr.response);
                 // console.log(response);
                 // appObj.toggleLoader(appObj.keywordsLoader, false);

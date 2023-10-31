@@ -175,7 +175,8 @@ export default class App{
         });
 
         this.modalRakeWindowRefreshKeywordsBtn.addEventListener('click', ()=>{
-            this._refreshUsersKeywords();
+            let notesCount = this.notesMatrix.length;
+            if(notesCount > 0) this._refreshUsersKeywords();
         });
 
         this.modalRakeWindowRefreshCandidatesBtn.addEventListener('click', ()=>{
@@ -518,7 +519,7 @@ export default class App{
     }
 
     // move the whole thing  to NotesAPI?
-    async _refreshUsersKeywords(){
+    async _refreshUsersKeywords(notesMatrixLength){
         console.log("App, refreshing user's keywords, showing notesMatrix: ", this.notesMatrix);      
         let notesCount = this.notesMatrix.length;
         // this.notesMatrix.forEach(note => {
@@ -546,6 +547,7 @@ export default class App{
                 if (note['name'] != '') noteKeywords.push(note['name'].toLowerCase());
                 noteKeywords = noteKeywords.map(str => NotesAPI.shieldApostrophes(str));
                 const keywordsString = noteKeywords.join(",");
+                console.log("keywords string (ready to push): ", keywordsString);
                 NotesAPI.pushKeywords(this.username, note['id'], keywordsString);
                 notesCount--;
                 if(notesCount == 0){
@@ -593,6 +595,7 @@ export default class App{
             3, rowClass, ["Пользователь", "Общие<br>слова", "Сходство<wbr>иерархий"]);
         // for (let user of othersWithKeywords)
         othersWithKeywords.forEach(user => {
+                setZeroTimeout(() => {
                 // doHeavyLifting();
                 let clientsKeywords = clientWithKeywords.keywords;
                 let usersKeywords = user.keywords;
@@ -608,6 +611,8 @@ export default class App{
                         if(usersItem.keyword === clientsItem.keyword) return true;
                     return false;
                 });
+                // console.log("user's keywords: ", usersKeywords);
+                // console.log("client's keywords: ", clientsKeywords);
                 const matchesCount = clientsKeywords.length;
                 let SpearmanCorrelation = 0;
                 if(matchesCount > 0){
@@ -625,6 +630,9 @@ export default class App{
                             word.rank = newRank;
                             newRank--;
                         }
+
+                        console.log("user's keywords: ", usersKeywords);
+                        console.log("client's keywords: ", clientsKeywords);
 
                         // RECALCULATING THE RANKS FOR BOTH ARRAYS
                         // ======================================================
@@ -658,6 +666,7 @@ export default class App{
                 const nameCellHTML = `<a href=\'mailto:${user.email}\'>${user.username}</a>`;
                 this._createTableRowHTML(this.TD, this.modalRakeWindowCoworkCandidatesTable,
                     3, rowClass, [nameCellHTML, matchesCount, SpearmanCorrelation.toFixed(2)]);
+            });
         });
     }
 
@@ -832,27 +841,57 @@ export default class App{
                 this._setActiveNote(noteId);
             },
 
+            // onNoteAdd: async () => {
+            //     const title = "Новая заметка",
+            //         body = "Введите текст...",
+            //         newMemoryLimit = this.memoryLimitKB - this._byteSizeKB(title + body);
+            //     console.log("Byte size: ", this._byteSize(title + body));
+            //     console.log("Byte size (KB): ", this._byteSizeKB(title + body));
+            //     console.log(this.memoryLimitKB);
+            //     if(newMemoryLimit < 0) alert (`Лимит памяти превышен на ${Math.abs(newMemoryLimit)} КБ. Изменения не будут сохранены.`);
+            //     else {
+            //         // const lastId = NotesAPI.noteSave(-1, "Новая заметка", "Введите текст...",
+            //         //     this.username, newMemoryLimit);
+            //         // this.toggleLoader(this.mainLoader, true);
+            //         const response = await NotesAPI.noteSave(-1, "Новая заметка", "Введите текст...",
+            //             this.username, newMemoryLimit);
+            //         const lastId = await response.json();
+            //         // this.toggleLoader(this.mainLoader, false);
+            //             // console.log("onNoteAdd, id to add: ", lastId);
+            //         const currDate = NotesView.getCurrentDateString();
+            //         this.view.createListItemHTML(lastId, "Новая заметка", "Введите текст...",
+            //             currDate);
+            //         this.notesMatrix.push({id: lastId, name: "Новая заметка", note_text: "Введите текст...",
+            //             creation_date: currDate});
+            //         this.memoryLimitKB = newMemoryLimit;
+            //         console.log(`Memory limit post change: ${this.memoryLimitKB}`);
+            //         this.modalRakeWindowMemoryProgressBar.style.width = (this.memoryLimitKB? (App.KB*2-this.memoryLimitKB)/(App.KB*2)*100.0 + '%' : '0');
+            //         this.modalRakeWindowMemoryProgressBarLabel.innerText = `${this.memoryLimitKB ? (this.memoryLimitKB/App.KB).toFixed(2) : 0} ГБ / 2.00 ГБ свободно`;
+            //         // console.log(this.notesMatrix);
+            //     }
+            // },
+
             onNoteAdd: async () => {
-                const title = "Новая заметка",
-                    body = "Введите текст...",
+                const title = `Новая заметка`,
+                    body = `Введите текст...`,
                     newMemoryLimit = this.memoryLimitKB - this._byteSizeKB(title + body);
-                console.log("Byte size: ", this._byteSize(title + body));
-                console.log("Byte size (KB): ", this._byteSizeKB(title + body));
+                console.log(`Byte size: `, this._byteSize(title + body));
+                console.log(`Byte size (KB): `, this._byteSizeKB(title + body));
                 console.log(this.memoryLimitKB);
                 if(newMemoryLimit < 0) alert (`Лимит памяти превышен на ${Math.abs(newMemoryLimit)} КБ. Изменения не будут сохранены.`);
                 else {
-                    // const lastId = NotesAPI.noteSave(-1, "Новая заметка", "Введите текст...",
+                    // const lastId = NotesAPI.noteSave(-1, `Новая заметка`, `Введите текст...`,
                     //     this.username, newMemoryLimit);
                     // this.toggleLoader(this.mainLoader, true);
-                    const response = await NotesAPI.noteSave(-1, "Новая заметка", "Введите текст...",
+                    const response = await NotesAPI.noteSave(-1, `Новая заметка`, `Введите текст...`,
                         this.username, newMemoryLimit);
                     const lastId = await response.json();
                     // this.toggleLoader(this.mainLoader, false);
-                        // console.log("onNoteAdd, id to add: ", lastId);
+                        // console.log(`onNoteAdd, id to add: `, lastId);
                     const currDate = NotesView.getCurrentDateString();
-                    this.view.createListItemHTML(lastId, "Новая заметка", "Введите текст...",
+                    this.view.createListItemHTML(lastId, `Новая заметка`, `Введите текст...`,
                         currDate);
-                    this.notesMatrix.push({id: lastId, name: "Новая заметка", note_text: "Введите текст...",
+                    this.notesMatrix.push({id: lastId, name: `Новая заметка`, note_text: `Введите текст...`,
                         creation_date: currDate});
                     this.memoryLimitKB = newMemoryLimit;
                     console.log(`Memory limit post change: ${this.memoryLimitKB}`);
@@ -861,6 +900,8 @@ export default class App{
                     // console.log(this.notesMatrix);
                 }
             },
+
+
 
             onNoteEdit: async () => {
                 const newTitleText = this.view.inputTitle.value.trim(),
