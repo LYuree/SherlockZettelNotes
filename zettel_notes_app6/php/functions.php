@@ -43,13 +43,16 @@
             $keywords[] = $keyword;
         }
         foreach($keywords as $item){
-            $item['keyword'] = strtolower($item['keyword']);
+            // why tolower? they've already been 'tolower-ed'
+            // $item['keyword'] = strtolower($item['keyword']);
+            $item['keyword'] = ($item['keyword']);
         }
 
         // print_r($keywords);
 
         // сформируем новый массив, где дубли ключевых слов будут "слиты" воедино
         $keywordsUnique = array();
+        $iteration = 0;
         foreach($keywords as $keyword){
             $index = keyword_in_array($keyword, $keywordsUnique);
             // if($index == null) print_r("index is null\n");
@@ -63,9 +66,19 @@
                 // print_r("keyword: ".$keywordsUnique[$index]['keyword']. ", occurrences: ".
                 // $keywordsUnique[$index]['occurrences']."\n");
             }
-            else $keywordsUnique[] = $keyword;
+            else {
+                // print_r("index = -1, keyword: ");
+                // print_r($keyword);
+                // print_r("iteration: ".$iteration."\n");
+                $keywordsUnique[] = $keyword;
+            }
+            $iteration++;
         }
         usort($keywordsUnique, "occ_cmp");
+        // print_r($keywordsUnique);
+        // if($keywordsUnique[1]['keyword'] == $keywordsUnique[3]['keyword'])
+        //     echo "keywords are equal";
+        // print_r($keywordsUnique[1]['keyword'].", ".$keywordsUnique[3]['keyword']);
 
         // print_r($keywordsUnique);
 
@@ -89,8 +102,14 @@
         $haystack_length = count($haystack);
         for ($i = 0; $i < $haystack_length; $i++){
             // print_r($haystack[$i]['keyword']."-".$needle['keyword']."\n");
-            if ($haystack[$i]['keyword'] == $needle['keyword']) $index = $i;
-            
+            if ($haystack[$i]['keyword'] == $needle['keyword']) {
+                // print_r($haystack[$i]['keyword']."-".$needle['keyword']."\n");
+                $index = $i;
+                // print("\n$index");
+                // if ($i === null) echo "null";
+                // else echo "$i";
+                // break;
+            }            
             // print_r("index is null, KEYWORD: ".$needle['keyword'].", haystack: ".
             //     $haystack[$i]['keyword']."\n");
             // ($index." - KEYWORD: ".$needle['keyword'].", haystack: ".
@@ -99,7 +118,7 @@
             //     $haystack[$i]['keyword'].", i = ".$i."\n");
             // else print_r($index."\n");
         }
-        if($index == null) return -1;
+        if($index == null && $index != 0) return -1;
         return $index;
     }
 
