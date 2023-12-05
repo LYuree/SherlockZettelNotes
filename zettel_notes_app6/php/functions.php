@@ -173,10 +173,18 @@
         $mail->SMTPAuth = true;
         $mail->Username = $sender_email; // Enter your email here
         $mail->Password = $sender_app_code; //Enter your password here
-        $mail->Port = 465;
+        // port for ssl
+        // $mail->Port = 465;
+        // port for tls
+        $mail->Port = 587;
 
         //****************************
-        $mail->SMTPSecure = "ssl";
+
+        // I guess, the ssl certificate expired, or the server got outdated, or w/e...
+        // just migrated to tls encrypting
+
+        // $mail->SMTPSecure = "ssl";
+        $mail->SMTPSecure = "tls";
         //****************************
         
         $mail->IsHTML(true); //for the letter itself?
