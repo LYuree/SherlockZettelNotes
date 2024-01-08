@@ -1,4 +1,5 @@
-<?php 
+<?php
+require 'sensitive_info/sensitive_info.php';
 
 $dsn = "pgsql:host=localhost;port=5432;dbname=zettelnotes";
 $options = [
@@ -8,7 +9,7 @@ $options = [
 
 try{
      // З'єднання з базою даних
-    $pdo = new PDO($dsn, 'postgres', 'Mister#wizard*', $options);
+    $pdo = new PDO($dsn, "$db_server_username", "$db_server_password", $options);
     // print_r('<span style="color:white">Підключення вдалося! </span>'); 
 }catch (PDOException $e) {
     $pdo = null;
