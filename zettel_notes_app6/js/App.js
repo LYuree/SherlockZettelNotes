@@ -8,6 +8,8 @@ import '/node_modules/zero-timeout/index.js';
 
 export default class App{
     static KB = 2097152/2;
+    static marginTopShifted = '-100px';
+    static marginTopUnshifted = '-200px';
 
     constructor(root){
         //these should also be assigned conditionally?
@@ -394,7 +396,8 @@ export default class App{
     }
 
     initiateNotesView(){
-        this.view = new NotesView(this, this.root, this._handlers());
+        console.log(App.marginTopShifted);
+        this.view = new NotesView(this, this.root, this._handlers(), App.marginTopShifted, App.marginTopUnshifted);
     }
 
     toggleModalSignInWindow(active){
@@ -494,10 +497,12 @@ export default class App{
         console.log(currActiveNote);
         if(currActiveNote){
             currActiveNote.classList.remove('selected');
+            currActiveNote.classList.remove('active');
+            console.log(currActiveNote);
             const nextNote = NotesView._getNextNoteItem(currActiveNote);
             if(nextNote){
                 currActiveNote.classList.remove('active');
-                nextNote.style.marginTop = '-200px';
+                nextNote.style.marginTop = this.marginTopSlide;
             }
         }
         const newActiveNote = this.view._searchHTMLCollection(this.view.noteListItemsArray, noteId);
@@ -505,7 +510,7 @@ export default class App{
         // console.log(newActiveNote);
         const nextNote = NotesView._getNextNoteItem(newActiveNote);
         if(nextNote){
-            nextNote.style.marginTop = 0;
+            nextNote.style.marginTop = this.marginTopNoSlide;
         }
         // console.log(nextNote);
         this.view.updateActiveNote(this.activeNoteId);
@@ -571,6 +576,13 @@ export default class App{
     }
 
 
+    noteExists(noteId){
+        for (const note of this.notesMatrix){
+            if(note.id == noteId) return true;
+        }
+        return false;
+    }
+
     // _refreshUsersCoworkCandidates(){
     //     // let usersWithKeywords = NotesAPI.getKeywordsByUsers();
     //     // renaming the func to
@@ -580,6 +592,8 @@ export default class App{
     //     usersWithKeywords.splice(index, 1);
     //     this._setCoworkersTable(clientWithKeywords, usersWithKeywords);
     // }
+
+    // for debugging
     doHeavyLifting(){
         let i = 0;
         while (i < 1e6){
@@ -592,7 +606,7 @@ export default class App{
         this._clearChildNodes(this.modalRakeWindowCoworkCandidatesTable);
         const rowClass = "modal__rake_window__cowork_candidates__table_row";
         this._createTableRowHTML(this.TH, this.modalRakeWindowCoworkCandidatesTable,
-            3, rowClass, ["Пользователь", "Общие<br>слова", "Сходство<wbr>иерархий"]);
+            3, rowClass, ["Пользователь", "Общие<br>слова", "Сходство<wbr>наборов"]);
         // for (let user of othersWithKeywords)
         othersWithKeywords.forEach(user => {
                 setZeroTimeout(() => {
@@ -601,73 +615,246 @@ export default class App{
                 let usersKeywords = user.keywords;
                 // getting an array of keywords with occurrences and ranks
                 // const matchingKeywords = usersKeywords.filter(keyword => clientsKeywords.includes(keyword));
-                usersKeywords = usersKeywords.filter(function(usersItem){
-                    for (let clientsItem of clientsKeywords)
-                        if(usersItem.keyword === clientsItem.keyword) return true;
-                    return false;
-                });
-                clientsKeywords = clientsKeywords.filter(function(clientsItem){
-                    for (let usersItem of usersKeywords)
-                        if(usersItem.keyword === clientsItem.keyword) return true;
-                    return false;
-                });
+                
+                
+                // usersKeywords = usersKeywords.filter(function(usersItem){
+                //     for (let clientsItem of clientsKeywords)
+                //         if(usersItem.keyword === clientsItem.keyword) return true;
+                //     return false;
+                // });
+                // clientsKeywords = clientsKeywords.filter(function(clientsItem){
+                //     for (let usersItem of usersKeywords)
+                //         if(usersItem.keyword === clientsItem.keyword) return true;
+                //     return false;
+                // });
+
+
                 // console.log("user's keywords: ", usersKeywords);
                 // console.log("client's keywords: ", clientsKeywords);
                 const matchesCount = clientsKeywords.length;
-                let SpearmanCorrelation = 0;
-                if(matchesCount > 0){
-                    if(matchesCount == 1) SpearmanCorrelation = 1;
-                    else{
-                        let newRank = matchesCount;
 
-                        for (let word of clientsKeywords){
-                            word.rank = newRank;
-                            newRank--;
-                        }
+                // we could create an otsuka-class instance that would hold the
+                // value of the coefficient itself as well as c, the length of the two
+                // arrays' intersection
+                // const OtsukaMean = this.getOtsukaMean(clientsKeywords, usersKeywords);
+                const JaccardMean = this.getJaccardMean(clientsKeywords, usersKeywords);
+                // let SpearmanCorrelation = this._getSpearmanRho(matchesCount, usersKeywords, clientsKeywords);
+                
+                // let MAPE = null;
 
-                        newRank = matchesCount;
-                        for (let word of usersKeywords){
-                            word.rank = newRank;
-                            newRank--;
-                        }
 
-                        console.log("user's keywords: ", usersKeywords);
-                        console.log("client's keywords: ", clientsKeywords);
-
-                        // RECALCULATING THE RANKS FOR BOTH ARRAYS
-                        // ======================================================
-                        // since two users may have a big difference in the total
-                        // number of the keywords they possess,
-                        // when we find the intersection of their keyword arrays,
-                        // we'll have to recalculate the ranks of those keywords,
-                        // so that their keyword ranking systems are comparable.
-                        // ======================================================
-
-                        let sumSqrDif = 0;
-
-                        // HOW WE CALCULATE THE SQUARE DIFFERENCES FOR THE SPEARMAN'S RHO
-                        // we have to take THE SAME keyword and look at the difference between
-                        // two ranks
-                        // so we'll have to find corresponding 
-                        // objects by property at each iteration
-                        
-                        for (let clientsWord of clientsKeywords){
-                            // console.log(usersKeywords,clientsKeywords);
-                            const usersWord = usersKeywords.find(item => item.keyword == clientsWord.keyword);
-                            console.log(clientsWord, usersWord);
-                            const sqrDif = (clientsWord.rank - usersWord.rank)**2;
-                            sumSqrDif += sqrDif;
-                        }
-                        console.log(sumSqrDif);
-                        SpearmanCorrelation = 1 - 6*sumSqrDif/(matchesCount*(matchesCount**2 - 1));
-                    }
-                }
                 console.log(user.email, user.username);
+                console.log(JaccardMean);
                 const nameCellHTML = `<a href=\'mailto:${user.email}\'>${user.username}</a>`;
                 this._createTableRowHTML(this.TD, this.modalRakeWindowCoworkCandidatesTable,
-                    3, rowClass, [nameCellHTML, matchesCount, SpearmanCorrelation.toFixed(2)]);
+                    3, rowClass, [nameCellHTML, '-', JaccardMean.toFixed(4)]);
             });
         });
+    }
+
+    // _getCosineSim(keywordsA, keywordsB){
+    //     let dotproduct=0,
+    //         mA=0,
+    //         mB=0;
+    //     // for(i = 0; i < A.length;){
+    //     //     dotproduct += (A[i] * B[i]);
+    //     //     mA += (A[i]*A[i]);
+    //     //     mB += (B[i]*B[i]);
+    //     // }
+
+    //     // wait wut
+    //     // what if they have different lengths
+
+    //     for(i = 0; i < A.length;){
+    //         dotproduct += (keywordsA[i] * B[i]);
+    //         mA += (A[i]*A[i]);
+    //         mB += (B[i]*B[i]);
+    //     }
+    //     mA = Math.sqrt(mA);
+    //     mB = Math.sqrt(mB);
+    //     var similarity = (dotproduct)/(mA)*(mB)
+    //     return similarity;
+    
+    //     //.....
+        
+    //     // var array1 = [1,0,0,1];
+    //     // var array2 = [1,0,0,0];
+        
+    //     // var p = cosinesim(array1,array2);
+    //     // document.getElementById("sim").innerHTML = String(p);
+    // }
+
+    // setRelativeFreqs(userWithKeywords){
+    //     let freqSum = 0;
+    //     const keywords = userWithKeywords['keywords'];
+    //     for (let keyword of keywords)
+    //         freqSum += keyword['occurrences'];
+    //     for (let keyword of userWithKeywords['keywords'])
+    //         keyword['relFrequency'] = keyword['occurrences']/freqSum;
+    // }
+
+    occurrencesToPercent(keywordsArray){
+        // a structured clone of an array is created
+        // to prevent the initial array from undergoing changes;
+        // structuredClone function shows better performance
+        // than the JSON way, but the former might require polyfill
+        // (which it, probably, shouldn't, cause it seems to be now supported
+        // by all browsers)
+        // const resultArray = JSON.parse(JSON.stringify(keywordsArray));
+        const resultArray = structuredClone(keywordsArray);
+        // const resultArray = Array.from(keywordsArray);
+        console.log(resultArray);
+        let sumOfOccurrences = 0;
+        for (let item of resultArray){
+            // console.log(item);
+            sumOfOccurrences += item['occurrences'];
+        }
+        for (let item of resultArray){
+            item['occurrences'] /= sumOfOccurrences;
+        }
+        console.log(resultArray);
+        return resultArray;
+    }
+
+    getJaccardMean(clientsKeywords, usersKeywords){
+        console.log(clientsKeywords, usersKeywords);
+        let intersection = 0,
+            union = 2, //basically 100% + 100%
+            m = 0;
+        const usersKeywordsTransformed = this.occurrencesToPercent(usersKeywords),
+        clientsKeywordsTransformed = this.occurrencesToPercent(clientsKeywords);
+
+        const unionArray = usersKeywordsTransformed.concat(clientsKeywordsTransformed);
+        for (let unionIndex in unionArray){
+            // you can prob figure out the intersection here, too
+            let firstItem = unionArray[unionIndex];
+            console.log(unionArray.slice(unionIndex + 1))
+            let intersectingItem = unionArray.slice(+unionIndex + 1).find(item => item['keyword'] == firstItem['keyword']);
+            console.log(firstItem, intersectingItem, unionIndex);
+            if (intersectingItem){
+                console.log(unionArray);
+                intersection += Math.min(firstItem['occurrences'], intersectingItem['occurrences']);
+                // union += Math.max(firstItem['occurrences'], intersectingItem['occurrences']);
+            }
+            else {
+                // union += firstItem['occurrences'];
+                m += 1;
+            }
+        }
+
+        // for (let clientsItem of clientsKeywordsTransformed){
+        //     // clientsKeywordsArray[i][0] = item['keyword']; //call these arrays keywordMatrices, if you somehow happen to need them
+        //     // clientsKeywordsArray[i][1] = +item['occurrences'];
+        //     // console.log(clientsItem);
+        //     // Ni += +clientsItem['occurrences'];
+        //     let usersItem = usersKeywordsTransformed.find(item => clientsItem['keyword'] == item['keyword']);
+        //     if (usersItem){
+        //         intersection += Math.min(clientsItem['occurrences'], usersItem['occurrences']);
+        //         // union += Math.max(clientsItem['occurrences'], usersItem['occurrences']);
+        //         m += 1;
+        //     }
+        //     // else union += clientsItem;
+        // }
+        
+        // for (let usersItem of usersKeywordsTransformed){
+        //     //     usersKeywordsArray[i][0] = item['keyword'];
+        //     //     usersKeywordsArray[i][1] = +item['occurrences'];
+        //     Nj += usersItem['occurrences'];
+        //     }
+        console.log(`intersection = ${intersection}, union = ${union}, m = ${m}`);
+        return intersection/union/m;
+    }
+
+
+
+    getOtsukaMean(clientsKeywords, usersKeywords){
+        // maybe, let's create an actual two-dim array out of our
+        // arrays of objects?
+        // console.log(clientsKeywords);
+        // console.log(usersKeywords);
+        let Ni = 0,
+            Nj = 0,
+            c = 0,
+            m = 0;
+        // const clientsKeywordsArray = new Array(),
+            // usersKeywordsArray = new Array();
+        // let i = 0;
+        const usersKeywordsTransformed = this.occurrencesToPercent(usersKeywords),
+            clientsKeywordsTransformed = this.occurrencesToPercent(clientsKeywords);
+        for (let clientsItem of clientsKeywordsTransformed){
+            // clientsKeywordsArray[i][0] = item['keyword']; //call these arrays keywordMatrices, if you somehow happen to need them
+            // clientsKeywordsArray[i][1] = +item['occurrences'];
+            console.log(clientsItem);
+            Ni += +clientsItem['occurrences'];
+            let usersItem = usersKeywordsTransformed.find(item => clientsItem['keyword'] == item['keyword']);
+            if (usersItem){
+                c += Math.min(+clientsItem['occurrences'], +usersItem['occurrences']);
+                m += 1;
+            }
+        }
+        for (let usersItem of usersKeywordsTransformed){
+        //     usersKeywordsArray[i][0] = item['keyword'];
+        //     usersKeywordsArray[i][1] = +item['occurrences'];
+            Nj += +usersItem['occurrences'];
+        }
+        console.log(`c = ${c}, Ni = ${Ni}, Nj = ${Nj}`);
+        return c/Math.sqrt(Ni + Nj)/m;
+        // for (let clientsItem in clientsKeywords){
+            // if (usersKeywords.find(usersItem => clientsItem['keyword'] == usersItem['keyword']))
+                // c += Math.min(+clientsItem['occurrences'], +usersItem['occurrences']);
+        // }
+
+    }
+
+    _getSpearmanRho(matchesCount, usersKeywords, clientsKeywords){
+        if(matchesCount > 0){
+            if(matchesCount == 1) SpearmanCorrelation = 1;
+            else{
+                let newRank = matchesCount;
+
+                for (let word of clientsKeywords){
+                    word.rank = newRank;
+                    newRank--;
+                }
+
+                newRank = matchesCount;
+                for (let word of usersKeywords){
+                    word.rank = newRank;
+                    newRank--;
+                }
+
+                console.log("user's keywords: ", usersKeywords);
+                console.log("client's keywords: ", clientsKeywords);
+
+                // RECALCULATING THE RANKS FOR BOTH ARRAYS
+                // ======================================================
+                // since two users may have a big difference in the total
+                // number of the keywords they possess,
+                // when we find the intersection of their keyword arrays,
+                // we'll have to recalculate the ranks of those keywords,
+                // so that their keyword ranking systems are comparable.
+                // ======================================================
+
+                let sumSqrDif = 0;
+
+                // HOW WE CALCULATE THE SQUARE DIFFERENCES FOR THE SPEARMAN'S RHO
+                // we have to take THE SAME keyword and look at the difference between
+                // two ranks
+                // so we'll have to find corresponding 
+                // objects by property at each iteration
+                
+                for (let clientsWord of clientsKeywords){
+                    // console.log(usersKeywords,clientsKeywords);
+                    const usersWord = usersKeywords.find(item => item.keyword == clientsWord.keyword);
+                    console.log(clientsWord, usersWord);
+                    const sqrDif = (clientsWord.rank - usersWord.rank)**2;
+                    sumSqrDif += sqrDif;
+                }
+                console.log(sumSqrDif);
+                SpearmanCorrelation = 1 - 6*sumSqrDif/(matchesCount*(matchesCount**2 - 1));
+            }
+        }       
+        return SpearmanCorrelation;
     }
 
     // _setCoworkersTable(clientWithKeywords, othersWithKeywords){
@@ -841,39 +1028,10 @@ export default class App{
                 this._setActiveNote(noteId);
             },
 
-            // onNoteAdd: async () => {
-            //     const title = "Новая заметка",
-            //         body = "Введите текст...",
-            //         newMemoryLimit = this.memoryLimitKB - this._byteSizeKB(title + body);
-            //     console.log("Byte size: ", this._byteSize(title + body));
-            //     console.log("Byte size (KB): ", this._byteSizeKB(title + body));
-            //     console.log(this.memoryLimitKB);
-            //     if(newMemoryLimit < 0) alert (`Лимит памяти превышен на ${Math.abs(newMemoryLimit)} КБ. Изменения не будут сохранены.`);
-            //     else {
-            //         // const lastId = NotesAPI.noteSave(-1, "Новая заметка", "Введите текст...",
-            //         //     this.username, newMemoryLimit);
-            //         // this.toggleLoader(this.mainLoader, true);
-            //         const response = await NotesAPI.noteSave(-1, "Новая заметка", "Введите текст...",
-            //             this.username, newMemoryLimit);
-            //         const lastId = await response.json();
-            //         // this.toggleLoader(this.mainLoader, false);
-            //             // console.log("onNoteAdd, id to add: ", lastId);
-            //         const currDate = NotesView.getCurrentDateString();
-            //         this.view.createListItemHTML(lastId, "Новая заметка", "Введите текст...",
-            //             currDate);
-            //         this.notesMatrix.push({id: lastId, name: "Новая заметка", note_text: "Введите текст...",
-            //             creation_date: currDate});
-            //         this.memoryLimitKB = newMemoryLimit;
-            //         console.log(`Memory limit post change: ${this.memoryLimitKB}`);
-            //         this.modalRakeWindowMemoryProgressBar.style.width = (this.memoryLimitKB? (App.KB*2-this.memoryLimitKB)/(App.KB*2)*100.0 + '%' : '0');
-            //         this.modalRakeWindowMemoryProgressBarLabel.innerText = `${this.memoryLimitKB ? (this.memoryLimitKB/App.KB).toFixed(2) : 0} ГБ / 2.00 ГБ свободно`;
-            //         // console.log(this.notesMatrix);
-            //     }
-            // },
 
             onNoteAdd: async () => {
                 const title = `Новая заметка`,
-                    body = `Введите текст...`,
+                    body = `<p>Введите текст...</p>`,
                     newMemoryLimit = this.memoryLimitKB - this._byteSizeKB(title + body);
                 console.log(`Byte size: `, this._byteSize(title + body));
                 console.log(`Byte size (KB): `, this._byteSizeKB(title + body));
@@ -883,15 +1041,15 @@ export default class App{
                     // const lastId = NotesAPI.noteSave(-1, `Новая заметка`, `Введите текст...`,
                     //     this.username, newMemoryLimit);
                     // this.toggleLoader(this.mainLoader, true);
-                    const response = await NotesAPI.noteSave(-1, `Новая заметка`, `Введите текст...`,
+                    const response = await NotesAPI.noteSave(-1, `Новая заметка`, `<p>Введите текст...</p>`,
                         this.username, newMemoryLimit);
                     const lastId = await response.json();
                     // this.toggleLoader(this.mainLoader, false);
                         // console.log(`onNoteAdd, id to add: `, lastId);
                     const currDate = NotesView.getCurrentDateString();
-                    this.view.createListItemHTML(lastId, `Новая заметка`, `Введите текст...`,
+                    this.view.createListItemHTML(lastId, `Новая заметка`, `<p>Введите текст...</p>`,
                         currDate);
-                    this.notesMatrix.push({id: lastId, name: `Новая заметка`, note_text: `Введите текст...`,
+                    this.notesMatrix.push({id: lastId, name: `Новая заметка`, note_text: `<p>Введите текст...</p>`,
                         creation_date: currDate});
                     this.memoryLimitKB = newMemoryLimit;
                     console.log(`Memory limit post change: ${this.memoryLimitKB}`);

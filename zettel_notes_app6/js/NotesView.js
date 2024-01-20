@@ -1,5 +1,9 @@
 export default class NotesView{
-    constructor(appObj, root, {onNoteSearch, onNoteSelect,  onNoteAdd,  onNoteEdit, onNoteDelete} = {}){
+    constructor(appObj, root, {onNoteSearch, onNoteSelect,  onNoteAdd,  onNoteEdit, onNoteDelete},
+        marginTopShifted, marginTopUnshifted = {}){
+        console.log(marginTopShifted);
+
+
         this.App = appObj;
         this.root = root;
         this.onNoteSearch = onNoteSearch;
@@ -22,6 +26,9 @@ export default class NotesView{
         this.noteAddBtn = this.root.querySelector('.notes__add');
         this.searchField = this.root.querySelector('.search__note');
         this.editBtn = this.root.querySelector('.notes__preview__top_section__button');
+
+        this.marginTopShifted = marginTopShifted;
+        this.marginTopUnshifted = marginTopUnshifted;
 
         this.quill = new Quill('.notes__body__editor', {
             theme: 'snow'
@@ -118,9 +125,16 @@ export default class NotesView{
                 || blurRelatedTarget.classList.contains("notes__preview__top_section__button")
                 || blurRelatedTarget.classList.contains("ql-action"))){
                 this.qlDropDownMenu.style.display = 'none';
+                console.log(this.qlDropDownMenu.style.display);
                 this.qlTooltip.classList.remove('active');
             }
             else this.qlTooltip.classList.add('active');
+        });
+
+        this.qlActionBtn.addEventListener('click', () => {
+            this.qlDropDownMenu.style.display = 'none';
+            // console.log(this.qlDropDownMenu.style.display);
+            this.qlTooltip.classList.remove('active');
         });
         
         this.notePreview.addEventListener('click', clickEvent => {
@@ -185,6 +199,7 @@ export default class NotesView{
         });
 
         const _sidebarClickHandler = clickEvent => {
+            // console.log(this);
             if(this.editMode == true){
                 const save = confirm("Сохранить изменения в текущей заметке?");
                 if(save) {
@@ -231,6 +246,17 @@ export default class NotesView{
                 }        
             }
             else{
+                    const currActiveNote = this.App.activeNoteId ? this._searchHTMLCollection(this.noteListItemsArray, this.App.activeNoteId) : null;
+                    console.log(currActiveNote);
+                    if(currActiveNote){
+                        currActiveNote.classList.remove('active');
+                        currActiveNote.classList.remove('selected');
+                        // const nextNote = NotesView._getNextNoteItem(targetNote);
+                        // if(nextNote){
+                        //     nextNote.classList.add('shifted');
+                        //     nextNote.style.marginTop = 0;
+                        // }
+                    }
                     if (targetClassList.contains("notes__small-title") || targetClassList.contains("notes__small-body") || targetClassList.contains("notes__small-updated"))
                     {
                         eventTargetParent = eventTarget.parentNode;
@@ -242,6 +268,12 @@ export default class NotesView{
                     }
                     else if(targetClassList.contains("note__list-item"))
                     {
+                        // const previousActiveNote = NotesView.activeNoteId ? NotesView.view._searchHTMLCollection(this.view.noteListItemsArray, this.activeNoteId) : null;
+                        // console.log(previousActiveNote);
+                        // if(previousActiveNote){
+                        //     previousActiveNote.classList.remove('active');
+                        //     previousActiveNote.classList.remove('selected');
+                        // }
                         activeNoteId = eventTarget.id;
                         this.activeSmallTitle = eventTarget.querySelector('.notes__small-title');
                         this.activeSmallBody = eventTarget.querySelector('.notes__small-body');
@@ -290,7 +322,9 @@ export default class NotesView{
                         const nextNote = NotesView._getNextNoteItem(targetNote);
                         targetNote.classList.add('active');
                         if(nextNote){
-                            nextNote.style.marginTop = 0;
+                            nextNote.classList.add('shifted');
+                            nextNote.style.marginTop = this.marginTopShifted;
+                            console.log(this.marginTopShifted);
                         }
                     }
                     catch (err) {
@@ -300,6 +334,7 @@ export default class NotesView{
             });
 
             this.notesContainer.addEventListener('mouseout', event => {
+                console.log(this);
                 const eventTarget = event.target;
                 if(!eventTarget.classList.contains('notes__list-items__container')){
                     const targetNote = NotesView._getNoteItem(eventTarget);
@@ -307,7 +342,9 @@ export default class NotesView{
                         const nextNote = NotesView._getNextNoteItem(targetNote);
                         targetNote.classList.remove('active');
                         if(nextNote){
-                            nextNote.style.marginTop = '-200px';
+                            nextNote.classList.remove('shifted');
+                            nextNote.style.marginTop = this.marginTopUnshifted;
+                            console.log(this.marginTopUnshifted);
                         }
                     }
                 }
@@ -380,11 +417,17 @@ export default class NotesView{
                 substrBodyIndex = note['note_text'].toLowerCase().indexOf(inputValue);
             if(substrBodyIndex != -1 || substrTitleIndex != -1)
             {
-                // const start = substrBodyIndex-10,
-                //     finish = substrBodyIndex + inputValue.length + 10;
-                const bodyExtract = this._getDropDownSubstring(note['note_text'], substrBodyIndex,
-                    substrBodyIndex + inputValue.length, 17);
-                const dropDownItem = this._createDropDownItem(note['id'], note['name'], bodyExtract);
+                const inputLength = inputValue.length;
+                let bodyExtract = null,
+                    titleExtract = null;
+                if(substrBodyIndex != -1) bodyExtract = note['note_text'].substring(substrBodyIndex, substrBodyIndex + 52);
+                else bodyExtract = this.App._stripHTMLTags(note['note_text']).substring(0, 52); //default substring starts from the beginning of the note's text
+
+                if(substrTitleIndex != -1) titleExtract = note['name'].substring(substrTitleIndex, substrTitleIndex + 52);
+                else titleExtract = note['name'].substring(0, 52); //default substring starts from the beginning of the note's title
+                
+                // const dropDownItem = this._createDropDownItem(note['id'], note['name'], bodyExtract);
+                const dropDownItem = this._createDropDownItem(note['id'], titleExtract, bodyExtract);
                 // this.qlDropDownMenu.appendChild(dropDownItem);
                 this.qlDropDownMenuList.appendChild(dropDownItem);
                 // console.log(this.qlDropDownMenu);
@@ -392,38 +435,40 @@ export default class NotesView{
         }        
     }
 
-    _getDropDownSubstring = (str, start, end, maxLength) => {
-        const substrLength =  end - start;
-        if(substrLength < maxLength) {
-            const spareLength = maxLength - substrLength;
-            start = start - Math.floor(spareLength/2.0);
-            end = start + Math.ceil(spareLength/2.0);
-        }
-        // if (str.length > length) {
-        //  return `${"..." + str.substring(5, length)}...`;
-        // }
-        // return str;
-        return str.substring(start, end+1);
-    };
+    // obsolete?
+    // _getDropDownSubstring = (str, start, end, maxLength) => {
+    //     const substrLength =  end - start;
+    //     if(substrLength < maxLength) {
+    //         const spareLength = maxLength - substrLength;
+    //         start = start - Math.floor(spareLength/2.0);
+    //         end = start + Math.ceil(spareLength/2.0);
+    //     }
+    //     return str.substring(start, end+1);
+    // };
 
 
     _createDropDownItem(noteId, title, bodyExtract){
         const listItem = document.createElement("li"),
             heading = document.createElement("p"),
             body = document.createElement("p");
+
         listItem.classList += "notes__body__editor__drop_down_menu__list__item";
-        heading.classList += "notes__body__editor__drop_down_menu__list__item__heading";
-        body.classList += heading.classList += "notes__body__editor__drop_down_menu__list__item__text";
+        heading.classList += "notes__body__editor__drop_down_menu__list__item__heading bold";
+        body.classList += "notes__body__editor__drop_down_menu__list__item__text";
+
         heading.innerText = title;
         body.innerText = this.App._stripHTMLTags(bodyExtract);
+
         listItem.appendChild(heading);
         listItem.appendChild(body);
         listItem.dataset.linkedNoteId = noteId;
+
         // tabIndex is needed for a li-element to
         // be able to receive focus
         // (is checked upon the blur event occurring
         // on the qlLinkInput element
         // when the .relatedTarget is accessed)
+        
         listItem.tabIndex="0";
         // console.log(listItem);
         return listItem;
@@ -466,19 +511,24 @@ export default class NotesView{
         // console.log("URL: ", clickTargetURL);
         // console.log("ID: ", linkedNoteId);
         if(linkedNoteId != null && linkedNoteId != undefined){
-            this.activeNoteId = linkedNoteId;
-            const linkedNote = this._searchHTMLCollection(this.noteListItemsArray, linkedNoteId);
-            // const linkedNote = this.noteListItemsArray.find(element => element.id == linkedNoteId);
-            console.log(linkedNote);
-            this.activeSmallTitle = linkedNote.querySelector('.notes__small-title');
-            this.activeSmallBody = linkedNote.querySelector('.notes__small-body');
-            this.activeSmallBodyHidden = linkedNote.querySelector('.notes__small-body-hidden');      
-            this.activeSmallUpdated = linkedNote.querySelector('.notes__small-updated');
-            const smallTitleText = this.activeSmallTitle.innerHTML,
-                smallBodyHiddenText = this.activeSmallBodyHidden.innerHTML;
-            // console.log(this);
-            this.onNoteSelect(this.activeNoteId);
-            this.updateActiveNote(smallTitleText, smallBodyHiddenText);
+            if(!this.App.noteExists(linkedNoteId)){
+                alert('Ошибка: похоже, адресуемой заметки не существует.');
+            }
+            else {
+                this.activeNoteId = linkedNoteId;
+                const linkedNote = this._searchHTMLCollection(this.noteListItemsArray, linkedNoteId);
+                // const linkedNote = this.noteListItemsArray.find(element => element.id == linkedNoteId);
+                console.log(linkedNote);
+                this.activeSmallTitle = linkedNote.querySelector('.notes__small-title');
+                this.activeSmallBody = linkedNote.querySelector('.notes__small-body');
+                this.activeSmallBodyHidden = linkedNote.querySelector('.notes__small-body-hidden');      
+                this.activeSmallUpdated = linkedNote.querySelector('.notes__small-updated');
+                const smallTitleText = this.activeSmallTitle.innerHTML,
+                    smallBodyHiddenText = this.activeSmallBodyHidden.innerHTML;
+                // console.log(this);
+                this.onNoteSelect(this.activeNoteId);
+                this.updateActiveNote(smallTitleText, smallBodyHiddenText);
+            }
         }
     }
 
