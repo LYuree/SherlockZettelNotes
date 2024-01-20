@@ -244,6 +244,15 @@ export default class NotesAPI{
                 // launchCallbacks(testCallback);
 
                 usersWithKeywords = JSON.parse(xhr.response);
+
+                // for (let userWithKeywords of usersWithKeywords){
+                //     appObj.setRelativeFreqs(userWithKeywords);
+                // }
+
+                usersWithKeywords.forEach(userWithKeywords => {
+                    console.log(userWithKeywords['keywords']);
+                });
+
                 const index = usersWithKeywords.findIndex(user => user.username == appObj.username);
                 const clientWithKeywords = usersWithKeywords[index];
                 usersWithKeywords.splice(index, 1);
