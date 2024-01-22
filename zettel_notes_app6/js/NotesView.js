@@ -1,8 +1,8 @@
 export default class NotesView{
+    static initialDisplay = 'inline-block';
+
     constructor(appObj, root, {onNoteSearch, onNoteSelect,  onNoteAdd,  onNoteEdit, onNoteDelete},
         marginTopShifted, marginTopUnshifted = {}){
-        console.log(marginTopShifted);
-
 
         this.App = appObj;
         this.root = root;
@@ -211,7 +211,9 @@ export default class NotesView{
                     this.inputTitle.style.display = "none";
                     this.quillContainer.style.display = "none";
                     this.quillToolbar.style.display = "none";
-                    this.displayTitle.style.display = "initial";
+                    // this.displayTitle.style.display = "initial";
+                    // this.displayBody.style.display = "initial";
+                    this.displayTitle.style.display = "inline-block";
                     this.displayBody.style.display = "initial";
                 }
                 else {
@@ -223,7 +225,7 @@ export default class NotesView{
 
                     // this.onNoteEdit();
 
-                    this.displayTitle.style.display = "initial";
+                    this.displayTitle.style.display = "inline-block";
                     this.displayBody.style.display = "initial";
                 }
                 this.editMode = false;
@@ -547,7 +549,7 @@ export default class NotesView{
                     this.inputTitle.style.display = "none";
                     this.quillContainer.style.display = "none";
                     this.quillToolbar.style.display = "none";
-                    this.displayTitle.style.display = "initial";
+                    this.displayTitle.style.display = "inline-block";
                     this.displayBody.style.display = "initial";
                 }
                 else {
@@ -559,7 +561,7 @@ export default class NotesView{
 
                     // this.onNoteEdit();
 
-                    this.displayTitle.style.display = "initial";
+                    this.displayTitle.style.display = "inline-block";
                     this.displayBody.style.display = "initial";
                 }
                 this.editMode = false;
@@ -583,7 +585,7 @@ export default class NotesView{
             this.inputTitle.style.display = "none";
             this.quillContainer.style.display = "none";
             this.quillToolbar.style.display = "none";
-            this.displayTitle.style.display = "initial";
+            this.displayTitle.style.display = "inline-block";
             this.displayBody.style.display = "initial";
             this.editMode = false;
         }

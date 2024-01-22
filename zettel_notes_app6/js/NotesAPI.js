@@ -119,7 +119,7 @@ export default class NotesAPI{
                         appObj.initiateNotesView();
                         appObj.setNotes(responseJson['notes']);                            
                         appObj.initiateKeywords();
-                        appObj.view.toggleNotesSidebar(true);   
+                        // appObj.view.toggleNotesSidebar(true);
                     }
                     else {
                         appObj.setSignInErrors();
