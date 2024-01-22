@@ -94,6 +94,8 @@ export default class App{
 
         this.modalRakeWindowMemoryProgressBar.style.width = (this.memoryLimitKB? (App.KB*2-this.memoryLimitKB)/(App.KB*2)*100.0 + '%' : '0');
         this.modalRakeWindowMemoryProgressBarLabel.innerText = `${this.memoryLimitKB ? (this.memoryLimitKB/App.KB).toFixed(2) : 0} ГБ / 2.00 ГБ свободно`;
+
+        this.minMaximizeBtn = document.querySelector('.fas.fa-arrow-left');
         // console.log()
 
 
@@ -143,6 +145,19 @@ export default class App{
 
 
         this.modalSignUpPassword = document.querySelector('.modal__sign-up__password-input');
+
+        this.minMaximizeBtn.addEventListener('click', () => {
+            if(this.view.notesSidebar.classList.contains('active')){
+                // this.view.notesSidebar.style.left = 0;
+                // this.view.notesSidebar.style.transform = "translateX(-100%)";
+                this.view.toggleNotesSidebar(false);
+            }
+            else {
+                // this.view.notesSidebar.style.left = '72px';
+                // this.view.notesSidebar.style.transform = "translateX(0)";
+                this.view.toggleNotesSidebar(true);
+            }
+        });
 
         this.toggleVisibilityBtn2.addEventListener('click', ()=>{
             if (this.modalSignUpPassword.type === "password") {
@@ -637,6 +652,7 @@ export default class App{
                 // value of the coefficient itself as well as c, the length of the two
                 // arrays' intersection
                 // const OtsukaMean = this.getOtsukaMean(clientsKeywords, usersKeywords);
+                
                 const JaccardMean = this.getJaccardMean(clientsKeywords, usersKeywords);
                 // let SpearmanCorrelation = this._getSpearmanRho(matchesCount, usersKeywords, clientsKeywords);
                 
