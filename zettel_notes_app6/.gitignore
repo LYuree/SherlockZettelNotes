@@ -1,2 +1,5 @@
 node_modules
 sensitive_info
+python/.venv
+python/templates
+

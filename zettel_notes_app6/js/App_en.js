@@ -34,6 +34,16 @@ export default class App{
             value: "th",
             writeable: false
         });
+
+        Object.defineProperty(this, "THr2", {
+            value: "th rowspan='2'",
+            writeable: false
+        });
+
+        Object.defineProperty(this, "THc3", {
+            value: "th colspan='3'",
+            writeable: false
+        });
         // const TD = "td";
         // const TH = "th";
         
@@ -93,7 +103,7 @@ export default class App{
         this.coworkCandidatesLoader = document.querySelector('.cowork_candidates-loader');
 
         this.modalRakeWindowMemoryProgressBar.style.width = (this.memoryLimitKB? (App.KB*2-this.memoryLimitKB)/(App.KB*2)*100.0 + '%' : '0');
-        this.modalRakeWindowMemoryProgressBarLabel.innerText = `${this.memoryLimitKB ? (this.memoryLimitKB/App.KB).toFixed(2) : 0} ГБ / 2.00 ГБ свободно`;
+        this.modalRakeWindowMemoryProgressBarLabel.innerText = `${this.memoryLimitKB ? (this.memoryLimitKB/App.KB).toFixed(2) : 0} GB / 2.00 GB free`;
 
         this.minMaximizeBtn = document.querySelector('.min_maximize_btn');
         // console.log()
@@ -252,15 +262,15 @@ export default class App{
             let inputError = false;
 
             if(username === '') {
-                this.setErrorFor(this.modalSignUpLogin, "Имя пользователя не может быть пустым");
+                this.setErrorFor(this.modalSignUpLogin, "Username cannot be empty");
                 inputError = true;
             }
             else if (username.length < 4 || username.length > 14){
-                this.setErrorFor(this.modalSignUpLogin, "Имя пользователя должно состоять из 4-14 символов");
+                this.setErrorFor(this.modalSignUpLogin, "Username must contain 4-14 symbols");
                 inputError = true;
             }
             else if(this._checkLettersEN(username) === false){
-                this.setErrorFor(this.modalSignUpLogin, "Имя пользователя должно содержать только символы a-z");
+                this.setErrorFor(this.modalSignUpLogin, "Username must contain only symbols a-z");
                 inputError = true;
             }
             else {
@@ -273,11 +283,11 @@ export default class App{
 
 
             if(email === '') {
-                this.setErrorFor(this.modalSignUpEmail, "E-mail не может быть пустым");
+                this.setErrorFor(this.modalSignUpEmail, "E-mail cannot be empty");
                 inputError = true;
             }
             else if (!this._isValidEmail(email)) {
-                this.setErrorFor(this.modalSignUpEmail, 'E-mail недействителен');
+                this.setErrorFor(this.modalSignUpEmail, 'E-mail is invalid');
                 inputError = true;
             }
             else {
@@ -288,11 +298,11 @@ export default class App{
         
         
             if(password === '') {
-                this.setErrorFor(this.modalSignUpPassword, "Пароль не может быть пустым");
+                this.setErrorFor(this.modalSignUpPassword, "Password cannot be empty");
                 inputError = true;
             }
             else if(password.length < 6 || password.length > 10){
-                this.setErrorFor(this.modalSignUpPassword, "Пароль должен содержать 6-10 символов");
+                this.setErrorFor(this.modalSignUpPassword, "Password must contain 6-10 symbols");
                 inputError = true;
             }
             else {
@@ -303,11 +313,11 @@ export default class App{
         
         
             if(passwordRepeat === '') {
-                this.setErrorFor(this.modalSignUpPasswordRepeat, "Пароль не может быть пустым");
+                this.setErrorFor(this.modalSignUpPasswordRepeat, "Password cannot be empty");
                 inputError = true;
             }
             else if(passwordRepeat !== password) {
-                this.setErrorFor(this.modalSignUpPasswordRepeat, "Пароли не совпадают");
+                this.setErrorFor(this.modalSignUpPasswordRepeat, "Passwords do not match");
                 inputError = true;
             }
             else {
@@ -387,12 +397,12 @@ export default class App{
         this.publicity = publicityStatus;
         console.log(publicityStatus);
         if(this.publicity == true) {
-            this.modalRakeWindowPublicityBtn.innerText = 'Сделать аккаунт закрытым';
-            this.modalRakeWindowPublicity.innerText = 'Публичный аккаунт';
+            this.modalRakeWindowPublicityBtn.innerText = 'Make your account private';
+            this.modalRakeWindowPublicity.innerText = 'Public account';
         }
         else {
-            this.modalRakeWindowPublicityBtn.innerText = 'Сделать аккаунт публичным';
-            this.modalRakeWindowPublicity.innerText = 'Закрытый аккаунт';
+            this.modalRakeWindowPublicityBtn.innerText = 'Make your account public';
+            this.modalRakeWindowPublicity.innerText = 'Private account';
         }
     }
 
@@ -402,12 +412,12 @@ export default class App{
         // console.log(this.memoryLimitKB);
         this.modalRakeWindowMemoryProgressBar.style.width = (this.memoryLimitKB? (App.KB*2-this.memoryLimitKB)/(App.KB*2)*100.0 + '%' : '0');
         // console.log(this.modalRakeWindowMemoryProgressBar.style.width);
-        this.modalRakeWindowMemoryProgressBarLabel.innerText = `${this.memoryLimitKB ? (this.memoryLimitKB/App.KB).toFixed(2) : 0} ГБ / 2.00 ГБ свободно`;
+        this.modalRakeWindowMemoryProgressBarLabel.innerText = `${this.memoryLimitKB ? (this.memoryLimitKB/App.KB).toFixed(2) : 0} GB / 2.00 GB free`;
     }
 
     setUserRegDate(registrationDate){
         this.registrationDate = registrationDate;
-        this.modalRakeWindowRegDate.innerText = `Вы с нами с: ${this.registrationDate}`;
+        this.modalRakeWindowRegDate.innerText = `You are with us since: ${this.registrationDate}`;
     }
 
     initiateNotesView(){
@@ -565,6 +575,7 @@ export default class App{
                 // let response = await NotesAPI.extractKeywords(this._stripHTMLTags(note['note_text']));
                 let response = await NotesAPI.extractKeywordsYake(this._stripHTMLTags(note['note_text']));
                 let noteKeywords = await response.json();
+                console.log(noteKeywords);
                 if (note['name'] != '') noteKeywords.push(note['name'].toLowerCase());
                 noteKeywords = noteKeywords.map(str => NotesAPI.shieldApostrophes(str));
                 const keywordsString = noteKeywords.join(",");
@@ -617,31 +628,41 @@ export default class App{
         }
     }
 
+    _createCoworkersCaption(){
+        const newRow1 = document.createElement("tr");
+        const THr2 = document.createElement("th"),
+            THc3 = document.createElement("th");
+        THr2.rowSpan = "2";
+        THc3.colSpan = "3";
+        THr2.innerText = "Пользователь";
+        THc3.innerHTML = "Меры<wbr>сходства";
+        newRow1.appendChild(THr2);
+        newRow1.appendChild(THc3);
+        const rowClass = "modal__rake_window__cowork_candidates__table_row";
+        this.modalRakeWindowCoworkCandidatesTable.appendChild(newRow1);
+        this._createTableRowsHTML(this.TH, this.modalRakeWindowCoworkCandidatesTable,
+            3, rowClass, ['Жаккар','Оцука','Спирмен']);
+    }
+
     _setCoworkersTable(clientWithKeywords, othersWithKeywords){
         console.log(this);
         this._clearChildNodes(this.modalRakeWindowCoworkCandidatesTable);
         const rowClass = "modal__rake_window__cowork_candidates__table_row";
-        this._createTableRowHTML(this.TH, this.modalRakeWindowCoworkCandidatesTable,
-            3, rowClass, ["Пользователь", "Общие<br>слова", "Сходство<wbr>наборов"]);
-        // for (let user of othersWithKeywords)
+        this._createCoworkersCaption();
+        
         othersWithKeywords.forEach(user => {
                 setZeroTimeout(() => {
                 // doHeavyLifting();
                 let clientsKeywords = clientWithKeywords.keywords;
                 let usersKeywords = user.keywords;
                 const matchesCount = clientsKeywords.length;
-
-                // we could create an otsuka-class instance that would hold the
-                // value of the coefficient itself as well as c, the length of the two
-                // arrays' intersection
-                // const OtsukaMean = this.getOtsukaMean(clientsKeywords, usersKeywords);
-                
-                const JaccardMean = this.getJaccardMean(clientsKeywords, usersKeywords);
-                console.log(user.email, user.username);
-                console.log(JaccardMean);
+                const Otsuka = this.getOtsuka(clientsKeywords, usersKeywords);                
+                const Jaccard = this.getJaccard(clientsKeywords, usersKeywords);
+                const Spearman = this._getSpearmanRho(matchesCount, usersKeywords, clientsKeywords);
+                const EPS = 4; //accuracy (number of digits)
                 const nameCellHTML = `<a href=\'mailto:${user.email}\'>${user.username}</a>`;
-                this._createTableRowHTML(this.TD, this.modalRakeWindowCoworkCandidatesTable,
-                    3, rowClass, [nameCellHTML, '-', JaccardMean.toFixed(4)]);
+                this._createTableRowsHTML(this.TD, this.modalRakeWindowCoworkCandidatesTable,
+                    4, rowClass, [nameCellHTML, Jaccard.toFixed(EPS), Otsuka.toFixed(EPS), Spearman.toFixed(EPS)]);
             });
         });
     }
@@ -710,66 +731,84 @@ export default class App{
         return resultArray;
     }
 
-    getJaccardMean(clientsKeywords, usersKeywords){
+    getJaccard(clientsKeywords, usersKeywords){
         console.log(clientsKeywords, usersKeywords);
         let intersection = 0;
         const usersKeywordsTransformed = this.occurrencesToPercent(usersKeywords),
-        clientsKeywordsTransformed = this.occurrencesToPercent(clientsKeywords);
+            clientsKeywordsTransformed = this.occurrencesToPercent(clientsKeywords),
+            occurrencesUnionArray = new Array();
+        let concatArray = usersKeywordsTransformed.concat(clientsKeywordsTransformed);
+        // the difference between the concat and the union arrays
+        // is that concat array is just a straight concatenation of two arrays that
+        // contains duplicates, whereas the union array will only contain the
+        // 'version' of each word with the highest occurrences value
 
-        let unionArray = usersKeywordsTransformed.concat(clientsKeywordsTransformed);
-        for (let unionIndex in unionArray){
-            // you can prob figure out the intersection here, too
-            let firstItem = unionArray[unionIndex];
-            // console.log(unionArray.slice(unionIndex + 1))
-            let intersectingItem = unionArray.slice(+unionIndex + 1).find(item => item['keyword'] == firstItem['keyword']);
-            // console.log(firstItem, intersectingItem, unionIndex);
-            if (intersectingItem){
-                intersection += Math.min(firstItem['occurrences'], intersectingItem['occurrences']);
-                // union += Math.max(firstItem['occurrences'], intersectingItem['occurrences']);
+        // also, could probably just store the occurrences in the union array,
+        // cause we'll only need that array to calculate the sum of its keywords' occurrences
+        for (let firstItemIndex in concatArray){
+            let firstItem = concatArray[firstItemIndex];
+            // when searching for the counterpart of the first item,
+            // you have to search in an array \ first item (set difference)
+            const concatArraySliced = concatArray.slice(+firstItemIndex + 1);
+            let secondItemIndex = concatArraySliced.findIndex(item => item['keyword'] == firstItem['keyword']),
+                secondItem = concatArraySliced[secondItemIndex];
+            if (secondItem){
+                console.log("first item, second item:");
+                console.log(firstItem, secondItem);
+                intersection += Math.min(+firstItem['occurrences'], +secondItem['occurrences']);
+                if(firstItem['occurrences'] > secondItem['occurrences']) occurrencesUnionArray.push(firstItem['occurrences']);
             }
+            else occurrencesUnionArray.push(firstItem['occurrences']);
+            // an item is pushed into the union array if it's unique
+            // OR it has a counterpart with lower occurrences value
         }
-        console.log(unionArray);
+
+        console.log(occurrencesUnionArray);
+        const union = occurrencesUnionArray.reduce((accumulator, currentValue) => accumulator + currentValue);
+
+
         // let i = 0;
-        // for (let firstItemIndex in unionArray){
-        //     let firstItem = unionArray[firstItemIndex];
+
+        // for (let firstItemIndex in concatArray){
+        //     let firstItem = concatArray[firstItemIndex];
         //     console.log(firstItem['keyword']);
-        //     let secondItemIndex = unionArray.findIndex(item => item['keyword'] == firstItem['keyword']),
-        //         secondItem = unionArray[secondItemIndex];
+        //     let secondItemIndex = concatArray.findIndex(item => item['keyword'] == firstItem['keyword']),
+        //         secondItem = concatArray[secondItemIndex];
         //     if(firstItem){
         //             if (secondItemIndex && secondItemIndex != -1){
-        //                 // console.log(unionArray);
-        //                 union += Math.max(firstItem['occurrences'], secondItem['occurrences']);
-        //                 // union += Math.max(firstItem['occurrences'], intersectingItem['occurrences']);
-        //                 unionArray.splice(secondItemIndex, 1);
+        //                 // console.log(concatArray);
+        //                 // union += Math.max(firstItem['occurrences'], secondItem['occurrences']);
+        //                 // union += Math.max(firstItem['occurrences'], secondItem['occurrences']);
+        //                 concatArray.splice(secondItemIndex, 1);
         //             }
         //             else {
-        //                 union += firstItem['occurrences'];
+        //                 // union += firstItem['occurrences'];
         //             }
-        //         unionArray.splice(firstItemIndex, 1);
+        //         concatArray.splice(firstItemIndex, 1);
         //     }
-        //     for (const key of unionArray.keys()) console.log(key);
+        //     for (const key of concatArray.keys()) console.log(key);
         //     i++;
         // }
         // console.log(`i = ${i}`);
         
-        const actualUnionArray = new Array(); //rename the unionArray as joined array
+        // const actualconcatArray = new Array(); //rename the concatArray as joined array
 
-        for (const firstItem of unionArray){
-            const secondItem = unionArray.splice().find(item => item['keyword'] == firstItem['keyword']);
-            if(secondItem){
-                console.log(`First item: ${firstItem['keyword']}`);
-                console.log(`Second item: ${secondItem['keyword']}`);
-                if(firstItem['occurrences'] > secondItem['occurrences'])
-                    actualUnionArray.push(firstItem['occurrences']);
-            }
-            else actualUnionArray.push(firstItem['occurrences']);
-            // else union += firstItem['occurrences'] ?? 0;
-            // unionArray.splice(firstIndex, 1);
-            // console.log("\n==========================================\n")
-            // for (const value of unionArray.values()) console.log(value);
-        }
-        console.log(actualUnionArray);
-        const union = actualUnionArray.reduce((a, b) => a + b);
+        // for (const firstItem of concatArray){
+        //     const secondItem = concatArray.splice().find(item => item['keyword'] == firstItem['keyword']);
+        //     if(secondItem){
+        //         console.log(`First item: ${firstItem['keyword']}`);
+        //         console.log(`Second item: ${secondItem['keyword']}`);
+        //         if(firstItem['occurrences'] > secondItem['occurrences'])
+        //             actualconcatArray.push(firstItem['occurrences']);
+        //     }
+        //     else actualconcatArray.push(firstItem['occurrences']);
+        //     // else union += firstItem['occurrences'] ?? 0;
+        //     // concatArray.splice(firstIndex, 1);
+        //     // console.log("\n==========================================\n")
+        //     // for (const value of concatArray.values()) console.log(value);
+        // }
+        // console.log(actualconcatArray);
+        // const union = actualconcatArray.reduce((a, b) => a + b);
 
         console.log(`intersection = ${intersection}, union = ${union}`);
         if(union == 0) return 0;
@@ -778,7 +817,7 @@ export default class App{
 
 
 
-    getOtsukaMean(clientsKeywords, usersKeywords){
+    getOtsuka(clientsKeywords, usersKeywords){
         let Ni = 0,
             Nj = 0,
             c = 0,
@@ -802,6 +841,7 @@ export default class App{
     }
 
     _getSpearmanRho(matchesCount, usersKeywords, clientsKeywords){
+        let SpearmanCorrelation = 0;
         if(matchesCount > 0){
             if(matchesCount == 1) SpearmanCorrelation = 1;
             else{
@@ -842,8 +882,10 @@ export default class App{
                     // console.log(usersKeywords,clientsKeywords);
                     const usersWord = usersKeywords.find(item => item.keyword == clientsWord.keyword);
                     console.log(clientsWord, usersWord);
-                    const sqrDif = (clientsWord.rank - usersWord.rank)**2;
-                    sumSqrDif += sqrDif;
+                    if(usersWord){
+                        const sqrDif = (clientsWord.rank - usersWord.rank)**2;
+                        sumSqrDif += sqrDif;
+                    }
                 }
                 console.log(sumSqrDif);
                 SpearmanCorrelation = 1 - 6*sumSqrDif/(matchesCount*(matchesCount**2 - 1));
@@ -856,7 +898,7 @@ export default class App{
     //     console.log(this);
     //     this._clearChildNodes(this.modalRakeWindowCoworkCandidatesTable);
     //     const rowClass = "modal__rake_window__cowork_candidates__table_row";
-    //     this._createTableRowHTML(this.TH, this.modalRakeWindowCoworkCandidatesTable,
+    //     this._createTableRowsHTML(this.TH, this.modalRakeWindowCoworkCandidatesTable,
     //         3, rowClass, ["Пользователь", "Общие<br>слова", "Сходство<wbr>иерархий"]);
     //     for (let user of othersWithKeywords){
     //         let clientsKeywords = clientWithKeywords.keywords;
@@ -921,7 +963,7 @@ export default class App{
     //         }
     //         console.log(user.email, user.username);
     //         const nameCellHTML = `<a href=\'mailto:${user.email}\'>${user.username}</a>`;
-    //         this._createTableRowHTML(this.TD, this.modalRakeWindowCoworkCandidatesTable,
+    //         this._createTableRowsHTML(this.TD, this.modalRakeWindowCoworkCandidatesTable,
     //             3, rowClass, [nameCellHTML, matchesCount, SpearmanCorrelation.toFixed(2)]);
             
     //     }
@@ -982,12 +1024,16 @@ export default class App{
     //     }
     // }
     
-    _createTableRowHTML(cellTag, parentalTable, numberOfCells, rowClass, cellValues){
+
+    // a function for creating multiple standardized table rows
+    _createTableRowsHTML(cellTag, parentalTable, numberOfCells, rowClass, cellValues){
         const newRow = document.createElement("tr");
         // const cells = new Array();
         // cellValues is an array
+        console.log(arguments);
         for(let i = 0; i < numberOfCells; i++){
             const dataCell = document.createElement(`${cellTag}`);
+            // console.log(cellTag, dataCell);
             dataCell.classList += rowClass;
             dataCell.innerHTML = cellValues[i];
             const noTagValue = (typeof cellValues[i] == 'string') ? this._stripHTMLTags(cellValues[i]) : cellValues[i];
@@ -1025,31 +1071,31 @@ export default class App{
 
 
             onNoteAdd: async () => {
-                const title = `Новая заметка`,
-                    body = `<p>Введите текст...</p>`,
+                const title = `New note`,
+                    body = `<p>Compose an epic...</p>`,
                     newMemoryLimit = this.memoryLimitKB - this._byteSizeKB(title + body);
                 console.log(`Byte size: `, this._byteSize(title + body));
                 console.log(`Byte size (KB): `, this._byteSizeKB(title + body));
                 console.log(this.memoryLimitKB);
-                if(newMemoryLimit < 0) alert (`Лимит памяти превышен на ${Math.abs(newMemoryLimit)} КБ. Изменения не будут сохранены.`);
+                if(newMemoryLimit < 0) alert (`Memory limit exceeded by ${Math.abs(newMemoryLimit)} KB. Changes cannot be saved.`);
                 else {
                     // const lastId = NotesAPI.noteSave(-1, `Новая заметка`, `Введите текст...`,
                     //     this.username, newMemoryLimit);
                     // this.toggleLoader(this.mainLoader, true);
-                    const response = await NotesAPI.noteSave(-1, `Новая заметка`, `<p>Введите текст...</p>`,
+                    const response = await NotesAPI.noteSave(-1, `New note`, `<p>Compose an epic...</p>`,
                         this.username, newMemoryLimit);
                     const lastId = await response.json();
                     // this.toggleLoader(this.mainLoader, false);
                         // console.log(`onNoteAdd, id to add: `, lastId);
                     const currDate = NotesView.getCurrentDateString();
-                    this.view.createListItemHTML(lastId, `Новая заметка`, `<p>Введите текст...</p>`,
+                    this.view.createListItemHTML(lastId, `New note`, `<p>Compose an epic...</p>`,
                         currDate);
-                    this.notesMatrix.push({id: lastId, name: `Новая заметка`, note_text: `<p>Введите текст...</p>`,
+                    this.notesMatrix.push({id: lastId, name: `New note`, note_text: `<p>Compose an epic...</p>`,
                         creation_date: currDate});
                     this.memoryLimitKB = newMemoryLimit;
                     console.log(`Memory limit post change: ${this.memoryLimitKB}`);
                     this.modalRakeWindowMemoryProgressBar.style.width = (this.memoryLimitKB? (App.KB*2-this.memoryLimitKB)/(App.KB*2)*100.0 + '%' : '0');
-                    this.modalRakeWindowMemoryProgressBarLabel.innerText = `${this.memoryLimitKB ? (this.memoryLimitKB/App.KB).toFixed(2) : 0} ГБ / 2.00 ГБ свободно`;
+                    this.modalRakeWindowMemoryProgressBarLabel.innerText = `${this.memoryLimitKB ? (this.memoryLimitKB/App.KB).toFixed(2) : 0} GB / 2.00 GB free`;
                     // console.log(this.notesMatrix);
                 }
             },
@@ -1074,7 +1120,7 @@ export default class App{
                 console.log("Total difference: ", totalDif);
                 const newMemoryLimit = this.memoryLimitKB - totalDif;
                 let changesApplied = false;
-                if(newMemoryLimit < 0) alert(`Лимит памяти превышен на ${Math.abs(newMemoryLimit)} КБ. Изменения не будут сохранены.`);
+                if(newMemoryLimit < 0) alert(`Memory limit exceeded by ${Math.abs(newMemoryLimit)} KB. Changes cannot be saved.`);
                 else {
                     console.log(this.view.qlEditor);
                     const newSmallBodyHiddenHTML = this.view.qlEditor.innerHTML.trim();
@@ -1091,7 +1137,7 @@ export default class App{
                     console.log(this.memoryLimitKB);
                     changesApplied = true;
                     this.modalRakeWindowMemoryProgressBar.style.width = (this.memoryLimitKB? (1-this.memoryLimitKB)/App.KB*100.0 + '%' : '0');
-                    this.modalRakeWindowMemoryProgressBarLabel.innerText = `${this.memoryLimitKB ? (this.memoryLimitKB/App.KB).toFixed(2) : 0} ГБ / 2.00 ГБ свободно`;
+                    this.modalRakeWindowMemoryProgressBarLabel.innerText = `${this.memoryLimitKB ? (this.memoryLimitKB/App.KB).toFixed(2) : 0} GB / 2.00 GB free`;
                 }
                 return changesApplied;
             },
@@ -1103,13 +1149,13 @@ export default class App{
                 console.log(`Memory limit before deletion: ${this.memoryLimitKB}`);
                 this.memoryLimitKB += noteSize;
                 this.modalRakeWindowMemoryProgressBar.style.width = (this.memoryLimitKB? (App.KB*2-this.memoryLimitKB)/(App.KB*2)*100.0 + '%' : '0');
-                this.modalRakeWindowMemoryProgressBarLabel.innerText = `${this.memoryLimitKB ? (this.memoryLimitKB/App.KB).toFixed(2) : 0} ГБ / 2.00 ГБ свободно`;
+                this.modalRakeWindowMemoryProgressBarLabel.innerText = `${this.memoryLimitKB ? (this.memoryLimitKB/App.KB).toFixed(2) : 0} GB / 2.00 GB free`;
                 console.log(`Deleted note byte size: ${noteSize}`);
                 console.log(`Memory limit after note deletion: ${this.memoryLimitKB}`);
                 let updateUserMemoryLimitResponse = NotesAPI.updateUserMemoryLimit(username, this.memoryLimitKB);
                 console.log(updateUserMemoryLimitResponse);
                 if(!updateUserMemoryLimitResponse)
-                    alert('Ай-ай-ай! Кажется, произошла ошибка при обновлении лимита памяти.');
+                    alert('Oops! An error occurred while refreshing the memory limit.');
                 NotesAPI.noteDelete(idToRemove, username);
             }
         }

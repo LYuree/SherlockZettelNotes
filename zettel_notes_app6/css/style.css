@@ -26,6 +26,11 @@ body {
     background-size: cover;
 }
 
+.notes__list-items__container {
+    background-image: url(/images/maroon.jpg);
+    background-size: cover;
+}
+
 .sign-up-redirect__btn__wrapper {
     display: flex;
     justify-content: center;
@@ -103,7 +108,7 @@ body {
 #modal__sign-up.active,
 #modal__verification_message.active {
     top: 50%;
-    z-index: 1200;
+    z-index: 2000;
 }
 
 
@@ -266,15 +271,52 @@ div.modal__rake_window__section__user_text_container {
     max-width: 16rem;
 }
 
-
-@media screen and (max-width: 641px) {
-    .notes__sidebar,
-    .notes__navbar{
-        position: absolute;
+@media screen and (max-width: 900px){
+    .notes__preview__top_section__button-wrapper {
+        float: initial;
     }
-    
-    div.notes__sidebar {
+}
+
+@media screen and (max-width: 690px) {
+    .notes__preview {
+        position: absolute;
         left: 72px;
+    }
+
+    .notes__sidebar{
+        position: absolute;
+        z-index: 1100;
+        /* display: none; */
+    }
+
+    .notes__preview__top_section__button-wrapper{
+        display: none;
+    }
+
+    .notes__preview__top_section__button i.small_edit_btn {
+        display: block;
+        float: none;
+    }
+
+    /* .notes__preview__top_section__button i.small_edit_btn {
+        float: none;
+    } */
+    
+    #modal__rake_window.active {
+        z-index: 1300;
+    }
+
+    div.modal__rake_window__background.active {
+        z-index: 1300;
+    }
+
+    div.notes__sidebar.active {
+        display: block;
+        left: 72px;
+    }
+
+    div.notes__sidebar {
+        left: -20rem;
     }
 
     .notes__navbar {
@@ -314,19 +356,25 @@ div.modal__rake_window__section__user_text_container {
     }
 }
 
-@media screen and (max-width: 1262px) {
+@media screen and (min-width: 1262px) {
     .notes__preview .notes__preview__top_section__button-wrapper {
         float: none;
         margin-top: .75rem;
     }
+}
 
-    .notes__sidebar.active{
+@media screen and (min-width: 691px){
+    .notes__sidebar {
         position: relative;
+    }
+    
+    .notes__sidebar.active{
+        display: block;
         left: 0;
     }
 
-    .notes__sidebar.active{
-        position: relative;
+    .notes__sidebar{
+        left: -21.2rem;
     }
 }
 
@@ -427,7 +475,7 @@ div.modal__rake_window__section__user_text_container {
     /* width: initial; */
     display: inline-block;
     position: relative;
-    padding: 0.25rem;    
+    /* padding: 0.25rem;     */
 }
 
 
@@ -441,6 +489,7 @@ div.modal__rake_window__section__user_text_container {
 }
 
 .notes__preview__top_section__button {
+    min-width: 0;
     background: none !important;
 }
 
@@ -587,7 +636,9 @@ button:hover {
 
 
 .notes__navbar {
-    width: 60px;
+    z-index: 1200;
+    min-width: 60px;
+    height: 100vh;
     /* background-color: rgb(255, 246, 232); */
     /* background: #e0cbaf; */
     box-shadow: 0 0 25px #914f0d inset;
@@ -627,20 +678,21 @@ button:hover {
     transition: 0.5s;
     border-right: 1px solid black;
     height: 100vh;
+    display: none;
 
     /* overflow-y:scroll; */
 
-    position: relative;
+    /* position: relative; */
     max-width: 17.2rem;
     /* display: flex;
     flex-direction: column; */
     /* width: 100%; */
 }
 
-.notes__sidebar.active {
-    /* display: block; */
+/* .notes__sidebar.active {
+    display: block;
     opacity: 1;
-}
+} */
 
 
 .notes__sidebar .notes__sidebar__management__panel {
@@ -887,6 +939,7 @@ input.search__note:focus {
 .modal__rake_window__cowork_candidates__refresh_candidates_button,
 .modal__rake_window__background__close_button,
 .modal__rake_window__publicity_button,
+.small_edit_btn 
 button {
     cursor: pointer;
     outline: none;
@@ -939,7 +992,7 @@ button.modal__rake_window__publicity_button {
 
 div.note__list-item {
     max-width: 17.2rem;
-    border: 1px solid black;
+    border-top: 1px solid black;
     padding: 0 1rem;
     font-size: 0.8em;
     cursor: pointer;
@@ -1050,12 +1103,21 @@ div.notes__small-title {
 
 }
 
+i.small_edit_btn {
+    display: none;
+    float: none;
+}
 
 .notes__preview {
     /* display: flex; */
+    /* height: calc(100vh - 6rem); */
+    position: relative;
     display: none;
     flex-direction: column;
     flex-grow: 1;
+    /* width: auto; */
+    left: auto;
+    /* margin-bottom: 0; */
 
     /* margin: 0.75rem 2rem; */
 
@@ -1072,6 +1134,7 @@ div.notes__small-title {
       /* width: 75%; */
     /* center page with absolute position */
     /* top: 0%; left: 50%; transform: translate(-50%, 0); */
+    /* margin: 2rem 2rem 0 2rem; */
     margin: 2rem;
     padding: 4rem;
     box-shadow: 2px 3px 20px black, 0 0 125px #8f5922 inset;
@@ -1102,8 +1165,9 @@ div.notes__small-title {
 } */
 
 .notes__preview__top_section__button-wrapper {
+    min-width: 0;
     width: 12rem;
-    float: right;
+    /* float: right; */
     padding: .25rem 0;
     /* margin-top: .75rem; */
     /* margin-left: 15px; */
@@ -1144,10 +1208,10 @@ div.notes__small-title {
 }
 
 
-.notes__preview .notes__preview__top_section i:hover{
+/* .notes__preview .notes__preview__top_section i:hover{
     box-shadow: 0px 0px 30px 10px rgb(255, 255, 255);
-    /* , 0px 0px 30px 10px rgb(255, 255, 255) inset; */
-}
+    , 0px 0px 30px 10px rgb(255, 255, 255) inset;
+} */
 
 
 .ql-editor p,
@@ -1180,11 +1244,12 @@ div.notes__small-title {
 .ql-container.ql-snow {
     display: none;
     font-family: auto;
-    max-width: 57.25vw;
     /* max-height: 50vh; */
     max-height: 65vh;
     /* margin: auto; */
-    width: 57.25vw;
+
+    /* max-width: 57.25vw; */
+    /* width: 57.25vw; */
 }
 
 /* .notes__preview__top_section {
@@ -1282,7 +1347,7 @@ div.notes__body__div p {
     /* overflow-x: hidden; */
     white-space: pre-wrap;
     word-wrap: break-word;
-    height: 52.5vh;
+    height: 60vh;
 }
 
 /* .notes__body_div * {
@@ -1326,7 +1391,9 @@ div.notes__body__div p {
     /* overflow-x: hidden; */
     white-space: pre-wrap;
     word-wrap: break-word;
-    max-width: 55vw;
+
+    /* max-width: 55vw; */
+
     max-height: 65vh;
     /* margin: auto; */
     margin-top: 0;
@@ -1335,7 +1402,7 @@ div.notes__body__div p {
 .notes__body_div * {
     word-wrap: break-word;
     overflow: hidden;
-    min-width: 1rem;
+    /* min-width: 1rem; */
 }
 
 
@@ -1407,4 +1474,7 @@ main.notes__preview div.notes__preview__top_section.active {
     background: transparent;
     outline: none;
     padding: 0 15px;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
 }
