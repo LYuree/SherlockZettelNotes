@@ -95,7 +95,7 @@ export default class App{
         this.modalRakeWindowMemoryProgressBar.style.width = (this.memoryLimitKB? (App.KB*2-this.memoryLimitKB)/(App.KB*2)*100.0 + '%' : '0');
         this.modalRakeWindowMemoryProgressBarLabel.innerText = `${this.memoryLimitKB ? (this.memoryLimitKB/App.KB).toFixed(2) : 0} ГБ / 2.00 ГБ свободно`;
 
-        this.minMaximizeBtn = document.querySelector('.fas.fa-arrow-left');
+        this.minMaximizeBtn = document.querySelector('.min_maximize_btn');
         // console.log()
 
 
@@ -562,7 +562,8 @@ export default class App{
 
         this.notesMatrix.forEach(async note => {
             console.log("launching callback for a note");
-                let response = await NotesAPI.extractKeywords(this._stripHTMLTags(note['note_text']));
+                // let response = await NotesAPI.extractKeywords(this._stripHTMLTags(note['note_text']));
+                let response = await NotesAPI.extractKeywordsYake(this._stripHTMLTags(note['note_text']));
                 let noteKeywords = await response.json();
                 if (note['name'] != '') noteKeywords.push(note['name'].toLowerCase());
                 noteKeywords = noteKeywords.map(str => NotesAPI.shieldApostrophes(str));
@@ -628,24 +629,6 @@ export default class App{
                 // doHeavyLifting();
                 let clientsKeywords = clientWithKeywords.keywords;
                 let usersKeywords = user.keywords;
-                // getting an array of keywords with occurrences and ranks
-                // const matchingKeywords = usersKeywords.filter(keyword => clientsKeywords.includes(keyword));
-                
-                
-                // usersKeywords = usersKeywords.filter(function(usersItem){
-                //     for (let clientsItem of clientsKeywords)
-                //         if(usersItem.keyword === clientsItem.keyword) return true;
-                //     return false;
-                // });
-                // clientsKeywords = clientsKeywords.filter(function(clientsItem){
-                //     for (let usersItem of usersKeywords)
-                //         if(usersItem.keyword === clientsItem.keyword) return true;
-                //     return false;
-                // });
-
-
-                // console.log("user's keywords: ", usersKeywords);
-                // console.log("client's keywords: ", clientsKeywords);
                 const matchesCount = clientsKeywords.length;
 
                 // we could create an otsuka-class instance that would hold the
@@ -654,11 +637,6 @@ export default class App{
                 // const OtsukaMean = this.getOtsukaMean(clientsKeywords, usersKeywords);
                 
                 const JaccardMean = this.getJaccardMean(clientsKeywords, usersKeywords);
-                // let SpearmanCorrelation = this._getSpearmanRho(matchesCount, usersKeywords, clientsKeywords);
-                
-                // let MAPE = null;
-
-
                 console.log(user.email, user.username);
                 console.log(JaccardMean);
                 const nameCellHTML = `<a href=\'mailto:${user.email}\'>${user.username}</a>`;
@@ -734,92 +712,93 @@ export default class App{
 
     getJaccardMean(clientsKeywords, usersKeywords){
         console.log(clientsKeywords, usersKeywords);
-        let intersection = 0,
-            union = 2, //basically 100% + 100%
-            m = 0;
+        let intersection = 0;
         const usersKeywordsTransformed = this.occurrencesToPercent(usersKeywords),
         clientsKeywordsTransformed = this.occurrencesToPercent(clientsKeywords);
 
-        const unionArray = usersKeywordsTransformed.concat(clientsKeywordsTransformed);
+        let unionArray = usersKeywordsTransformed.concat(clientsKeywordsTransformed);
         for (let unionIndex in unionArray){
             // you can prob figure out the intersection here, too
             let firstItem = unionArray[unionIndex];
-            console.log(unionArray.slice(unionIndex + 1))
+            // console.log(unionArray.slice(unionIndex + 1))
             let intersectingItem = unionArray.slice(+unionIndex + 1).find(item => item['keyword'] == firstItem['keyword']);
-            console.log(firstItem, intersectingItem, unionIndex);
+            // console.log(firstItem, intersectingItem, unionIndex);
             if (intersectingItem){
-                console.log(unionArray);
                 intersection += Math.min(firstItem['occurrences'], intersectingItem['occurrences']);
                 // union += Math.max(firstItem['occurrences'], intersectingItem['occurrences']);
             }
-            else {
-                // union += firstItem['occurrences'];
-                m += 1;
-            }
         }
-
-        // for (let clientsItem of clientsKeywordsTransformed){
-        //     // clientsKeywordsArray[i][0] = item['keyword']; //call these arrays keywordMatrices, if you somehow happen to need them
-        //     // clientsKeywordsArray[i][1] = +item['occurrences'];
-        //     // console.log(clientsItem);
-        //     // Ni += +clientsItem['occurrences'];
-        //     let usersItem = usersKeywordsTransformed.find(item => clientsItem['keyword'] == item['keyword']);
-        //     if (usersItem){
-        //         intersection += Math.min(clientsItem['occurrences'], usersItem['occurrences']);
-        //         // union += Math.max(clientsItem['occurrences'], usersItem['occurrences']);
-        //         m += 1;
+        console.log(unionArray);
+        // let i = 0;
+        // for (let firstItemIndex in unionArray){
+        //     let firstItem = unionArray[firstItemIndex];
+        //     console.log(firstItem['keyword']);
+        //     let secondItemIndex = unionArray.findIndex(item => item['keyword'] == firstItem['keyword']),
+        //         secondItem = unionArray[secondItemIndex];
+        //     if(firstItem){
+        //             if (secondItemIndex && secondItemIndex != -1){
+        //                 // console.log(unionArray);
+        //                 union += Math.max(firstItem['occurrences'], secondItem['occurrences']);
+        //                 // union += Math.max(firstItem['occurrences'], intersectingItem['occurrences']);
+        //                 unionArray.splice(secondItemIndex, 1);
+        //             }
+        //             else {
+        //                 union += firstItem['occurrences'];
+        //             }
+        //         unionArray.splice(firstItemIndex, 1);
         //     }
-        //     // else union += clientsItem;
+        //     for (const key of unionArray.keys()) console.log(key);
+        //     i++;
         // }
+        // console.log(`i = ${i}`);
         
-        // for (let usersItem of usersKeywordsTransformed){
-        //     //     usersKeywordsArray[i][0] = item['keyword'];
-        //     //     usersKeywordsArray[i][1] = +item['occurrences'];
-        //     Nj += usersItem['occurrences'];
-        //     }
-        console.log(`intersection = ${intersection}, union = ${union}, m = ${m}`);
-        return intersection/union/m;
+        const actualUnionArray = new Array(); //rename the unionArray as joined array
+
+        for (const firstItem of unionArray){
+            const secondItem = unionArray.splice().find(item => item['keyword'] == firstItem['keyword']);
+            if(secondItem){
+                console.log(`First item: ${firstItem['keyword']}`);
+                console.log(`Second item: ${secondItem['keyword']}`);
+                if(firstItem['occurrences'] > secondItem['occurrences'])
+                    actualUnionArray.push(firstItem['occurrences']);
+            }
+            else actualUnionArray.push(firstItem['occurrences']);
+            // else union += firstItem['occurrences'] ?? 0;
+            // unionArray.splice(firstIndex, 1);
+            // console.log("\n==========================================\n")
+            // for (const value of unionArray.values()) console.log(value);
+        }
+        console.log(actualUnionArray);
+        const union = actualUnionArray.reduce((a, b) => a + b);
+
+        console.log(`intersection = ${intersection}, union = ${union}`);
+        if(union == 0) return 0;
+        return intersection/union;
     }
 
 
 
     getOtsukaMean(clientsKeywords, usersKeywords){
-        // maybe, let's create an actual two-dim array out of our
-        // arrays of objects?
-        // console.log(clientsKeywords);
-        // console.log(usersKeywords);
         let Ni = 0,
             Nj = 0,
             c = 0,
-            m = 0;
-        // const clientsKeywordsArray = new Array(),
-            // usersKeywordsArray = new Array();
-        // let i = 0;
+            m = 0; //obsolete; m is the number of attributes, and we only have one
         const usersKeywordsTransformed = this.occurrencesToPercent(usersKeywords),
             clientsKeywordsTransformed = this.occurrencesToPercent(clientsKeywords);
         for (let clientsItem of clientsKeywordsTransformed){
-            // clientsKeywordsArray[i][0] = item['keyword']; //call these arrays keywordMatrices, if you somehow happen to need them
-            // clientsKeywordsArray[i][1] = +item['occurrences'];
             console.log(clientsItem);
             Ni += +clientsItem['occurrences'];
             let usersItem = usersKeywordsTransformed.find(item => clientsItem['keyword'] == item['keyword']);
             if (usersItem){
                 c += Math.min(+clientsItem['occurrences'], +usersItem['occurrences']);
-                m += 1;
+                // m += 1;
             }
         }
         for (let usersItem of usersKeywordsTransformed){
-        //     usersKeywordsArray[i][0] = item['keyword'];
-        //     usersKeywordsArray[i][1] = +item['occurrences'];
             Nj += +usersItem['occurrences'];
         }
         console.log(`c = ${c}, Ni = ${Ni}, Nj = ${Nj}`);
-        return c/Math.sqrt(Ni + Nj)/m;
-        // for (let clientsItem in clientsKeywords){
-            // if (usersKeywords.find(usersItem => clientsItem['keyword'] == usersItem['keyword']))
-                // c += Math.min(+clientsItem['occurrences'], +usersItem['occurrences']);
-        // }
-
+        return c/Math.sqrt(Ni*Nj);
     }
 
     _getSpearmanRho(matchesCount, usersKeywords, clientsKeywords){

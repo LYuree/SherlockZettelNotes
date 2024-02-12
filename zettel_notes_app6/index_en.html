@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="node_modules/spinkit/spinkit.css">
+    <link rel="shortcut icon" href="./images/holmes_icon.png">
+    <!-- FA-ICONS -->
+    <!-- <script src="https://kit.fontawesome.com/e202a65f05.js" crossorigin="anonymous"></script> -->
+    <script src="https://kit.fontawesome.com/e202a65f05.js" crossorigin="anonymous"></script>
+    <!-- Include stylesheet -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <title>Project ZettelNotes</title>
+</head>
+<body>
+    <div class="main-loader sk-circle-wrapper">
+        <div class="sk-circle sk-center">
+            <div class="sk-circle-dot"></div>
+            <div class="sk-circle-dot"></div>
+            <div class="sk-circle-dot"></div>
+            <div class="sk-circle-dot"></div>
+            <div class="sk-circle-dot"></div>
+            <div class="sk-circle-dot"></div>
+            <div class="sk-circle-dot"></div>
+            <div class="sk-circle-dot"></div>
+            <div class="sk-circle-dot"></div>
+            <div class="sk-circle-dot"></div>
+            <div class="sk-circle-dot"></div>
+            <div class="sk-circle-dot"></div>
+        </div>
+    </div>
+    <!-- SIGN IN MODAL WINDOW -->
+        <div class="modal__sign-in__background">
+            <div id="modal__sign-in">
+                <div class="modal__sign-in__caption">Greetings!<br>Please, sign in to continue</div>
+                <div class="modal__sign-in__row">
+                    <label for="modal__sign-in__login-input">Username/e-mail:&nbsp</label>
+                    <div class="modal__sign-in__input-wrapper">
+                        <input type="text" name="modal__sign-in__login-input" class="modal__sign-in__login-input">
+                    </div>
+                </div>
+                <div class="modal__sign-in__row">
+                    <label for="modal__sign-in__password-input">Password:&nbsp</label>
+                    <div class="modal__sign-in__input-wrapper">
+                        <input type="password" name="modal__sign-in__password-input" class="modal__sign-in__password-input">
+                        <div class="modal__sign-in__input-wrapper__toggle-visibility">
+                            <img class="modal__sign-in__input-wrapper__toggle-visibility__img1" src="./images/eye-black.png">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal__sign-in__error-wrapper__flex-container">
+                    <div class="modal__sign-in__error-wrapper">
+                        <p>Invalid username or password</p>
+                    </div>
+                </div>
+
+                <div class="modal__sign-in__button-wrapper__flex-container">
+                    <div class="modal__sign-in__button-wrapper">
+                        <button type="submit" class="modal__sign-in__button">Sign in</button>
+                    </div>
+                </div>
+                
+                <div class="modal__sign-in__register-link__wrapper">
+                    <span>Don't have an account yet?</span>
+                    <br>
+                    <a href="#" class="modal__sign-in__register-link">Sign up</a>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- MODAL SIGN UP (REGISTRATION) WINDOW -->
+
+
+        <div class="modal__sign-up__background">
+            <div id="modal__sign-up">
+                <div class="modal__sign-up__caption">Sign up</div>
+                
+                <div class="modal__sign-up__form-control">
+                    <div class="modal__sign-up__row">
+                        <label for="modal__sign-up__login-input">Username:&nbsp</label>
+                        <div class="modal__sign-up__input-wrapper">
+                            <input type="text" name="modal__sign-up__login-input" class="modal__sign-up__login-input">
+                        </div>
+                    </div>
+                    <div class="modal__sign-up__small-wrapper">
+                        <small class="modal__sign-in__login-input-error">error message</small>
+                    </div>
+                </div>
+                
+                <div class="modal__sign-up__form-control">
+                    <div class="modal__sign-up__row">
+                        <label for="modal__sign-up__email-input">e-mail:&nbsp</label>
+                        <div class="modal__sign-up__input-wrapper">
+                            <input type="text" name="modal__sign-up__email-input" class="modal__sign-up__email-input">
+                        </div>
+                    </div>
+                    <div class="modal__sign-up__small-wrapper">
+                        <small class="modal__sign-in__email-input-error">error message</small>
+                    </div>
+                </div>
+
+                <div class="modal__sign-up__form-control">
+                    <div class="modal__sign-up__row">
+                        <label for="modal__sign-up__password-input">Password:&nbsp</label>
+                        <div class="modal__sign-up__input-wrapper">
+                            <input type="password" name="modal__sign-up__password-input" class="modal__sign-up__password-input">
+                            <div class="modal__sign-in__input-wrapper__toggle-visibility">
+                                <img class="modal__sign-in__input-wrapper__toggle-visibility__img2" src="./images/eye-black.png">
+                            </div>                            <!-- <div class="toggle_visibility" style="background: url(&quot;images/eye-grey.png&quot;);"></div> -->
+                        </div>
+                    </div>
+                    <div class="modal__sign-up__small-wrapper">
+                        <small class="modal__sign-in__password-error">error message</small>
+                    </div>
+                </div>
+
+                <div class="modal__sign-up__form-control">
+                    <div class="modal__sign-up__row">
+                        <label for="modal__sign-up__repeat-password-input">Confirm password:&nbsp</label>
+                        <div class="modal__sign-up__input-wrapper">
+                            <input type="password" name="modal__sign-up__repeat-password-input" class="modal__sign-up__repeat-password-input">
+                            <div class="modal__sign-in__input-wrapper__toggle-visibility">
+                                <img class="modal__sign-in__input-wrapper__toggle-visibility__img3" src="./images/eye-black.png">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal__sign-up__small-wrapper">
+                        <small class="modal__sign-in__repeat-password-error">error message</small>
+                    </div>
+                </div>
+
+                <div class="modal__sign-up__button-wrapper__flex-container">
+                    <div class="modal__sign-up__button-wrapper">
+                        <button type="submit" class="modal__sign-up__button">Sign up</button>
+                    </div>
+                </div>
+                
+                <div class="modal__sign-up__authorize-link__wrapper">
+                    <span>Already have an account?</span>
+                    <br>
+                    <a href="#" class="modal__sign-up__authorize-link">Sign in</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- REGISTER COMPLETION WINDOW -->
+        
+        <div class="modal__verification_message__background">
+            <div id="modal__verification_message">
+                <span class="modal__verification_message">
+                    <p>Wonderful! You're one step away from using Sherlock ZettelNotes!</p>
+                    <p>We've sent a link to the email you've specified.</p>
+                    <p>Follow the link from the email to verify your email address.</p>
+                </span>             
+                <div class="modal__verification_message__authorize-link__wrapper">
+                    <a href="#" class="modal__verification_message__authorize-link">Sign in</a>
+                </div>
+            </div>
+        </div>
+
+
+
+
+        <!-- RAKE WINDOW -->
+        <div class="modal__rake_window__background">
+            <div id="modal__rake_window">
+                <div class="model__rake_window__scroll-wrapper">
+                    <div class="modal__rake_window__header">
+                        <div class="modal__rake_window__caption">
+                            Analysis
+                        </div>
+                        <button class="modal__rake_window__background__close_button">
+                             X
+                        </button>
+                    </div>
+                    
+                    <div class="modal__rake_window__section_flex_container">
+                        <div class="modal__rake_window_user_info-wrapper">
+                            <section class="modal__rake_window__user_info">
+                                <div class="user_info-loader sk-circle-wrapper">
+                                    <div class="sk-circle sk-center">
+                                        <div class="sk-circle-dot"></div>
+                                        <div class="sk-circle-dot"></div>
+                                        <div class="sk-circle-dot"></div>
+                                        <div class="sk-circle-dot"></div>
+                                        <div class="sk-circle-dot"></div>
+                                        <div class="sk-circle-dot"></div>
+                                        <div class="sk-circle-dot"></div>
+                                        <div class="sk-circle-dot"></div>
+                                        <div class="sk-circle-dot"></div>
+                                        <div class="sk-circle-dot"></div>
+                                        <div class="sk-circle-dot"></div>
+                                        <div class="sk-circle-dot"></div>
+                                    </div>
+                                    <div class="user_info-loader_label">Refreshing status.<br>This might take some time...</div>
+                                </div>
+                            
+                                <img src="./images/holmes_icon.png" alt="avatar">
+                                <div class="modal__rake_window__section__user_text_container">
+                                    <span class="modal__rake_window__username"></span>
+                                    <span class="modal__rake_window__publicity"></span>
+                                    <span class="modal__rake_window__memory_limit"></span>
+                                    <span class="modal__rake_window__registration_date"></span>
+                                    <div class="modal__rake_window__memory_progress_bar__wrapper">
+                                        <div class="modal__rake_window__memory_progress_bar"></div>
+                                    </div>
+                                    <!-- label? -->
+                                    <span class="modal__rake_window__memory_progress_bar_label">1.26 ГБ/ 2 ГБ</span>
+                                    <div class="modal__rake_window__user_info__controls">
+                                        <div class="modal__rake_window__publicity_button-wrapper">
+                                            <button type="submit" class="modal__rake_window__publicity_button">
+                                            </button>
+                                        </div>
+                                        <i class="far fa-question-circle" title="Clicking on this button will make the information about your keywords available to others. You'll be recommended to other users as a potential coworker and will receive such recommendations yourself.">
+                                        </i>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+
+                        
+                        <section class="modal__rake_window__users_keywords">
+                            <!-- <div class="modal__rake_window__users_keywords__loader_mask">
+                                <div class="modal__rake_window__users_keywords__loader"></div>
+                            </div> -->
+                            <div class="keywords-loader sk-circle-wrapper">
+                                <div class="sk-circle sk-center">
+                                    <div class="sk-circle-dot"></div>
+                                    <div class="sk-circle-dot"></div>
+                                    <div class="sk-circle-dot"></div>
+                                    <div class="sk-circle-dot"></div>
+                                    <div class="sk-circle-dot"></div>
+                                    <div class="sk-circle-dot"></div>
+                                    <div class="sk-circle-dot"></div>
+                                    <div class="sk-circle-dot"></div>
+                                    <div class="sk-circle-dot"></div>
+                                    <div class="sk-circle-dot"></div>
+                                    <div class="sk-circle-dot"></div>
+                                    <div class="sk-circle-dot"></div>
+                                </div>
+                                <div class="keywords-loader_label">Extracting keywords<br>This might take some time...</div>
+                            </div>
+                            <div class="modal__rake_window__users_keywords__caption modal_window__caption">
+                                your keywords
+                            </div>
+                            <div class="modal__rake_window__users_keywords__info">
+                                The app can automatically extract the keywords from your notes.
+                                English texts are processed most effectively.
+                            </div>
+                            
+                            <table class="modal__rake_window__users_keywords__table">
+                                <tr class="modal__rake_window__users_keywords__table_row">
+                                    <th>Word</th>
+                                    <th>Occurrences</th>
+                                    <th>Rank</th>
+                                </tr>
+                                <tr class="modal__rake_window__users_keywords_table_row">
+                                    <td class="modal__rake_window__users_keywords__table_row__username_col">
+                                        circulatory system
+                                    </td>
+                                </tr>
+                                <tr class="modal__rake_window__users_keywords__table_row">
+                                    <td class="modal__rake_window__users_keywords__table_row__username_col">
+                                        blood
+                                    </td>
+                                </tr>
+                            </table>
+                            <div class="modal__rake_window__button_wrapper">
+                                <button class="modal__rake_window__users_keywords__refresh_keywords_button">
+                                    Refresh the list (auto)
+                                </button>
+                            </div>
+                        </section>
+                        <section class="modal__rake_window__cowork_candidates">
+                            <!-- <div class="modal__rake_window__cowork_candidates__loader_mask">
+                                <div class="modal__rake_window__cowork_candidates__loader"></div>
+                            </div> -->
+                            <div class="cowork_candidates-loader sk-circle-wrapper">
+                                <div class="sk-circle sk-center">
+                                    <div class="sk-circle-dot"></div>
+                                    <div class="sk-circle-dot"></div>
+                                    <div class="sk-circle-dot"></div>
+                                    <div class="sk-circle-dot"></div>
+                                    <div class="sk-circle-dot"></div>
+                                    <div class="sk-circle-dot"></div>
+                                    <div class="sk-circle-dot"></div>
+                                    <div class="sk-circle-dot"></div>
+                                    <div class="sk-circle-dot"></div>
+                                    <div class="sk-circle-dot"></div>
+                                    <div class="sk-circle-dot"></div>
+                                    <div class="sk-circle-dot"></div>
+                                </div>
+                            </div>
+                            <div class="modal__rake_window__users_keywords__caption modal_window__caption">
+                                Looking for coworkers?
+                            </div>
+                            <div class="modal__rake_window__users_keywords__info">
+                                The app can give you recommendations on
+                                collaborating with other people
+                                based on the similarity between the keyword sets you and they have.
+                            </div>
+                            <table class="modal__rake_window__cowork_candidates__table">
+                                <tr class="modal__rake_window__cowork_candidates__table_row">
+                                    <th>User</th>
+                                    <th>Shared<br>words</th>
+                                    <th>Similarity<br>of the sets</th>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </table>
+                            <div class="modal__rake_window__button_wrapper">
+                                <button class="modal__rake_window__cowork_candidates__refresh_candidates_button">
+                                    Search
+                                </button>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <div class="notes" id="app">
+        <!-- navigation icons panel -->
+        <aside class="notes__navbar">
+            <div class="notes__navbar__fas__fa-icons">
+                <button class="min_maximize_btn fas fa-arrow-right" title="Minimize/maximize">                     
+                </button>
+                <button class="fas fa-flask notes__navbar__analysis_button" title="Keyword analysis">
+                    
+                </button>
+                <button class="fas fa-power-off notes__navbar__fas__fa-icons__sign-out" title="Sign out">
+                    <!-- <i class="fas fa-analytics"></i> -->
+                </button>
+                <!-- <i class="fa-solid fa-magnifying-glass-chart"></i>
+                <i class="fa-solid fa-chart-simple"></i> -->
+            </div>
+        </aside>
+
+
+        <!-- THE SIDEBAR SECTION -->
+        <div class="notes__sidebar">            
+            <!-- search field and note-create button  -->
+            <div class="notes__sidebar__management__panel">
+                <img src="./images/vintage_ornament_maroon.png" id="vintage__ornament" alt="">
+                <input type="text" name="search__note" id="search__note"
+                class="search__note" placeholder="Search..."
+                title="Searching notes by a substring...">
+                <button class="notes__add" title="Create a new note"> New </button>
+            </div>
+            <!-- the notes previews -->
+            <div class="notes__list-items__container">
+            </div>
+        </div>
+        <!-- THE MAIN SECTION -->
+        <div class="notes__body__editor__drop_down_menu" tabindex="0">
+            <ul class="notes__body__editor__drop_down_menu__list" tabindex="0">
+            </ul>
+        </div>
+        <main class="notes__preview">
+            <div class="notes__preview__top_section">
+                <!-- <input type="text" name="" id="" class="notes__title" placeholder="Enter a title..."> -->
+                <!-- <i class="fas fa-edit notes__preview__top_section__edit_button"></i> -->
+                <div class="notes__title_div"></div>
+                <input type="text" name="" id="" class="notes__title_input" placeholder="Enter a title...">
+                <div class="notes__preview__top_section__button-wrapper">
+                    <button type="submit" class="notes__preview__top_section__button">Edit</button>
+                </div>
+            </div>
+            <!-- <textarea class="notes__body" placeholder="Type in your text here..."></textarea>
+             -->
+            <div class="notes__body_div" placeholder="Type in your text here..."></div>
+            <div class="notes__body__editor" placeholder="Type in your text here..."></div>
+            <!-- <script>
+                var quill = new Quill('.notes__body__editor', {
+                    theme: 'snow'
+                });
+            </script> -->
+
+            <!-- Include the Quill library -->
+            <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+            <!-- <script type="module" src="./js/rake_js_test.js"></script> -->
+            <!-- <script> var exports = {}; </script> -->
+            <!-- <script type="module" src="./js/node_modules/rake-js/dist/lib/index.js"></script> -->
+            <!-- <script src="https://requirejs.org/docs/release/2.3.5/minified/require.js"></script> -->
+            <!-- <script type="module" src="./js/node_modules/rake-js/dist/lib/index.js"></script> -->
+            <script type="module" src="./js/main.js"></script>
+            <!-- <script type="module" data-main="./js/main.js" src="./js/requireJS.js"></script> -->
+        </main>
+    </div>
+</body>
+</html>

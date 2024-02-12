@@ -2,6 +2,7 @@ export default class NotesAPI{
     static url = './php/get_all_notes_handler.php';
     static registerUrl = './php/register.php';
     static rakeUrl = './php/RAKE.php';
+    static yakeUrl = "http://localhost:8000/yake";
     static pushKeywordsUrl = './php/push_keywords.php';
     static getClientsKeywordsRankedUrl = './php/get_clients_keywords.php';
     static getKeywordsByUsersUrl = './php/get_keywords_by_users.php';
@@ -48,7 +49,7 @@ export default class NotesAPI{
                 if(response.usernameExists == true){
                     console.log("Username already occupied");
                     appObj.toggleLoader(appObj.mainLoader, false);
-                    appObj.setErrorFor(appObj.modalSignUpLogin, "Пользователь с таким именем уже существует");
+                    appObj.setErrorFor(appObj.modalSignUpLogin, "This username is already occupied");
                     inputError = true;
                 }
                 
@@ -102,7 +103,7 @@ export default class NotesAPI{
                 console.log('response ready');
                 const userEntry = JSON.parse(xhr.response);
                 console.log(xhr.response);
-                appObj.publicity = userEntry['public'];
+                // appObj.publicity = userEntry['public'];
                 console.log(appObj.publicity);
                 console.log(userEntry);
                 if(userEntry != null && userEntry['active'] == true){
@@ -119,7 +120,7 @@ export default class NotesAPI{
                         appObj.initiateNotesView();
                         appObj.setNotes(responseJson['notes']);                            
                         appObj.initiateKeywords();
-                        // appObj.view.toggleNotesSidebar(true);
+                        appObj.view.toggleNotesSidebar(true);
                     }
                     else {
                         appObj.setSignInErrors();
@@ -206,9 +207,9 @@ export default class NotesAPI{
                 const keywordTable = appObj.modalRakeWindowKeywordsTable;
                 const rowClass = "modal__rake_window__users_keywords__table_row";
                 appObj._clearChildNodes(keywordTable);
-                appObj._createTableRowHTML(appObj.TH, keywordTable, 3, rowClass, ['Слово', 'Встреча<wbr>емость', 'Ранг']);
+                appObj._createTableRowsHTML(appObj.TH, keywordTable, 3, rowClass, ['Word', 'Occurr<wbr>ences', 'Rank']);
                 for (let word of keywords){
-                    appObj._createTableRowHTML(appObj.TD, keywordTable, 3, rowClass, [word['keyword'], word['occurrences'],
+                    appObj._createTableRowsHTML(appObj.TD, keywordTable, 3, rowClass, [word['keyword'], word['occurrences'],
                         word['rank']]);
                 }
                 appObj.toggleLoader(appObj.keywordsLoader, false);
@@ -225,34 +226,10 @@ export default class NotesAPI{
         let usersWithKeywords = [];
         xhr.onreadystatechange = () => {
             if(xhr.readyState == 4 && xhr.status == 200){
-                // console.log(xhr.response);
-                // for(let j = 0; j < 10; j++ ){
-                //     let i = 0;
-                //     while(i < 1e9) i++;
-                // }this.notesMatrix.forEach(note => {
-
-                // debugging heavylifting
-
-                // let j = 0;
-                // const launchCallbacks = function(func) {
-                //     while(j < 1e3) setZeroTimeout(func);
-                // }
-                // const testCallback = function(){
-                //     j--;
-                //     // console.log(j);
-                // }
-                // launchCallbacks(testCallback);
-
                 usersWithKeywords = JSON.parse(xhr.response);
-
-                // for (let userWithKeywords of usersWithKeywords){
-                //     appObj.setRelativeFreqs(userWithKeywords);
-                // }
-
                 usersWithKeywords.forEach(userWithKeywords => {
                     console.log(userWithKeywords['keywords']);
                 });
-
                 const index = usersWithKeywords.findIndex(user => user.username == appObj.username);
                 const clientWithKeywords = usersWithKeywords[index];
                 usersWithKeywords.splice(index, 1);
@@ -462,6 +439,18 @@ export default class NotesAPI{
             body: "noteText=" + noteBody
         };
         return fetch(this.rakeUrl, reqObj);
+    }
+
+    static extractKeywordsYake(noteBody){ //this is sync
+        const reqObj = {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: "noteText=" + noteBody
+        };
+        return fetch(this.yakeUrl, reqObj);
     }
 
     // static async extractKeywords(noteBody){ //this is an attempt of async programming

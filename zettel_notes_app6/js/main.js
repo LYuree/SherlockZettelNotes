@@ -1,4 +1,5 @@
-import App from "./App.js";
+// import App from "./App.js";
+import App from "./App_en.js";
 import NotesAPI from "./NotesAPI.js";
 const root = document.getElementById("app");
 const app = new App(root);
