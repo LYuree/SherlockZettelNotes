@@ -207,7 +207,7 @@ export default class NotesAPI{
                 const keywordTable = appObj.modalRakeWindowKeywordsTable;
                 const rowClass = "modal__rake_window__users_keywords__table_row";
                 appObj._clearChildNodes(keywordTable);
-                appObj._createTableRowsHTML(appObj.TH, keywordTable, 3, rowClass, ['Word', 'Occurr<wbr>ences', 'Rank']);
+                appObj._createTableRowsHTML(appObj.TH, keywordTable, 3, rowClass, ['Слово', 'Встречае-<wbr>мость', 'Ранг']);
                 for (let word of keywords){
                     appObj._createTableRowsHTML(appObj.TD, keywordTable, 3, rowClass, [word['keyword'], word['occurrences'],
                         word['rank']]);
