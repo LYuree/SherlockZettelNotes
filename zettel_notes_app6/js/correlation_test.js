@@ -98,10 +98,10 @@ const assignRanks = array => {
 };
 
 
-const keywordSet1 = new Set(`compatibility, systems, linear constraints, set, natural numbers, Criteria, compatibility, system, linear Diophantine equations, strict inequations, nonstrict inequations, Upper bounds, components, minimal set, solutions, algorithms, minimal generating sets, solutions, systems, corresponding algorithms, constructing, minimal supporting set, solving, systems, systems`
+const keywordSet1 = new Set(`compatibility, systems, linear constraints, strict inequations, nonstrict inequations, Upper bounds, components, minimal set, solutions, algorithms, minimal generating sets, solutions, systems, corresponding algorithms, constructing, minimal supporting set, solving, systems, systems`
     .split(', '));
 const keywordSet2 = new Set(`blood vessels, heart, heart diseases, diseases, circulatory system, lymphatic system`.split(', '));
-const keywordSet3 = new Set(`systems, linear constraints, set, natural numbers, Criteria, compatibility, system, linear Diophantine equations, strict inequations, nonstrict inequations, Upper bounds, components, minimal set, solutions, algorithms, minimal generating sets, solutions, criteria, corresponding algorithms, constructing, minimal supporting set, solving, blood vessels, heart, heart diseases, diseases, diseases, circulatory system, lymphatic system`.split(', '));
+const keywordSet3 = new Set(`systems, linear constraints, set, natural numbers, Criteria, compatibility, diseases, circulatory system, lymphatic system`.split(', '));
 const keywordSet4 = new Set(`systems, blood vessels, heart, heart diseases, diseases, circulatory system, lymphatic system`.split(', '));
 // systems, linear constraints, set, natural numbers, Criteria, compatibility, system, linear Diophantine equations, strict inequations, nonstrict inequations, Upper bounds, components, minimal set, solutions, algorithms, minimal generating sets, solutions, systems, criteria, corresponding algorithms, constructing, minimal supporting set, solving,
 
@@ -206,28 +206,6 @@ function getJaccard(clientsKeywords, usersKeywords){
         // OR it has a counterpart with lower occurrences value
     }
 
-    function occurrencesToPercent (keywordsArray){
-        // a structured clone of an array is created
-        // to prevent the initial array from undergoing changes;
-        // structuredClone function shows better performance
-        // than the JSON way, but the former might require polyfill
-        // (which it, probably, shouldn't, cause it seems to be now supported
-        // by all browsers)
-        // const resultArray = JSON.parse(JSON.stringify(keywordsArray));
-        const resultArray = structuredClone(keywordsArray);
-        // const resultArray = Array.from(keywordsArray);
-        // console.log(resultArray);
-        let sumOfOccurrences = 0;
-        for (let item of resultArray){
-            // console.log(item);
-            sumOfOccurrences += item['occurrences'];
-        }
-        for (let item of resultArray){
-            item['occurrences'] /= sumOfOccurrences;
-        }
-        // console.log(resultArray);
-        return resultArray;
-    }
 
     // console.log(occurrencesUnionArray);
     const union = occurrencesUnionArray.reduce((accumulator, currentValue) => accumulator + currentValue);
@@ -236,6 +214,29 @@ function getJaccard(clientsKeywords, usersKeywords){
     if(union == 0) return 0;
     // debugger;
     return intersection/union;
+}
+
+function occurrencesToPercent (keywordsArray){
+    // a structured clone of an array is created
+    // to prevent the initial array from undergoing changes;
+    // structuredClone function shows better performance
+    // than the JSON way, but the former might require polyfill
+    // (which it, probably, shouldn't, cause it seems to be now supported
+    // by all browsers)
+    // const resultArray = JSON.parse(JSON.stringify(keywordsArray));
+    const resultArray = structuredClone(keywordsArray);
+    // const resultArray = Array.from(keywordsArray);
+    // console.log(resultArray);
+    let sumOfOccurrences = 0;
+    for (let item of resultArray){
+        // console.log(item);
+        sumOfOccurrences += item['occurrences'];
+    }
+    for (let item of resultArray){
+        item['occurrences'] /= sumOfOccurrences;
+    }
+    // console.log(resultArray);
+    return resultArray;
 }
 
 const keywordsArray1 = Array.from(keywordSet1);
@@ -331,7 +332,8 @@ for (let i = 0; i < rankedArrays.length; i++){
     // debugger;
     // let fontWeight = null;
     // if()
-    printRow("td", jacTable, JaccardValues[i].length+1, "test_row", [`<b>${i+1}</b>`, ...JaccardValues[i]]);
+    const jacValuesFixed = JaccardValues[i].map(value => value.toFixed(4));
+    printRow("td", jacTable, JaccardValues[i].length+1, "test_row", [`<b>${i+1}</b>`, ...jacValuesFixed]);
 }
 document.body.appendChild(jacTable);
 document.write("<br>");
@@ -343,7 +345,8 @@ for (const array of rankedArrays){
     keywTable.classList.add("keywords_table");
     let i = 1;
     printRow("th", keywTable, 4, "test_row", ["", 'keyword', 'occurrences', 'rank']);
-    for (const item of array){
+    const arrayTransformed = occurrencesToPercent(array);
+    for (const item of arrayTransformed){
         // debugger;
         printRow("td", keywTable, 4, "test_row", [i, item['keyword'], item['occurrences'], item['rank']]);
         i++;

@@ -206,7 +206,7 @@ export default class NotesView{
                     this.onNoteEdit();
                     this.displayTitle.innerHTML = this.inputTitle.value;
                     this.displayBody.innerHTML = this.qlEditor.innerHTML;
-                    this.editBtn.innerHTML = "Edit";
+                    this.editBtn.innerHTML = "Править";
 
                     this.inputTitle.style.display = "none";
                     this.quillContainer.style.display = "none";
@@ -217,7 +217,7 @@ export default class NotesView{
                     this.displayBody.style.display = "initial";
                 }
                 else {
-                    this.editBtn.innerHTML = "Edit";
+                    this.editBtn.innerHTML = "Править";
 
                     this.inputTitle.style.display = "none";
                     this.quillContainer.style.display = "none";
@@ -238,7 +238,7 @@ export default class NotesView{
     
             if(targetClassList.contains("notes__delete")){
                 console.log("Note deletion event...");
-                const confirmDeletion = confirm('Are you sure you want to delete this note?');
+                const confirmDeletion = confirm('Вы уверены, что хотите удалить эту заметку?');
                 const idToRemove = eventTarget.parentNode.id;                    
                 if(confirmDeletion){
                     console.log(this.App.username);
@@ -369,7 +369,7 @@ export default class NotesView{
                     // console.log(this.displayTitle, this.displayBody);
                     this.inputTitle.value = this.displayTitle.innerHTML;
                     this.qlEditor.innerHTML = this.displayBody.innerHTML;
-                    this.editBtn.innerHTML = "Save";
+                    this.editBtn.innerHTML = "Сохранить";
                     this._toggleEditMode(true);
                 }
                 else {
@@ -562,7 +562,7 @@ export default class NotesView{
         const save = confirm("Save changes to the current note?");
                 if(save) {
                     this._saveChanges();
-                    this.editBtn.innerHTML = "Edit";
+                    this.editBtn.innerHTML = "Править";
 
                     this.inputTitle.style.display = "none";
                     this.quillContainer.style.display = "none";
@@ -571,7 +571,7 @@ export default class NotesView{
                     this.displayBody.style.display = "initial";
                 }
                 else {
-                    this.editBtn.innerHTML = "Edit";
+                    this.editBtn.innerHTML = "Править";
 
                     this.inputTitle.style.display = "none";
                     this.quillContainer.style.display = "none";
@@ -589,7 +589,7 @@ export default class NotesView{
         this.qlTooltip.classList.remove('active');
         // activate edit mode
         if(enable){
-            this.editBtn.innerHTML = "Save";
+            this.editBtn.innerHTML = "Сохранить";
             this.displayTitle.style.display = "none";
             this.displayBody.style.display = "none";            
             this.inputTitle.style.display = "initial";
@@ -599,7 +599,7 @@ export default class NotesView{
         }
         // deactivate edit mode
         else {
-            this.editBtn.innerHTML = "Edit";
+            this.editBtn.innerHTML = "Править";
             this.inputTitle.style.display = "none";
             this.quillContainer.style.display = "none";
             this.quillToolbar.style.display = "none";
