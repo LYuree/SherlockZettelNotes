@@ -635,13 +635,13 @@ export default class App{
         THr2.rowSpan = "2";
         THc3.colSpan = "3";
         THr2.innerText = "Пользователь";
-        THc3.innerHTML = "Меры<wbr>сходства";
+        THc3.innerHTML = "Меры<br>сходства";
         newRow1.appendChild(THr2);
         newRow1.appendChild(THc3);
         const rowClass = "modal__rake_window__cowork_candidates__table_row";
         this.modalRakeWindowCoworkCandidatesTable.appendChild(newRow1);
         this._createTableRowsHTML(this.TH, this.modalRakeWindowCoworkCandidatesTable,
-            3, rowClass, ['Жаккар','Оцука','Спирмен']);
+            3, rowClass, ['Жаккара','Оцуки','Спирмена']);
     }
 
     _setCoworkersTable(clientWithKeywords, othersWithKeywords){
@@ -685,6 +685,7 @@ export default class App{
             return userRowObj;
         });
         rowObjects.sort((a, b) => b["Jaccard"] - a["Jaccard"]);
+        rowObjects.splice(100); //select the top-100 users of potential interest
         const EPS = 4; //accuracy (number of digits)
         rowObjects.forEach(rowObj => {
             this._createTableRowsHTML(this.TD, this.modalRakeWindowCoworkCandidatesTable,
