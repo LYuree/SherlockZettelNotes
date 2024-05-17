@@ -290,7 +290,7 @@ div.modal__rake_window__section__user_text_container {
     }
 
     .notes__preview__top_section__button-wrapper{
-        display: none;
+        /* display: none; */
     }
 
     .notes__preview__top_section__button i.small_edit_btn {
@@ -353,6 +353,10 @@ div.modal__rake_window__section__user_text_container {
     .notes__preview .notes__preview__top_section button,
     .notes__title_div{
         display: initial;
+    }
+
+    .notes__title_div {
+        max-inline-size: 30vw;
     }
 }
 
@@ -1110,7 +1114,8 @@ i.small_edit_btn {
 
 .notes__preview {
     /* display: flex; */
-    /* height: calc(100vh - 6rem); */
+    height: calc(100vh - 12rem);
+    /* height: calc(70vh -2rem); */
     position: relative;
     display: none;
     flex-direction: column;
@@ -1434,7 +1439,7 @@ main.notes__preview div.notes__preview__top_section.active {
     background: transparent;
     /* max-width: 55vw; */
     /* max-width: 60vw; */
-    max-inline-size: 30vw;
+    max-inline-size: 60vw;
     min-width: 0;
 
     white-space: nowrap;
@@ -1444,7 +1449,6 @@ main.notes__preview div.notes__preview__top_section.active {
     /* overflow-y: scroll; */
 }
 
-.notes__title_div
 
 .notes__title_div {
     word-wrap: break-word;
@@ -1477,4 +1481,5 @@ main.notes__preview div.notes__preview__top_section.active {
     min-width: 0;
     overflow: hidden;
     white-space: nowrap;
+    /* width: 100%; */
 }
