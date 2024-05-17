@@ -573,7 +573,7 @@ export default class App{
         this.notesMatrix.forEach(async note => {
             console.log("launching callback for a note");
                 // let response = await NotesAPI.extractKeywords(this._stripHTMLTags(note['note_text']));
-                let response = await NotesAPI.extractKeywordsYake(this._stripHTMLTags(note['note_text']));
+                let response = await NotesAPI.extractKeywords(this._stripHTMLTags(note['note_text']));
                 let noteKeywords = await response.json();
                 console.log(noteKeywords);
                 if (note['name'] != '') noteKeywords.push(note['name'].toLowerCase());
@@ -635,7 +635,7 @@ export default class App{
         THr2.rowSpan = "2";
         THc3.colSpan = "3";
         THr2.innerText = "Пользователь";
-        THc3.innerHTML = "Меры<br>сходства";
+        THc3.innerHTML = "Меры<wbr>сходства";
         newRow1.appendChild(THr2);
         newRow1.appendChild(THc3);
         const rowClass = "modal__rake_window__cowork_candidates__table_row";

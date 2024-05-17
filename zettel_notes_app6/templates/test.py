@@ -6,7 +6,6 @@ app = Flask(__name__)
 def greet():
     return "Hello World!"
 
-
 @app.route('/hello', methods=['GET', 'POST'])
 def hello():
     @after_this_request
@@ -15,8 +14,6 @@ def hello():
         return response
     # POST request
     if request.method == 'POST':
-        
-
         print('Incoming..')
         print(request.get_json())  # parse as JSON
         return 'OK', 200
@@ -33,4 +30,4 @@ def test_page():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8000)
+    app.run(host="0.0.0.0", port=3000)
