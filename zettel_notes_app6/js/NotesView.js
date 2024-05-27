@@ -238,7 +238,7 @@ export default class NotesView{
     
             if(targetClassList.contains("notes__delete")){
                 console.log("Note deletion event...");
-                const confirmDeletion = confirm('Are you sure you want to delete this note?');
+                const confirmDeletion = confirm('Вы уверены, что хотите удалить эту заметку?');
                 const idToRemove = eventTarget.parentNode.id;                    
                 if(confirmDeletion){
                     console.log(this.App.username);
@@ -562,7 +562,7 @@ export default class NotesView{
         const save = confirm("Save changes to the current note?");
                 if(save) {
                     this._saveChanges();
-                    this.editBtn.innerHTML = "Edit";
+                    this.editBtn.innerHTML = "Править";
 
                     this.inputTitle.style.display = "none";
                     this.quillContainer.style.display = "none";
@@ -571,7 +571,7 @@ export default class NotesView{
                     this.displayBody.style.display = "initial";
                 }
                 else {
-                    this.editBtn.innerHTML = "Edit";
+                    this.editBtn.innerHTML = "Править";
 
                     this.inputTitle.style.display = "none";
                     this.quillContainer.style.display = "none";

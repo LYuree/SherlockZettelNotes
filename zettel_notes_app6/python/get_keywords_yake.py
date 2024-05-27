@@ -28,7 +28,7 @@ def extract_keywords():
         key_words_unscored = []
         for word, score in key_words_scored:
             print(word)
-            key_words_unscored.append(word.lower())
+            key_words_unscored.append(word)
         # return jsonify(key_words_unscored)
         return jsonify(key_words_unscored)
         # return jsonify(KeywordsList(note_text, key_words_unscored))

@@ -38,7 +38,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="E:\zettel_notes_app6_latest\python\.venv"
+VIRTUAL_ENV="C:\PHP\zettel_notes_app6\python\.venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
