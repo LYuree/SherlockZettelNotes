@@ -644,11 +644,20 @@ export default class App{
             3, rowClass, ['Жаккара','Оцуки','Спирмена']);
     }
 
+    _createCoworkersCaptionJacc(){
+        const rowClass = "modal__rake_window__cowork_candidates__table_row";
+        this._createTableRowHTML(this.TH, this.modalRakeWindowCoworkCandidatesTable,
+            3, rowClass, ["Пользователь", "Сходство<br>иерархий"]);
+    }
+
     _setCoworkersTable(clientWithKeywords, othersWithKeywords){
         console.log(this);
         this._clearChildNodes(this.modalRakeWindowCoworkCandidatesTable);
         const rowClass = "modal__rake_window__cowork_candidates__table_row";
-        this._createCoworkersCaption();
+        // this._createCoworkersCaption();
+        // debugger;
+        this._createTableRowsHTML(this.TH, this.modalRakeWindowCoworkCandidatesTable,
+            2, rowClass, ["Пользователь", "Сходство<br>иерархий"]);
         
         // othersWithKeywords.forEach(user => {
         //         setZeroTimeout(() => {
@@ -689,11 +698,9 @@ export default class App{
         const EPS = 4; //accuracy (number of digits)
         rowObjects.forEach(rowObj => {
             this._createTableRowsHTML(this.TD, this.modalRakeWindowCoworkCandidatesTable,
-                    4, rowClass, [
+                    2, rowClass, [
                         rowObj["nameCellHTML"],
                         rowObj["Jaccard"].toFixed(EPS),
-                        rowObj["Otsuka"].toFixed(EPS),
-                        rowObj["Spearman"].toFixed(EPS)
                     ]);
         });
     }
